@@ -30,6 +30,12 @@
     endLevel   = 3
     ordered    = false
 
+[caches]
+  [caches.images]
+    dir = ':cacheDir/images'
+
+
+    
 [params]
   [params.theme_config]
     appearance        = "auto"
@@ -41,3 +47,5 @@
     baseURL 	      = "https://example.com"
     title 	      = "MyBlog"
     copyright         = "©2020 my name."
+
+
