@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>My New Hugo Site</title>
-    <link>http://localhost:1313/</link>
+    <link>https://example.org/</link>
     <description>Recent content on My New Hugo Site</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <lastBuildDate>Tue, 29 Apr 2025 01:50:25 +0800</lastBuildDate>
-    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://example.org/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Workflow</title>
-      <link>http://localhost:1313/posts/workflow/</link>
+      <link>https://example.org/posts/workflow/</link>
       <pubDate>Tue, 29 Apr 2025 01:50:25 +0800</pubDate>
-      <guid>http://localhost:1313/posts/workflow/</guid>
+      <guid>https://example.org/posts/workflow/</guid>
       <description>&lt;ul&gt;&#xA;&lt;li&gt;first you need new a markdown using hugo.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;hugo new posts/new.md&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;&#xA;&lt;li&gt;after that, you can edit this markdown anyway.&lt;/li&gt;&#xA;&lt;li&gt;change the status: draft to false.&lt;/li&gt;&#xA;&lt;li&gt;then you can check the updated site by:&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;if you need to see with draft:&#xA;hugo server -D &#xA;no draft:&#xA;hugo server&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;&#xA;&lt;li&gt;git add and commit then push.&lt;/li&gt;&#xA;&lt;li&gt;see the new site using url:&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;https://shawrong.github.io&#xA;&lt;/code&gt;&lt;/pre&gt;</description>
     </item>
   </channel>
