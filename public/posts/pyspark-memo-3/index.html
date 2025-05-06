@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Chapter 2
+Content
+
+Filter Operation
+including: &amp;, |, ==, ~
+
+Codes:
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.appName(&#39;DataFrame&#39;).getOrCreate()
+df_spark = spark.read().csv(&#39;test.csv&#39;, header=True, inferSchema=True)
+
+# filter first format:
+df_spark.filter(&#39;Salary&lt;=2000&#39;)
+# filter second format:
+df_spark.filter(df_spark[&#39;Salary&#39;] &lt;= 2000)
+
+# filter and
+df_spark.filter((df_spark[&#39;Salary&#39;] &lt;= 2000) &amp; (df_spark[&#39;Salary&#39;] &gt;= 1500))
+# you can use or as |
+# filter ~ is also the same
+">  
+
+  <title>
+    
+      PySpark Memo 3
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-05-07 01:31:22 &#43;0800 CST">
+                            2025-05-07
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>PySpark Memo 3</h1>
+
+    
+
+    <h1 id="chapter-2">Chapter 2</h1>
+<h1 id="content">Content</h1>
+<ul>
+<li>Filter Operation</li>
+<li>including: &amp;, |, ==, ~</li>
+</ul>
+<h2 id="codes">Codes:</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> pyspark.sql <span style="color:#f92672">import</span> SparkSession
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>spark <span style="color:#f92672">=</span> SparkSession<span style="color:#f92672">.</span>builder<span style="color:#f92672">.</span>appName(<span style="color:#e6db74">&#39;DataFrame&#39;</span>)<span style="color:#f92672">.</span>getOrCreate()
+</span></span><span style="display:flex;"><span>df_spark <span style="color:#f92672">=</span> spark<span style="color:#f92672">.</span>read()<span style="color:#f92672">.</span>csv(<span style="color:#e6db74">&#39;test.csv&#39;</span>, header<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>, inferSchema<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># filter first format:</span>
+</span></span><span style="display:flex;"><span>df_spark<span style="color:#f92672">.</span>filter(<span style="color:#e6db74">&#39;Salary&lt;=2000&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># filter second format:</span>
+</span></span><span style="display:flex;"><span>df_spark<span style="color:#f92672">.</span>filter(df_spark[<span style="color:#e6db74">&#39;Salary&#39;</span>] <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">2000</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># filter and</span>
+</span></span><span style="display:flex;"><span>df_spark<span style="color:#f92672">.</span>filter((df_spark[<span style="color:#e6db74">&#39;Salary&#39;</span>] <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">2000</span>) <span style="color:#f92672">&amp;</span> (df_spark[<span style="color:#e6db74">&#39;Salary&#39;</span>] <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">1500</span>))
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># you can use or as |</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># filter ~ is also the same</span>
+</span></span></code></pre></div>
+</article>
+
+            </div>
+        </main>
+    </body></html>

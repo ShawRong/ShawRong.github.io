@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Chapter 2
+Content
+
+Dropping Columns
+Dropping Rows
+Various Parameter In Dropping functionalities
+Handling Missing values by Mean, Median and Mode
+
+Codes:
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.appName(&#39;DataFrame&#39;).getOrCreate()
+df_spark = spark.read().csv(&#39;test.csv&#39;, header=True, inferSchema=True)
+df_spark.drop(&#39;Name&#39;)
+df_spark.na.drop()
+# This is default way of na.drop, any.
+df_spark.na.drop(how=&#39;any&#39;)
+# &#39;all&#39; will trop those containing every feature as na
+df_spark.na.drop(how=&#39;all&#39;)
+# You can add threshold, those get at least 2 non-na will remain.
+df_spark.na.drop(how=&#39;any&#39;, threshold=2)
+# You can use subset to limit the view from whole to a little subset, so that you can use threshold or &#39;how&#39; or flexible
+df_spark.na.drop(how=&#39;any&#39;, subset=[&#39;Age&#39;])
+
+# so you can fill in the na, too
+# you provide fill(value_to_fill, columns_to_select)
+df_spark.na.fill(&#39;Missing Values&#39;, [&#39;Experience&#39;, &#39;age&#39;])
+
+#You can use MLlib, too
+from pyspark.ml.feature import Imputer
+
+imputer = Imputer(
+	inputCols=[&#39;age&#39;, &#39;Experience&#39;, &#39;Salary&#39;],
+	outputCols=[&#34;{}_imputed&#34;.format(c) for c in [&#39;age&#39;, &#39;Experience&#39;, &#39;Salary&#39;]]
+).setStrategy(&#39;median&#39;)
+imputer.fit(df_pyspark).transform(df_spark).show()
+">  
+
+  <title>
+    
+      PySpark Memo 2
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-05-07 01:16:44 &#43;0800 CST">
+                            2025-05-07
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>PySpark Memo 2</h1>
+
+    
+
+    <h1 id="chapter-2">Chapter 2</h1>
+<h1 id="content">Content</h1>
+<ul>
+<li>Dropping Columns</li>
+<li>Dropping Rows</li>
+<li>Various Parameter In Dropping functionalities</li>
+<li>Handling Missing values by Mean, Median and Mode</li>
+</ul>
+<h2 id="codes">Codes:</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> pyspark.sql <span style="color:#f92672">import</span> SparkSession
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>spark <span style="color:#f92672">=</span> SparkSession<span style="color:#f92672">.</span>builder<span style="color:#f92672">.</span>appName(<span style="color:#e6db74">&#39;DataFrame&#39;</span>)<span style="color:#f92672">.</span>getOrCreate()
+</span></span><span style="display:flex;"><span>df_spark <span style="color:#f92672">=</span> spark<span style="color:#f92672">.</span>read()<span style="color:#f92672">.</span>csv(<span style="color:#e6db74">&#39;test.csv&#39;</span>, header<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>, inferSchema<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>df_spark<span style="color:#f92672">.</span>drop(<span style="color:#e6db74">&#39;Name&#39;</span>)
+</span></span><span style="display:flex;"><span>df_spark<span style="color:#f92672">.</span>na<span style="color:#f92672">.</span>drop()
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># This is default way of na.drop, any.</span>
+</span></span><span style="display:flex;"><span>df_spark<span style="color:#f92672">.</span>na<span style="color:#f92672">.</span>drop(how<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;any&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># &#39;all&#39; will trop those containing every feature as na</span>
+</span></span><span style="display:flex;"><span>df_spark<span style="color:#f92672">.</span>na<span style="color:#f92672">.</span>drop(how<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;all&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># You can add threshold, those get at least 2 non-na will remain.</span>
+</span></span><span style="display:flex;"><span>df_spark<span style="color:#f92672">.</span>na<span style="color:#f92672">.</span>drop(how<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;any&#39;</span>, threshold<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># You can use subset to limit the view from whole to a little subset, so that you can use threshold or &#39;how&#39; or flexible</span>
+</span></span><span style="display:flex;"><span>df_spark<span style="color:#f92672">.</span>na<span style="color:#f92672">.</span>drop(how<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;any&#39;</span>, subset<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#39;Age&#39;</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># so you can fill in the na, too</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># you provide fill(value_to_fill, columns_to_select)</span>
+</span></span><span style="display:flex;"><span>df_spark<span style="color:#f92672">.</span>na<span style="color:#f92672">.</span>fill(<span style="color:#e6db74">&#39;Missing Values&#39;</span>, [<span style="color:#e6db74">&#39;Experience&#39;</span>, <span style="color:#e6db74">&#39;age&#39;</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#You can use MLlib, too</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> pyspark.ml.feature <span style="color:#f92672">import</span> Imputer
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>imputer <span style="color:#f92672">=</span> Imputer(
+</span></span><span style="display:flex;"><span>	inputCols<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#39;age&#39;</span>, <span style="color:#e6db74">&#39;Experience&#39;</span>, <span style="color:#e6db74">&#39;Salary&#39;</span>],
+</span></span><span style="display:flex;"><span>	outputCols<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">_imputed&#34;</span><span style="color:#f92672">.</span>format(c) <span style="color:#66d9ef">for</span> c <span style="color:#f92672">in</span> [<span style="color:#e6db74">&#39;age&#39;</span>, <span style="color:#e6db74">&#39;Experience&#39;</span>, <span style="color:#e6db74">&#39;Salary&#39;</span>]]
+</span></span><span style="display:flex;"><span>)<span style="color:#f92672">.</span>setStrategy(<span style="color:#e6db74">&#39;median&#39;</span>)
+</span></span><span style="display:flex;"><span>imputer<span style="color:#f92672">.</span>fit(df_pyspark)<span style="color:#f92672">.</span>transform(df_spark)<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div>
+</article>
+
+            </div>
+        </main>
+    </body></html>
