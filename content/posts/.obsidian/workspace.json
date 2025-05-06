@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "pyspark memo 2.md",
+                "file": "pyspark memo 3.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "pyspark memo 2"
+              "title": "pyspark memo 3"
             }
           }
         ]
@@ -78,8 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "right": {
     "id": "aad006898dbbac86",
@@ -171,8 +170,9 @@
   },
   "active": "024a213d548ecfc8",
   "lastOpenFiles": [
-    "pyspark memo.md",
     "pyspark memo 2.md",
+    "pyspark memo 3.md",
+    "pyspark memo.md",
     "python cookbook memo.md",
     "workflow.md"
   ]
