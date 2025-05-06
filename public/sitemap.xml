@@ -2,20 +2,23 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:5031/posts/</loc>
+    <loc>https://example.org/posts/</loc>
+    <lastmod>2025-05-06T21:17:29+08:00</lastmod>
+  </url><url>
+    <loc>https://example.org/posts/pyspark-memo/</loc>
+    <lastmod>2025-05-06T21:17:29+08:00</lastmod>
+  </url><url>
+    <loc>https://example.org/posts/python-cookbook-memo/</loc>
     <lastmod>2025-05-06T16:58:38+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:5031/posts/python-cookbook-memo/</loc>
-    <lastmod>2025-05-06T16:58:38+08:00</lastmod>
-  </url><url>
-    <loc>http://localhost:5031/posts/workflow/</loc>
+    <loc>https://example.org/posts/workflow/</loc>
     <lastmod>2025-04-29T01:50:25+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:5031/</loc>
+    <loc>https://example.org/</loc>
     <lastmod>2022-08-25T21:30:04+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:5031/categories/</loc>
+    <loc>https://example.org/categories/</loc>
   </url><url>
-    <loc>http://localhost:5031/tags/</loc>
+    <loc>https://example.org/tags/</loc>
   </url>
 </urlset>
