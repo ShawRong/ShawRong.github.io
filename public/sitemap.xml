@@ -3,7 +3,10 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://example.org/posts/</loc>
-    <lastmod>2025-05-07T01:31:22+08:00</lastmod>
+    <lastmod>2025-05-07T16:55:33+08:00</lastmod>
+  </url><url>
+    <loc>https://example.org/posts/pyspark-memo-4/</loc>
+    <lastmod>2025-05-07T16:55:33+08:00</lastmod>
   </url><url>
     <loc>https://example.org/posts/pyspark-memo-3/</loc>
     <lastmod>2025-05-07T01:31:22+08:00</lastmod>
