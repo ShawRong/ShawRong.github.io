@@ -37,4 +37,6 @@ If without any thing materialized, the cost could be 6M.
 If ps is materialized, the cost could be 0.8M.
 If s is materizalized, the cost coulbe be 0.01M.
 ```
-#
+# How to calculate the gain.
+We just to calculate the previous cost and current cost. And we compare the them to get the different. 
+The difference is the gain.
