@@ -26,11 +26,15 @@ And we know the result of group c or s be derived from cs. So we can draw a typi
 
 ![[Pasted image 20250514173327.png]]
 
+# Cost calculation
 There none means a total count of the rows(no grouping just select from all).
 
 
 Here the xx M means the cost of answering a specific view(i.e. pc), if this view is materialized. If the one of the parents or parent-parent are not materialzed. It will trace back to the most close materialized parent for answer, and the cost is consistent with it. 
 ```
-Answering s, without any thing materialized. The cost could be 6M.
-If ps is materialized, the cost could be 0.8Mwe, the cost could be 0.8M
+Answering s:
+If without any thing materialized, the cost could be 6M.
+If ps is materialized, the cost could be 0.8M.
+If s is materizalized, the cost coulbe be 0.01M.
 ```
+#
