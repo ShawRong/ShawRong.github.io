@@ -1,7 +1,7 @@
 +++
-date = '2025-05-06T21:17:29+08:00'
+date = '2025-05-06t21:17:29+08:00'
 draft = false 
-title = 'PySpark Memo'
+title = 'pyspark memo'
 +++
 # Chapter 1
 # Content

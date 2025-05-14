@@ -1,24 +1,22 @@
 {
   "main": {
-    "id": "e7857b56f81d16e3",
+    "id": "70a0d0160ba499e8",
     "type": "split",
     "children": [
       {
-        "id": "aebed695d4cbddcf",
+        "id": "060f97380e8f10d0",
         "type": "tabs",
         "children": [
           {
-            "id": "024a213d548ecfc8",
+            "id": "d36bb163dc271abf",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "pdf",
               "state": {
-                "file": "pyspark memo 4.md",
-                "mode": "source",
-                "source": false
+                "file": "October/exam/MSBD5003 Exam 2019S-Part1.pdf"
               },
-              "icon": "lucide-file",
-              "title": "pyspark memo 4"
+              "icon": "lucide-file-text",
+              "title": "MSBD5003 Exam 2019S-Part1"
             }
           }
         ]
@@ -27,15 +25,15 @@
     "direction": "vertical"
   },
   "left": {
-    "id": "b4428e25c364b1ae",
+    "id": "26908904c705e9b4",
     "type": "split",
     "children": [
       {
-        "id": "6d67cf9e05cd3bc3",
+        "id": "dea2e13fe56b8254",
         "type": "tabs",
         "children": [
           {
-            "id": "c68d1305bbca6fb6",
+            "id": "fc59f95541bdf2d7",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
@@ -48,7 +46,7 @@
             }
           },
           {
-            "id": "6874e536939ebeb4",
+            "id": "77e5504578f6a5ef",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -65,7 +63,7 @@
             }
           },
           {
-            "id": "334d489ef9327742",
+            "id": "68ac8ee36f061016",
             "type": "leaf",
             "state": {
               "type": "bookmarks",
@@ -78,24 +76,39 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 398.5085258483887
   },
   "right": {
-    "id": "aad006898dbbac86",
+    "id": "77cba6ff1edb9445",
     "type": "split",
     "children": [
       {
-        "id": "b2de8bb8cef0d177",
+        "id": "c72ce994a2524024",
         "type": "tabs",
         "children": [
           {
-            "id": "2b2cf99dca5dffb2",
+            "id": "fb2ef363606fb8c3",
+            "type": "leaf",
+            "state": {
+              "type": "git-view",
+              "state": {},
+              "icon": "git-pull-request",
+              "title": "Source Control"
+            }
+          }
+        ]
+      },
+      {
+        "id": "7a8dd7853bb1bd8d",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "1ca974094497a6c1",
             "type": "leaf",
             "state": {
               "type": "backlink",
               "state": {
-                "file": "workflow.md",
+                "file": "October/5002 hw/ppt presentation.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -105,58 +118,53 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "workflow 的反向链接列表"
+              "title": "ppt presentation 的反向链接列表"
             }
           },
           {
-            "id": "15a6af6f967f41a6",
+            "id": "0ffe240623167fcc",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "workflow.md",
+                "file": "October/5017/名词记录.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "workflow 的出链列表"
+              "title": "名词记录 的出链列表"
             }
           },
           {
-            "id": "d90eb690f1c05e1b",
+            "id": "896f6a2c9516a08f",
             "type": "leaf",
             "state": {
               "type": "tag",
               "state": {
                 "sortOrder": "frequency",
-                "useHierarchy": true,
-                "showSearch": false,
-                "searchQuery": ""
+                "useHierarchy": true
               },
               "icon": "lucide-tags",
               "title": "标签"
             }
           },
           {
-            "id": "769649fb9f3005a7",
+            "id": "aa51b0bb7417ac6e",
             "type": "leaf",
             "state": {
               "type": "outline",
               "state": {
-                "file": "workflow.md",
-                "followCursor": false,
-                "showSearch": false,
-                "searchQuery": ""
+                "file": "October/5017/名词记录.md"
               },
               "icon": "lucide-list",
-              "title": "workflow 的大纲"
+              "title": "名词记录 的大纲"
             }
           }
         ]
       }
     ],
     "direction": "horizontal",
-    "width": 300,
+    "width": 230.5,
     "collapsed": true
   },
   "left-ribbon": {
@@ -169,13 +177,55 @@
       "command-palette:打开命令面板": false
     }
   },
-  "active": "024a213d548ecfc8",
+  "active": "d36bb163dc271abf",
   "lastOpenFiles": [
-    "pyspark memo 3.md",
-    "pyspark memo 4.md",
-    "pyspark memo 2.md",
-    "pyspark memo.md",
-    "python cookbook memo.md",
-    "workflow.md"
+    "October/exam/MSBD5003 Exam 2019S Programming.pdf",
+    "October/exam/MSBD5003 Exam 2019S-Solu.pdf",
+    "October/exam/MSBD5003 Exam 2019S-Part1.pdf",
+    "October/exam/MSBD5002-exam-question-2024.pdf",
+    "October/exam/MSBD5002-exam-sol-2024.pdf",
+    "October/旅行规划/日本旅行.md",
+    "October/exam",
+    "Pasted image 20250513222327.png",
+    "Pasted image 20250513222133.png",
+    "Pasted image 20250513222131.png",
+    "October/旅行规划",
+    "October/5002 introduction.md",
+    "October/5018 Reading Note 2.md",
+    "October/思维倾倒实验.md",
+    "October/history/bdt/5002 hw/hw2.md",
+    "October/思维倾倒实验.md.orig",
+    "October/思维倾倒实验_REMOTE_1491.md",
+    "October/思维倾倒实验_LOCAL_1491.md",
+    "October/思维倾倒实验_BASE_1491.md",
+    "October/思维倾倒实验_BACKUP_1491.md",
+    "October/history/bdt/5002 hw/未命名.md.orig",
+    "October/history/bdt/5002 hw/未命名_REMOTE_1491.md",
+    "October/history/bdt/5002 hw/未命名_LOCAL_1491.md",
+    "October/history/bdt/5002 hw/未命名_BASE_1491.md",
+    "October/history/bdt/5002 hw/未命名_BACKUP_1491.md",
+    "October/history/bdt/5002 hw/presentation.md.orig",
+    "October/history/bdt/5002 hw/presentation_REMOTE_1491.md",
+    "October/history/bdt/5002 hw/presentation_LOCAL_1491.md",
+    "October/history/bdt/5002 hw/presentation_BASE_1491.md",
+    "October/history/bdt/5002 hw/presentation_BACKUP_1491.md",
+    "October/history/bdt/5002 hw/ppt presentation.md.orig",
+    "October/history/bdt/5002 hw/ppt presentation_REMOTE_1491.md",
+    "October/history/bdt/5002 hw/ppt presentation_LOCAL_1491.md",
+    "October/history/bdt/5002 hw/ppt presentation_BASE_1491.md",
+    "October/history/bdt/5002 hw/ppt presentation_BACKUP_1491.md",
+    "October/history/bdt/5002 hw/new presentation_REMOTE_1491.md",
+    "October/history/bdt/5002 hw/new presentation_LOCAL_1491.md",
+    "October/history/bdt/5002 hw/new presentation_BASE_1491.md",
+    "October/history/bdt/5002 hw/new presentation_BACKUP_1491.md",
+    "October/日语/attachments/Pasted image 20250112000848.png",
+    "October/history/bdt/archive msbd/5001/attachments/Figure_1.png",
+    "October/history/暂时没啥用/健康 🍃/attachments/Pasted image 20240421164653.png",
+    "October/history/暂时没啥用/健康 🍃/attachments/Pasted image 20240421164613.png",
+    "October/history/bdt/hkust bdt learning/论文/checklist.canvas",
+    "9HY6)1Q~PF8O9E4B0Q_T170.png",
+    "Pasted image 20250509201436.png",
+    "Pasted image 20250509014807.png",
+    "October/hkust bdt learning/论文/checklist.canvas"
   ]
 }
