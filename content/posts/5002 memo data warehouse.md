@@ -24,3 +24,5 @@ we can mark a group by with p, c, s as pcs. And a group with c, s as cs, so on s
 
 And we know the result of group c or s be derived from cs. So we can draw a typical picture of this thing.
 
+![[Pasted image 20250514173327.png]]
+

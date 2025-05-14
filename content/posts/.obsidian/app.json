@@ -7,5 +7,6 @@
     "downscalePercent": 100
   },
   "vimMode": false,
-  "promptDelete": false
+  "promptDelete": false,
+  "attachmentFolderPath": "./attachments"
 }
