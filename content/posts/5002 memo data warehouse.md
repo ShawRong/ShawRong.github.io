@@ -1,5 +1,5 @@
 +++
-date = '2025-05-14t17:10:29+08:00'
+date = '2025-05-14T17:10:29+08:00'
 draft = false 
 title = '5002 Data Warehouse Memo'
 +++
@@ -26,3 +26,4 @@ And we know the result of group c or s be derived from cs. So we can draw a typi
 
 ![[Pasted image 20250514173327.png]]
 
+There none means a tot

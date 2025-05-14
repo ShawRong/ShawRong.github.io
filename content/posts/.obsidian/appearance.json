@@ -1,5 +1,7 @@
 {
   "showViewHeader": true,
   "nativeMenus": false,
-  "showRibbon": true
+  "showRibbon": true,
+  "textFontFamily": "Cascadia Mono",
+  "monospaceFontFamily": "Cascadia Mono"
 }
