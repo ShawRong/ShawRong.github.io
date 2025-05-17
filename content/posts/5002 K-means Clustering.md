@@ -1,3 +1,8 @@
++++
+date = '2025-05-17T21:17:29+08:00'
+draft = false 
+title = '5002 K-means Clustering Memo'
++++
 # K-means
 First, we get a pre-defined parameter k.
 We make k random guesses of the mean point.

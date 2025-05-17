@@ -1,3 +1,8 @@
++++
+date = '2025-05-17T21:17:29+08:00'
+draft = false 
+title = '5002 Hierarchical Clustering Memo'
++++
 # Kinds
 - Agglomerative methods
 	It begin from clusters based on each data point to a big cluster containing all the data point

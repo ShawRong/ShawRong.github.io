@@ -1,3 +1,9 @@
++++
+date = '2025-05-17T21:17:29+08:00'
+draft = false 
+title = '5002 Bayesian Classifier Memo'
++++
+
 Authority weight (in-degree)
 Hub weight (out-degree)
 

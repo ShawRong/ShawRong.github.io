@@ -1,3 +1,8 @@
++++
+date = '2025-05-17T21:17:29+08:00'
+draft = false 
+title = '5002 Outlier Memo'
++++
 # Comparison
 Statistical Model Disadv: Assume that the data follows a particular distribution.
 Distance-based Model Adv: No assume distribution. But not density wise.

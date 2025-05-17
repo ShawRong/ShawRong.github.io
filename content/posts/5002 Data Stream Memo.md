@@ -1,3 +1,8 @@
++++
+date = '2025-05-17T21:17:29+08:00'
+draft = false 
+title = '5002 Data Stream Memo'
++++
 # Ideas
 ## $\epsilon$-deficient synopsis
 - Condition 1: There is no false negative (true one wil be true)

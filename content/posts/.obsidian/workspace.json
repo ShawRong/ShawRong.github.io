@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "5002 memo data warehouse.md",
+                "file": "5002 Web Database Memo.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "5002 memo data warehouse"
+              "title": "5002 Web Database Memo"
             }
           }
         ]
@@ -181,10 +181,23 @@
   },
   "active": "d36bb163dc271abf",
   "lastOpenFiles": [
+    "5002 SVM Memo.md",
+    "5002 Subspace clustering Memo.md",
+    "5002 Recurrent Neural Network Memo.md",
+    "5002 Outlier Memo.md",
+    "5002 Other clustering Memo.md",
+    "5002 Neural Network.md",
+    "5002 memo data warehouse.md",
+    "5002 K-means Clustering.md",
+    "5002 Hierarchical Clustering.md",
+    "5002 Decision Tree Memo.md",
+    "5002 Data Stream Memo.md",
+    "5002 Bayesian Classifier Memo.md",
+    "5002 Association Memo.md",
+    "pyspark memo.md",
+    "attachments/Pasted image 20250516204827.png",
     "workflow.md",
     "python cookbook memo.md",
-    "5002 memo data warehouse.md",
-    "pyspark memo.md",
     "pyspark memo 2.md",
     "pyspark memo 3.md",
     "attachments/Pasted image 20250514173327.png",
@@ -209,25 +222,12 @@
     "October/思维倾倒实验_REMOTE_1491.md",
     "October/思维倾倒实验_LOCAL_1491.md",
     "October/思维倾倒实验_BASE_1491.md",
-    "October/思维倾倒实验_BACKUP_1491.md",
     "October/history/bdt/5002 hw/未命名.md.orig",
-    "October/history/bdt/5002 hw/未命名_REMOTE_1491.md",
-    "October/history/bdt/5002 hw/未命名_LOCAL_1491.md",
-    "October/history/bdt/5002 hw/未命名_BASE_1491.md",
-    "October/history/bdt/5002 hw/未命名_BACKUP_1491.md",
-    "October/history/bdt/5002 hw/presentation_REMOTE_1491.md",
-    "October/history/bdt/5002 hw/presentation_LOCAL_1491.md",
-    "October/history/bdt/5002 hw/presentation_BASE_1491.md",
-    "October/history/bdt/5002 hw/presentation_BACKUP_1491.md",
-    "October/history/bdt/5002 hw/ppt presentation_REMOTE_1491.md",
-    "October/history/bdt/5002 hw/ppt presentation_LOCAL_1491.md",
-    "October/history/bdt/5002 hw/ppt presentation_BASE_1491.md",
     "October/日语/attachments/Pasted image 20250112000848.png",
     "October/history/bdt/archive msbd/5001/attachments/Figure_1.png",
     "October/history/暂时没啥用/健康 🍃/attachments/Pasted image 20240421164653.png",
     "October/history/暂时没啥用/健康 🍃/attachments/Pasted image 20240421164613.png",
     "October/history/bdt/hkust bdt learning/论文/checklist.canvas",
-    "9HY6)1Q~PF8O9E4B0Q_T170.png",
     "October/hkust bdt learning/论文/checklist.canvas"
   ]
 }
