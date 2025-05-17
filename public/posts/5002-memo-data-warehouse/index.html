@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en-us"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=8521&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="What&rsquo;s Data warehouse
+Suppose there are two queries.
+select all the UST students coming from HK.
+select all the UST students coming from Mainland.
+They are complicate query, and could cost for one day.
+So we can store our pre-computed results.
+This is Data Warehouse&ndash;pre-computed results.
+User ask database, data warehouse could response without querying database.
+Basic Ideas about how to build warehouse.
+We know clearly that we there are query related to grouping or agregating. So we can build our warehouse according to these group.
+Suppose there are table containing three different columns&ndash; p, c, s.
+we can mark a group by with p, c, s as pcs. And a group with c, s as cs, so on so forth.">  
+
+  <title>
+    
+      5002 Data Warehouse Memo
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.900100e9dbee2d56c58fac8bb717037cae7e26a9c36c29d2ff587bdd65f0cbbe510b41d81a3bb234919cdfdc7550d786b2fab70c8fc507772d732fe097106d12.css" integrity="sha512-kAEA6dvuLVbFj6yLtxcDfK5&#43;JqnDbCnS/1h73WXwy75RC0HYGjuyNJGc39x1UNeGsvq3DI/FB3ctcy/glxBtEg==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-05-14 17:10:29 &#43;0800 CST">
+                            2025-05-14
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>5002 Data Warehouse Memo</h1>
+
+    
+
+    <h1 id="whats-data-warehouse">What&rsquo;s Data warehouse</h1>
+<p>Suppose there are two queries.</p>
+<pre tabindex="0"><code>select all the UST students coming from HK.
+select all the UST students coming from Mainland.
+</code></pre><p>They are complicate query, and could cost for one day.
+So we can store our pre-computed results.
+This is Data Warehouse&ndash;pre-computed results.</p>
+<p>User ask database, data warehouse could response without querying database.</p>
+<h1 id="basic-ideas-about-how-to-build-warehouse">Basic Ideas about how to build warehouse.</h1>
+<p>We know clearly that we there are query related to grouping or agregating. So we can build our warehouse according to these group.
+Suppose there are table containing three different columns&ndash; p, c, s.
+we can mark a group by with p, c, s as pcs. And a group with c, s as cs, so on so forth.</p>
+<p>And we know the result of group c or s be derived from cs. So we can draw a typical picture of this thing.</p>
+<p>![[Pasted image 20250514173327.png]]</p>
+<h1 id="cost-calculation">Cost calculation</h1>
+<p>There none means a total count of the rows(no grouping just select from all).</p>
+<p>Here the xx M means the cost of answering a specific view(i.e. pc), if this view is materialized. If the one of the parents or parent-parent are not materialzed. It will trace back to the most close materialized parent for answer, and the cost is consistent with it.</p>
+<pre tabindex="0"><code>Answering s:
+If without any thing materialized, the cost could be 6M.
+If ps is materialized, the cost could be 0.8M.
+If s is materizalized, the cost coulbe be 0.01M.
+</code></pre><h1 id="how-to-calculate-the-gain">How to calculate the gain.</h1>
+<p>We just to calculate the previous cost and current cost. And we compare the them to get the different.
+The difference is the gain.</p>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>
