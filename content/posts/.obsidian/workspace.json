@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "5002 Web Database Memo.md",
+                "file": "pyspark memo.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "5002 Web Database Memo"
+              "title": "pyspark memo"
             }
           }
         ]
@@ -181,19 +181,20 @@
   },
   "active": "d36bb163dc271abf",
   "lastOpenFiles": [
-    "5002 SVM Memo.md",
     "5002 Subspace clustering Memo.md",
-    "5002 Recurrent Neural Network Memo.md",
-    "5002 Outlier Memo.md",
     "5002 Other clustering Memo.md",
-    "5002 Neural Network.md",
-    "5002 memo data warehouse.md",
     "5002 K-means Clustering.md",
-    "5002 Hierarchical Clustering.md",
-    "5002 Decision Tree Memo.md",
     "5002 Data Stream Memo.md",
     "5002 Bayesian Classifier Memo.md",
     "5002 Association Memo.md",
+    "5002 Web Database Memo.md",
+    "5002 SVM Memo.md",
+    "5002 Recurrent Neural Network Memo.md",
+    "5002 Outlier Memo.md",
+    "5002 Neural Network.md",
+    "5002 memo data warehouse.md",
+    "5002 Hierarchical Clustering.md",
+    "5002 Decision Tree Memo.md",
     "pyspark memo.md",
     "attachments/Pasted image 20250516204827.png",
     "workflow.md",
@@ -221,7 +222,6 @@
     "October/思维倾倒实验.md.orig",
     "October/思维倾倒实验_REMOTE_1491.md",
     "October/思维倾倒实验_LOCAL_1491.md",
-    "October/思维倾倒实验_BASE_1491.md",
     "October/history/bdt/5002 hw/未命名.md.orig",
     "October/日语/attachments/Pasted image 20250112000848.png",
     "October/history/bdt/archive msbd/5001/attachments/Figure_1.png",
