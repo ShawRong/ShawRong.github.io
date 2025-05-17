@@ -1,7 +1,7 @@
 {
 	"version": 3,
 	"file": "main.css",
-	"sourceRoot": "E:/blog/myblog",
+	"sourceRoot": "/Users/apple/Desktop/blog/ShawRong.github.io",
 	"sources": [
 		"themes/hugo-theme-nostyleplease/assets/css/main.scss"
 	],
