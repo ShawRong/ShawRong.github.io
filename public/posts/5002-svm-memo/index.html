@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en-us"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Linear Support Vector Machine
+We can generalize this problem as this:
+$$
+\begin{align}
+\min w_1^2 &#43; w_2^2 \
+\text{subject to } y(w_1x_1&#43;w_2x_2&#43;b) \geq 1
+\end{align}
+$$
+Why minimizing this term?
+Because we want to maximize the distance D between two line. The D is involved in w by $\frac{w}{D}$.
+Why transform maximizing to minimizing?
+We want to transform the objective function from a non-linear form to a quadratic form.
+Then, the problem becomes a form of quadratic programming which has many existing efficient techniques for that.">  
+
+  <title>
+    
+      5002 SVM Memo
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.900100e9dbee2d56c58fac8bb717037cae7e26a9c36c29d2ff587bdd65f0cbbe510b41d81a3bb234919cdfdc7550d786b2fab70c8fc507772d732fe097106d12.css" integrity="sha512-kAEA6dvuLVbFj6yLtxcDfK5&#43;JqnDbCnS/1h73WXwy75RC0HYGjuyNJGc39x1UNeGsvq3DI/FB3ctcy/glxBtEg==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-05-16 21:17:29 &#43;0800 HKT">
+                            2025-05-16
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>5002 SVM Memo</h1>
+
+    
+
+    <h1 id="linear-support-vector-machine">Linear Support Vector Machine</h1>
+<p>We can generalize this problem as this:
+$$
+\begin{align}
+\min w_1^2 + w_2^2 \
+\text{subject to } y(w_1x_1+w_2x_2+b) \geq 1
+\end{align}
+$$</p>
+<h2 id="why-minimizing-this-term">Why minimizing this term?</h2>
+<p>Because we want to maximize the distance D between two line. The D is involved in w by $\frac{w}{D}$.</p>
+<h2 id="why-transform-maximizing-to-minimizing">Why transform maximizing to minimizing?</h2>
+<p>We want to transform the objective function from a non-linear form to a quadratic form.<br>
+Then, the problem becomes a form of quadratic programming which has many existing efficient techniques for that.</p>
+<h3 id="non-linear-one">Non-linear one</h3>
+<ul>
+<li>step1: transform the data into a higher dimensional space using a &rsquo;nonlinear&rsquo; mapping</li>
+<li>step2: use the linear support vector machine in this high-dimensional space</li>
+</ul>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

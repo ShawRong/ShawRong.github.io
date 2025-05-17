@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en-us"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Activation Function
+Threshold function, Step function, Hard Limiter
+$$
+y = \begin{cases}
+1 \quad \text{if net } \geq 0\
+0 \quad \text{if net } &lt; 0
+\end{cases}
+$$
+Linear Function
+Just Identiy Function
+Rectifier Function / Rectified Linear Unit(ReLU)
+$$
+y = \begin{cases}
+net \quad \text{if net } \geq 0\
+0 \quad \text{if net } &lt; 0
+\end{cases}
+$$
+Sigmoid Function
+![[Pasted image 20250515160346.png]]
+tanh Function
+![[Pasted image 20250515160408.png]]
+Forward(single neuron)
+$\text{net} = w_1x_1 &#43; w_2x_2 &#43; b$
+$y = \frac{1}{1 &#43; e^{-net}}$">  
+
+  <title>
+    
+      5002 Neural Network Memo
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.900100e9dbee2d56c58fac8bb717037cae7e26a9c36c29d2ff587bdd65f0cbbe510b41d81a3bb234919cdfdc7550d786b2fab70c8fc507772d732fe097106d12.css" integrity="sha512-kAEA6dvuLVbFj6yLtxcDfK5&#43;JqnDbCnS/1h73WXwy75RC0HYGjuyNJGc39x1UNeGsvq3DI/FB3ctcy/glxBtEg==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-05-16 21:17:29 &#43;0800 HKT">
+                            2025-05-16
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>5002 Neural Network Memo</h1>
+
+    
+
+    <h1 id="activation-function">Activation Function</h1>
+<h2 id="threshold-function-step-function-hard-limiter">Threshold function, Step function, Hard Limiter</h2>
+<p>$$
+y = \begin{cases}
+1 \quad \text{if net } \geq 0\
+0 \quad \text{if net } &lt; 0
+\end{cases}
+$$</p>
+<h2 id="linear-function">Linear Function</h2>
+<p>Just Identiy Function</p>
+<h1 id="rectifier-function--rectified-linear-unitrelu">Rectifier Function / Rectified Linear Unit(ReLU)</h1>
+<p>$$
+y = \begin{cases}
+net \quad \text{if net } \geq 0\
+0 \quad \text{if net } &lt; 0
+\end{cases}
+$$</p>
+<h1 id="sigmoid-function">Sigmoid Function</h1>
+<p>![[Pasted image 20250515160346.png]]</p>
+<h1 id="tanh-function">tanh Function</h1>
+<p>![[Pasted image 20250515160408.png]]</p>
+<h2 id="forwardsingle-neuron">Forward(single neuron)</h2>
+<p>$\text{net} = w_1x_1 + w_2x_2 + b$
+$y = \frac{1}{1 + e^{-net}}$</p>
+<h2 id="error-backward-propagation">Error Backward Propagation</h2>
+<p>$w_1 = w_1 + \alpha(d - y)x_1$</p>
+<p><em>when we processed all data points in the whole dataset, we say that we processed the dataset in one epoch.</em></p>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

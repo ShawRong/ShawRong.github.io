@@ -2,13 +2,49 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:1313/posts/</loc>
-    <lastmod>2025-05-17T21:17:29+08:00</lastmod>
+    <loc>http://localhost:1313/posts/hugo-bugs/</loc>
+    <lastmod>2025-05-16T21:17:29+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/5002-association-memo/</loc>
     <lastmod>2025-05-16T21:17:29+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/5002-bayesian-classifier-memo/</loc>
+    <lastmod>2025-05-16T21:17:29+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/5002-data-stream-memo/</loc>
+    <lastmod>2025-05-16T21:17:29+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/5002-decision-tree-memo/</loc>
+    <lastmod>2025-05-16T21:17:29+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/5002-hierarchical-clustering/</loc>
+    <lastmod>2025-05-16T21:17:29+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/5002-k-means-clustering/</loc>
+    <lastmod>2025-05-16T21:17:29+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/5002-neural-network/</loc>
+    <lastmod>2025-05-16T21:17:29+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/5002-other-clustering-memo/</loc>
+    <lastmod>2025-05-16T21:17:29+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/5002-outlier-memo/</loc>
+    <lastmod>2025-05-16T21:17:29+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/5002-recurrent-neural-network-memo/</loc>
+    <lastmod>2025-05-16T21:17:29+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/5002-subspace-clustering-memo/</loc>
+    <lastmod>2025-05-16T21:17:29+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/5002-svm-memo/</loc>
+    <lastmod>2025-05-16T21:17:29+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/5002-web-database-memo/</loc>
+    <lastmod>2025-05-16T21:17:29+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/</loc>
     <lastmod>2025-05-16T21:17:29+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/5002-memo-data-warehouse/</loc>

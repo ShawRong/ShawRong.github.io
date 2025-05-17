@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en-us"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Ideas
+$\epsilon$-deficient synopsis
+
+Condition 1: There is no false negative (true one wil be true)
+The difference between estimated and true is at most $\epsilon$N.(error rate)
+True frequencies less than (s-$\epsilon$)N are classified as infrequent (the most error one are still infrequent)
+
+Kind
+
+Sticky Sampling Algorithm
+Lossy Counting Algorithm
+Space-Saving Algorithm
+
+Sticky Sampling Algorithm
+properties
+
+using probability
+has confidence parameter $\delta$ (how confident your result is)
+support threshold s and error parameter $\epsilon$
+
+bucket design
+$t = \lceil 1/ \epsilon ln(s^{-1}\sigma^{-1})\rceil$ (decide the size of each bucket)">  
+
+  <title>
+    
+      5002 Data Stream Memo
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.900100e9dbee2d56c58fac8bb717037cae7e26a9c36c29d2ff587bdd65f0cbbe510b41d81a3bb234919cdfdc7550d786b2fab70c8fc507772d732fe097106d12.css" integrity="sha512-kAEA6dvuLVbFj6yLtxcDfK5&#43;JqnDbCnS/1h73WXwy75RC0HYGjuyNJGc39x1UNeGsvq3DI/FB3ctcy/glxBtEg==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-05-16 21:17:29 &#43;0800 HKT">
+                            2025-05-16
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>5002 Data Stream Memo</h1>
+
+    
+
+    <h1 id="ideas">Ideas</h1>
+<h2 id="epsilon-deficient-synopsis">$\epsilon$-deficient synopsis</h2>
+<ul>
+<li>Condition 1: There is no false negative (true one wil be true)</li>
+<li>The difference between estimated and true is at most $\epsilon$N.(error rate)</li>
+<li>True frequencies less than (s-$\epsilon$)N are classified as infrequent (the most error one are still infrequent)</li>
+</ul>
+<h1 id="kind">Kind</h1>
+<ul>
+<li>Sticky Sampling Algorithm</li>
+<li>Lossy Counting Algorithm</li>
+<li>Space-Saving Algorithm</li>
+</ul>
+<h1 id="sticky-sampling-algorithm">Sticky Sampling Algorithm</h1>
+<h2 id="properties">properties</h2>
+<ul>
+<li>using probability</li>
+<li>has confidence parameter $\delta$ (how confident your result is)</li>
+<li>support threshold s and error parameter $\epsilon$</li>
+</ul>
+<h2 id="bucket-design">bucket design</h2>
+<p>$t = \lceil 1/ \epsilon ln(s^{-1}\sigma^{-1})\rceil$ (decide the size of each bucket)</p>
+<p>1st bucket: 1 ~ 2t, size = 2t, r = 1
+2nd bucket: 2t+1 ~ 4t, size = 2t, r = 2
+3rd bucket: 4t ~ 8t, size = 4t, r = 4 &hellip; (r = 8, size = 8t&hellip;)</p>
+<h2 id="algorithm">algorithm</h2>
+<p>![[Pasted image 20250516204827.png]]</p>
+<ul>
+<li>1st bucket, it just absort everything into entries.</li>
+<li>change to 2nd bucket, toss coin to decrease and diminish counter to diminish used memo. (memo change to 2t / 2 = t)</li>
+<li>2nd bucket, toss coin to add counter (upper bounder of added memo: 2t * 1/2 = t, prev memo = t)</li>
+<li>change to 3rd bucket, memo change to 2t * 1/4 = t / 2</li>
+<li>3rd bucket, upper bounder of added memo: 4t * 1/4 = t</li>
+<li>Output: $f + \epsilon N \geq sN$ (considering error)</li>
+</ul>
+<h2 id="feature">feature</h2>
+<ul>
+<li>$\epsilon$-deficient synopsis with probability at least $1-\delta$</li>
+<li>at most 2t memo used on average</li>
+</ul>
+<h1 id="lossy-counting-algorithm">Lossy Counting Algorithm</h1>
+<h2 id="properties-1">properties</h2>
+<ul>
+<li>using fix-sized bucket</li>
+<li>support threshold and error parameter
+bucket size = $\lceil \frac{1}{\epsilon} \rceil$
+bucket index: count starting 1. i.e. ($b_\text{current} = \lceil\frac{N}{w}\rceil$)</li>
+</ul>
+<h2 id="algorithm-1">algorithm</h2>
+<p>![[Pasted image 20250516210217.png]]</p>
+<ul>
+<li>1st bucket, we just insert, with $\Delta = \text{id of bucket} - 1$</li>
+<li>changing bucket, remove $f + \Delta \leq \text{id of bucket}$</li>
+<li>2nd bucket, we insert, new created entry will get new $\Delta$</li>
+<li>changing bucket, we remove&hellip;</li>
+<li>output: $f + \epsilon N \geq sN$ (considering error)</li>
+</ul>
+<h2 id="feature-1">feature</h2>
+<ul>
+<li>100% $\epsilon$-deficient synopsis</li>
+<li>at most $\lceil 1/\epsilon log(\epsilon N) \rceil$ entries (related to N, i.e. data you read)</li>
+</ul>
+<h1 id="space-saving-algorithm">Space-saving algorithm</h1>
+<h2 id="properties-2">properties</h2>
+<ul>
+<li>just support threshold s and memory parameter M(the greatest number of possible entries stored in the memory)</li>
+</ul>
+<h2 id="algorithm-2">algorithm</h2>
+<p>![[Pasted image 20250516210935.png]]
+When memory full, we remove those entries with smallest $p_e = f + \Delta$, and add new insert as $(e, 1, p_e)$</p>
+<p>We output: $f + \Delta \geq sN$ (consider error)</p>
+<h2 id="feature-2">feature</h2>
+<ul>
+<li>greatest error: $E \leq 1/M$</li>
+<li>if $E \leq \epsilon$, we make sure $\epsilon$-deficient synopsis</li>
+<li>Memory consumption: M</li>
+</ul>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

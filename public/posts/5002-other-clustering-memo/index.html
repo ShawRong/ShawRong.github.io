@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en-us"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Methods
+
+Model-Based Clustering (EM algorithm)
+Density-Based Clustering (DBSCAN)
+Scalable Clustering Method (BIRCH)
+
+EM algorithm
+why?
+
+previous method, each point belongs to a single cluster. No point belongs to different cluster with probabilities.
+
+Normal distribution
+$p(x|&lt;\mu, \sigma&gt;)=\frac{1}{\sqrt{2\pi}\sigma}e^{- \frac{(x-\mu)^2}{2\sigma^2}}$
+sigma = standard derivation, mu = mean.
+Procedure
+
+Initialize all $\mu_i$ and $\sigma_i$ (random)
+For each point x, we calculate its probability belong to cluster i. (formula: $p(x\in C_i) = \frac{p(x|&lt;\mu_i, \sigma_i&gt;)} { \sum p(x|&lt;\mu, \sigma&gt;})$, i.e. probability of cluster i divided by the sum of probability of all the clusters)
+We calculate the new mean of cluster, and update $\mu$. using formula($\mu_i = \sum_{X} x \frac{p(x\in C_i)}{\sum_y p(y\in C_i)}$. (i.e. according to the probabilities that all points belong to cluster i)
+Repeat until converge
+
+DBSCAN
+why?
+traditional clustering cannot handle irregular shaped cluster">  
+
+  <title>
+    
+      5002 Other Clustering Memo
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.900100e9dbee2d56c58fac8bb717037cae7e26a9c36c29d2ff587bdd65f0cbbe510b41d81a3bb234919cdfdc7550d786b2fab70c8fc507772d732fe097106d12.css" integrity="sha512-kAEA6dvuLVbFj6yLtxcDfK5&#43;JqnDbCnS/1h73WXwy75RC0HYGjuyNJGc39x1UNeGsvq3DI/FB3ctcy/glxBtEg==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-05-16 21:17:29 &#43;0800 HKT">
+                            2025-05-16
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>5002 Other Clustering Memo</h1>
+
+    
+
+    <h1 id="methods">Methods</h1>
+<ul>
+<li>Model-Based Clustering (EM algorithm)</li>
+<li>Density-Based Clustering (DBSCAN)</li>
+<li>Scalable Clustering Method (BIRCH)</li>
+</ul>
+<h1 id="em-algorithm">EM algorithm</h1>
+<h2 id="why">why?</h2>
+<ul>
+<li>previous method, each point belongs to a single cluster. No point belongs to different cluster with probabilities.</li>
+</ul>
+<h2 id="normal-distribution">Normal distribution</h2>
+<p>$p(x|&lt;\mu, \sigma&gt;)=\frac{1}{\sqrt{2\pi}\sigma}e^{- \frac{(x-\mu)^2}{2\sigma^2}}$
+sigma = standard derivation, mu = mean.</p>
+<h2 id="procedure">Procedure</h2>
+<ul>
+<li>Initialize all $\mu_i$ and $\sigma_i$ (random)</li>
+<li>For each point x, we calculate its probability belong to cluster i. (formula: $p(x\in C_i) = \frac{p(x|&lt;\mu_i, \sigma_i&gt;)} { \sum p(x|&lt;\mu, \sigma&gt;})$, i.e. probability of cluster i divided by the sum of probability of all the clusters)</li>
+<li>We calculate the new mean of cluster, and update $\mu$. using formula($\mu_i = \sum_{X} x \frac{p(x\in C_i)}{\sum_y p(y\in C_i)}$. (i.e. according to the probabilities that all points belong to cluster i)
+Repeat until converge</li>
+</ul>
+<h1 id="dbscan">DBSCAN</h1>
+<h2 id="why-1">why?</h2>
+<p>traditional clustering cannot handle irregular shaped cluster</p>
+<h1 id="concepts">Concepts</h1>
+<h2 id="epsilon-neighborhood">$\epsilon$-neighborhood</h2>
+<p>denote by N(p), is the set of points that distance with p is within $\epsilon$ (including itself).</p>
+<h2 id="kinds-of-point">Kinds of point</h2>
+<ul>
+<li>core points, N(p) is at least MinPts(a parameter).</li>
+<li>border points, Not core point, but N(p) contains at least one core point</li>
+<li>noise points, not core or border</li>
+</ul>
+<h2 id="procedure-1">procedure</h2>
+<ul>
+<li>Each cluster contains at least one core point (create cluster from core point)</li>
+<li>If core point p and q, and N(p) contain q (or inverse), merge the cluster into one. (they are in the same cluster)</li>
+<li>Border point is assigned to previous created cluster if it contains the core point (arbitrarily if many).</li>
+<li>All noise points do not belong to any.</li>
+</ul>
+<h1 id="birch">BIRCH</h1>
+<h2 id="why-2">why?</h2>
+<p>most previous algorithm cannot handle update, and not scalable.</p>
+<h2 id="concepts-1">Concepts</h2>
+<ul>
+<li>Mean $\mu = \frac{\sum x}{n}$</li>
+<li>Radius $R = \sqrt{\frac{\sum (x-\mu)^2}{n}}$, average distance from member to the mean.</li>
+<li>Diameter $D=\sqrt{\frac{\sum\sum(x_i-x_j)^2}{n(n-1)}}$, average pair-wise distance within a cluster.</li>
+</ul>
+<h2 id="procedure-2">Procedure</h2>
+<p>L = {}
+when there is a new data point x comes in:</p>
+<ul>
+<li>If L is empty: create cluster C containing x, and insert into L.</li>
+<li>If not empty: Find closest cluster C of x, insert x into C. When C has diameter D greater than a given threshold, splite C into 2 sub-clusters, and insert them into L, remove the old one. (split: using dendrogram or other)</li>
+</ul>
+<h2 id="acceleration">Acceleration</h2>
+<ul>
+<li>n: no. of points in the cluster</li>
+<li>LS: the linear sum of n points $\sum x_i$</li>
+<li>SS: the square sum of the n points $\sum x^2$
+Update them is feasible and fast.
+Comparison of time consumption of each update: O(n^2) and O(1).</li>
+</ul>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

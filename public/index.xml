@@ -9,6 +9,13 @@
     <lastBuildDate>Fri, 16 May 2025 21:17:29 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title></title>
+      <link>http://localhost:1313/posts/hugo-bugs/</link>
+      <pubDate>Fri, 16 May 2025 21:17:29 +0800</pubDate>
+      <guid>http://localhost:1313/posts/hugo-bugs/</guid>
+      <description>&lt;h1 id=&#34;bug-list&#34;&gt;Bug list&lt;/h1&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;draft not true&lt;/li&gt;&#xA;&lt;li&gt;date is in future&lt;/li&gt;&#xA;&lt;/ul&gt;</description>
+    </item>
+    <item>
       <title>5002 Association Memo</title>
       <link>http://localhost:1313/posts/5002-association-memo/</link>
       <pubDate>Fri, 16 May 2025 21:17:29 +0800</pubDate>
@@ -21,6 +28,83 @@
       <pubDate>Fri, 16 May 2025 21:17:29 +0800</pubDate>
       <guid>http://localhost:1313/posts/5002-bayesian-classifier-memo/</guid>
       <description>&lt;h1 id=&#34;conditional-probability&#34;&gt;Conditional Probability&lt;/h1&gt;&#xA;&lt;p&gt;$P(B | A) = \frac {P(A | B) P(B)} {P(A)}$&#xA;Assuming x, y, z are independent, we have:&#xA;$P(x, y, z | A) = P(x | A) + P(y | A) + P(z | A)$&lt;/p&gt;&#xA;&lt;h1 id=&#34;naive-bayesian-classifier&#34;&gt;Naive Bayesian Classifier&lt;/h1&gt;&#xA;&lt;p&gt;Assume all the attribute are independent, and we get:&#xA;$$\begin{align}&#xA;P(yes | race, income) &amp;amp;= \frac {P(race, income | yes) P(yes)} {P(race, income)} \&#xA;&amp;amp;= \frac {P(race | yes) P(income | yes) P(yes)} {P(race, income)}&#xA;\end{align}$$&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>5002 Data Stream Memo</title>
+      <link>http://localhost:1313/posts/5002-data-stream-memo/</link>
+      <pubDate>Fri, 16 May 2025 21:17:29 +0800</pubDate>
+      <guid>http://localhost:1313/posts/5002-data-stream-memo/</guid>
+      <description>&lt;h1 id=&#34;ideas&#34;&gt;Ideas&lt;/h1&gt;&#xA;&lt;h2 id=&#34;epsilon-deficient-synopsis&#34;&gt;$\epsilon$-deficient synopsis&lt;/h2&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Condition 1: There is no false negative (true one wil be true)&lt;/li&gt;&#xA;&lt;li&gt;The difference between estimated and true is at most $\epsilon$N.(error rate)&lt;/li&gt;&#xA;&lt;li&gt;True frequencies less than (s-$\epsilon$)N are classified as infrequent (the most error one are still infrequent)&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h1 id=&#34;kind&#34;&gt;Kind&lt;/h1&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Sticky Sampling Algorithm&lt;/li&gt;&#xA;&lt;li&gt;Lossy Counting Algorithm&lt;/li&gt;&#xA;&lt;li&gt;Space-Saving Algorithm&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h1 id=&#34;sticky-sampling-algorithm&#34;&gt;Sticky Sampling Algorithm&lt;/h1&gt;&#xA;&lt;h2 id=&#34;properties&#34;&gt;properties&lt;/h2&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;using probability&lt;/li&gt;&#xA;&lt;li&gt;has confidence parameter $\delta$ (how confident your result is)&lt;/li&gt;&#xA;&lt;li&gt;support threshold s and error parameter $\epsilon$&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h2 id=&#34;bucket-design&#34;&gt;bucket design&lt;/h2&gt;&#xA;&lt;p&gt;$t = \lceil 1/ \epsilon ln(s^{-1}\sigma^{-1})\rceil$ (decide the size of each bucket)&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>5002 Decision Tree Memo</title>
+      <link>http://localhost:1313/posts/5002-decision-tree-memo/</link>
+      <pubDate>Fri, 16 May 2025 21:17:29 +0800</pubDate>
+      <guid>http://localhost:1313/posts/5002-decision-tree-memo/</guid>
+      <description>&lt;h1 id=&#34;type-of-decision-tree&#34;&gt;Type of Decision Tree&lt;/h1&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;ID3&#xA;Information gain&lt;/li&gt;&#xA;&lt;li&gt;C4.5&#xA;Information gain normalized by entropy(split info).&lt;/li&gt;&#xA;&lt;li&gt;CART&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h1 id=&#34;entropy&#34;&gt;Entropy&lt;/h1&gt;&#xA;&lt;p&gt;To measure how informative a distribution is.&#xA;The formula is as follows:&#xA;$\text{Entropy} = - \sum p log p$&#xA;Here, the logarithm is based on a base of two.&#xA;The greater the entropy is, the less informative the distribution is.&#xA;For example:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;P(tail) = 0.5  P(tail) = 0.5  entropy = 1&#xA;P(tail) = 1    P(tail) = 0    entropy = &#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;em&gt;We assume 0log 0 = 0 in the calculation&lt;/em&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>5002 Hierarchical Clustering Memo</title>
+      <link>http://localhost:1313/posts/5002-hierarchical-clustering/</link>
+      <pubDate>Fri, 16 May 2025 21:17:29 +0800</pubDate>
+      <guid>http://localhost:1313/posts/5002-hierarchical-clustering/</guid>
+      <description>&lt;h1 id=&#34;kinds&#34;&gt;Kinds&lt;/h1&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Agglomerative methods&#xA;It begin from clusters based on each data point to a big cluster containing all the data point&lt;/li&gt;&#xA;&lt;li&gt;Divisive Methods&#xA;From big cluster containing all the data point to cluster containing one data point.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h1 id=&#34;dendrogram&#34;&gt;Dendrogram&lt;/h1&gt;&#xA;&lt;p&gt;![[Pasted image 20250516131649.png]]&lt;/p&gt;&#xA;&lt;h1 id=&#34;distance&#34;&gt;Distance&lt;/h1&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Single Linkage: The nearest distance between two point in two cluster&lt;/li&gt;&#xA;&lt;li&gt;Complete Linkage: The distance between two cluster is given by the distance between their most distant members&lt;/li&gt;&#xA;&lt;li&gt;Group Average Linkage: The average of the distance between all pairs of records (pair-wise)&lt;/li&gt;&#xA;&lt;li&gt;Centroid Linkage: The distance is defined as the distance between the mean vector of two cluster&lt;/li&gt;&#xA;&lt;li&gt;Median Linkage: The mid-point of the original two cluster cetnres is used as the centre of the new combined group. To avoid the characteristic properties of the small one are lost.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h1 id=&#34;bottom-upagglomerative&#34;&gt;Bottom-up(Agglomerative)&lt;/h1&gt;&#xA;&lt;p&gt;![[Pasted image 20250516133344.png]]&#xA;&lt;strong&gt;single linkage:&lt;/strong&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>5002 K-means Clustering Memo</title>
+      <link>http://localhost:1313/posts/5002-k-means-clustering/</link>
+      <pubDate>Fri, 16 May 2025 21:17:29 +0800</pubDate>
+      <guid>http://localhost:1313/posts/5002-k-means-clustering/</guid>
+      <description>&lt;h1 id=&#34;k-means&#34;&gt;K-means&lt;/h1&gt;&#xA;&lt;p&gt;First, we get a pre-defined parameter k.&#xA;We make k random guesses of the mean point.&#xA;Do iterations until the mean doesn&amp;rsquo;t change.&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Assign each data point to the cluster whose mean is nearest&lt;/li&gt;&#xA;&lt;li&gt;Calculate the mean of each cluster&lt;/li&gt;&#xA;&lt;li&gt;Replace the cluster with a new mean&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h2 id=&#34;about-the-initialization-of-k-means&#34;&gt;About the initialization of k-means&lt;/h2&gt;&#xA;&lt;p&gt;The popular way to initialize the starting mean is a random choice.&#xA;The result depends on the initial guess, and a suboptimal result is possible, so we do several different starting points.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>5002 Neural Network Memo</title>
+      <link>http://localhost:1313/posts/5002-neural-network/</link>
+      <pubDate>Fri, 16 May 2025 21:17:29 +0800</pubDate>
+      <guid>http://localhost:1313/posts/5002-neural-network/</guid>
+      <description>&lt;h1 id=&#34;activation-function&#34;&gt;Activation Function&lt;/h1&gt;&#xA;&lt;h2 id=&#34;threshold-function-step-function-hard-limiter&#34;&gt;Threshold function, Step function, Hard Limiter&lt;/h2&gt;&#xA;&lt;p&gt;$$&#xA;y = \begin{cases}&#xA;1 \quad \text{if net } \geq 0\&#xA;0 \quad \text{if net } &amp;lt; 0&#xA;\end{cases}&#xA;$$&lt;/p&gt;&#xA;&lt;h2 id=&#34;linear-function&#34;&gt;Linear Function&lt;/h2&gt;&#xA;&lt;p&gt;Just Identiy Function&lt;/p&gt;&#xA;&lt;h1 id=&#34;rectifier-function--rectified-linear-unitrelu&#34;&gt;Rectifier Function / Rectified Linear Unit(ReLU)&lt;/h1&gt;&#xA;&lt;p&gt;$$&#xA;y = \begin{cases}&#xA;net \quad \text{if net } \geq 0\&#xA;0 \quad \text{if net } &amp;lt; 0&#xA;\end{cases}&#xA;$$&lt;/p&gt;&#xA;&lt;h1 id=&#34;sigmoid-function&#34;&gt;Sigmoid Function&lt;/h1&gt;&#xA;&lt;p&gt;![[Pasted image 20250515160346.png]]&lt;/p&gt;&#xA;&lt;h1 id=&#34;tanh-function&#34;&gt;tanh Function&lt;/h1&gt;&#xA;&lt;p&gt;![[Pasted image 20250515160408.png]]&lt;/p&gt;&#xA;&lt;h2 id=&#34;forwardsingle-neuron&#34;&gt;Forward(single neuron)&lt;/h2&gt;&#xA;&lt;p&gt;$\text{net} = w_1x_1 + w_2x_2 + b$&#xA;$y = \frac{1}{1 + e^{-net}}$&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>5002 Other Clustering Memo</title>
+      <link>http://localhost:1313/posts/5002-other-clustering-memo/</link>
+      <pubDate>Fri, 16 May 2025 21:17:29 +0800</pubDate>
+      <guid>http://localhost:1313/posts/5002-other-clustering-memo/</guid>
+      <description>&lt;h1 id=&#34;methods&#34;&gt;Methods&lt;/h1&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Model-Based Clustering (EM algorithm)&lt;/li&gt;&#xA;&lt;li&gt;Density-Based Clustering (DBSCAN)&lt;/li&gt;&#xA;&lt;li&gt;Scalable Clustering Method (BIRCH)&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h1 id=&#34;em-algorithm&#34;&gt;EM algorithm&lt;/h1&gt;&#xA;&lt;h2 id=&#34;why&#34;&gt;why?&lt;/h2&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;previous method, each point belongs to a single cluster. No point belongs to different cluster with probabilities.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h2 id=&#34;normal-distribution&#34;&gt;Normal distribution&lt;/h2&gt;&#xA;&lt;p&gt;$p(x|&amp;lt;\mu, \sigma&amp;gt;)=\frac{1}{\sqrt{2\pi}\sigma}e^{- \frac{(x-\mu)^2}{2\sigma^2}}$&#xA;sigma = standard derivation, mu = mean.&lt;/p&gt;&#xA;&lt;h2 id=&#34;procedure&#34;&gt;Procedure&lt;/h2&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Initialize all $\mu_i$ and $\sigma_i$ (random)&lt;/li&gt;&#xA;&lt;li&gt;For each point x, we calculate its probability belong to cluster i. (formula: $p(x\in C_i) = \frac{p(x|&amp;lt;\mu_i, \sigma_i&amp;gt;)} { \sum p(x|&amp;lt;\mu, \sigma&amp;gt;})$, i.e. probability of cluster i divided by the sum of probability of all the clusters)&lt;/li&gt;&#xA;&lt;li&gt;We calculate the new mean of cluster, and update $\mu$. using formula($\mu_i = \sum_{X} x \frac{p(x\in C_i)}{\sum_y p(y\in C_i)}$. (i.e. according to the probabilities that all points belong to cluster i)&#xA;Repeat until converge&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h1 id=&#34;dbscan&#34;&gt;DBSCAN&lt;/h1&gt;&#xA;&lt;h2 id=&#34;why-1&#34;&gt;why?&lt;/h2&gt;&#xA;&lt;p&gt;traditional clustering cannot handle irregular shaped cluster&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>5002 Outlier Memo</title>
+      <link>http://localhost:1313/posts/5002-outlier-memo/</link>
+      <pubDate>Fri, 16 May 2025 21:17:29 +0800</pubDate>
+      <guid>http://localhost:1313/posts/5002-outlier-memo/</guid>
+      <description>&lt;h1 id=&#34;comparison&#34;&gt;Comparison&lt;/h1&gt;&#xA;&lt;p&gt;Statistical Model Disadv: Assume that the data follows a particular distribution.&#xA;Distance-based Model Adv: No assume distribution. But not density wise.&#xA;Density-Based Model Adv: can find local outliers&lt;/p&gt;&#xA;&lt;h1 id=&#34;concept&#34;&gt;Concept&lt;/h1&gt;&#xA;&lt;p&gt;$\epsilon$ is the distance between p and the k-th nearest neighbor.&#xA;local reachability density lrd_k(p) is: $\frac 1 \epsilon$&#xA;local outlier factor(LOF) is $(\sum_{o \in N_k(p)} \frac{lrd_k(o)}{lrd_k(p)})/{k}$&#xA;N_k(p) is the $\epsilon$-neighborhood of p (excluding p).&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>5002 Recurrent Neural Network Memo</title>
+      <link>http://localhost:1313/posts/5002-recurrent-neural-network-memo/</link>
+      <pubDate>Fri, 16 May 2025 21:17:29 +0800</pubDate>
+      <guid>http://localhost:1313/posts/5002-recurrent-neural-network-memo/</guid>
+      <description>&lt;h1 id=&#34;difference-with-neural-network&#34;&gt;Difference with Neural Network&lt;/h1&gt;&#xA;&lt;p&gt;The output of RNN are passed to the next RNN network (internal variable).&lt;/p&gt;&#xA;&lt;h1 id=&#34;multilayer&#34;&gt;Multilayer&lt;/h1&gt;&#xA;&lt;p&gt;Actually, these rnn can have multiple layers and multiple memory units.&lt;/p&gt;&#xA;&lt;h1 id=&#34;basic-rnn&#34;&gt;Basic RNN&lt;/h1&gt;&#xA;&lt;p&gt;The basic rnn is simple. It use internal variable(s) as output variable(y). And the s can be calculated by using:&#xA;$s_t = tanh(W [x_{t}, s_{t-1}] + b)$&#xA;$y_t = s_t$&lt;/p&gt;&#xA;&lt;h1 id=&#34;lstm&#34;&gt;LSTM&lt;/h1&gt;&#xA;&lt;p&gt;There are components:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;internal variable to store memory&lt;/li&gt;&#xA;&lt;li&gt;forget feature to forget some portion of internal variable&lt;/li&gt;&#xA;&lt;li&gt;input feature to decide portion of input and strength of input&lt;/li&gt;&#xA;&lt;li&gt;output feature to decide portion of output and strength of output&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h2 id=&#34;some-significant-difference&#34;&gt;Some significant difference&lt;/h2&gt;&#xA;&lt;p&gt;First, the output and internal state previous are input, too.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>5002 Subspace clustering Memo</title>
+      <link>http://localhost:1313/posts/5002-subspace-clustering-memo/</link>
+      <pubDate>Fri, 16 May 2025 21:17:29 +0800</pubDate>
+      <guid>http://localhost:1313/posts/5002-subspace-clustering-memo/</guid>
+      <description>&lt;h1 id=&#34;methods&#34;&gt;Methods&lt;/h1&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Dense Unit-based Method&lt;/li&gt;&#xA;&lt;li&gt;Entropy-Based Method&lt;/li&gt;&#xA;&lt;li&gt;Transformation-Based Method&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h2 id=&#34;why-subspace-clustering&#34;&gt;why subspace clustering?&lt;/h2&gt;&#xA;&lt;p&gt;dimension curse: when the number of dimensions increases, the distance between any two points is nearly the same.&lt;/p&gt;&#xA;&lt;h1 id=&#34;dense-unit-based-method&#34;&gt;Dense Unit-based Method&lt;/h1&gt;&#xA;&lt;h2 id=&#34;property&#34;&gt;Property&lt;/h2&gt;&#xA;&lt;p&gt;If a set is cluster in k dimension, then it&amp;rsquo;s part of cluster in k-1 dimension, too.&lt;/p&gt;&#xA;&lt;h2 id=&#34;algorithm&#34;&gt;Algorithm&lt;/h2&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Identify sub-space that contain dense units (aprior algorithm, find x, y, z these dimension)&lt;/li&gt;&#xA;&lt;li&gt;Identify clusters in each sub-space that contain dense units (base on previous found x, y, z dimension, we find cluster like {x:[1, 10] y: [11, 20]}, etc..)&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h2 id=&#34;adapt-aprior&#34;&gt;adapt aprior&lt;/h2&gt;&#xA;&lt;p&gt;for example, we get grid of 10, and mark $X_1$ as [1, 10], and so on. threshold 1.&#xA;( 1, 19) $X_0$ $Y_1$&#xA;(11, 29) $X_1$ $Y_2$&#xA;(21, 39) $X_2$ $Y_3$&#xA;(31, 49) $X_3$ $Y_4$&#xA;(41, 59) $X_4$ $Y_5$&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>5002 SVM Memo</title>
+      <link>http://localhost:1313/posts/5002-svm-memo/</link>
+      <pubDate>Fri, 16 May 2025 21:17:29 +0800</pubDate>
+      <guid>http://localhost:1313/posts/5002-svm-memo/</guid>
+      <description>&lt;h1 id=&#34;linear-support-vector-machine&#34;&gt;Linear Support Vector Machine&lt;/h1&gt;&#xA;&lt;p&gt;We can generalize this problem as this:&#xA;$$&#xA;\begin{align}&#xA;\min w_1^2 + w_2^2 \&#xA;\text{subject to } y(w_1x_1+w_2x_2+b) \geq 1&#xA;\end{align}&#xA;$$&lt;/p&gt;&#xA;&lt;h2 id=&#34;why-minimizing-this-term&#34;&gt;Why minimizing this term?&lt;/h2&gt;&#xA;&lt;p&gt;Because we want to maximize the distance D between two line. The D is involved in w by $\frac{w}{D}$.&lt;/p&gt;&#xA;&lt;h2 id=&#34;why-transform-maximizing-to-minimizing&#34;&gt;Why transform maximizing to minimizing?&lt;/h2&gt;&#xA;&lt;p&gt;We want to transform the objective function from a non-linear form to a quadratic form.&lt;br&gt;&#xA;Then, the problem becomes a form of quadratic programming which has many existing efficient techniques for that.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>5002 Web Database Memo</title>
+      <link>http://localhost:1313/posts/5002-web-database-memo/</link>
+      <pubDate>Fri, 16 May 2025 21:17:29 +0800</pubDate>
+      <guid>http://localhost:1313/posts/5002-web-database-memo/</guid>
+      <description>&lt;p&gt;Authority weight (in-degree)&#xA;Hub weight (out-degree)&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;A good authority has many edges from good hubs&lt;/li&gt;&#xA;&lt;li&gt;A good hub has many edges from good authorities&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h1 id=&#34;hit-algorithm&#34;&gt;Hit Algorithm&lt;/h1&gt;&#xA;&lt;p&gt;Two steps:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Sampling Step&lt;/li&gt;&#xA;&lt;li&gt;Iteration Step&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h2 id=&#34;sampling-step&#34;&gt;sampling step&lt;/h2&gt;&#xA;&lt;p&gt;Given a user query with several terms, we collect a set of pages that are very relevant &amp;ndash; called the base set.&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;We get all the web page that contain any query terms. This is called root set.&lt;/li&gt;&#xA;&lt;li&gt;We find the link pages, which are linked by or link to web pages of root set.&lt;/li&gt;&#xA;&lt;li&gt;Base set = link pages &amp;amp; root set&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h2 id=&#34;iteration-step&#34;&gt;Iteration Step&lt;/h2&gt;&#xA;&lt;p&gt;We know the hub weight of a web page is given by:&#xA;$h(N) = a(N) + a(MS) + a(A)$&#xA;etc..&#xA;so we can get:&#xA;$\vec{h} = [{h(N), h(MS), h(A)}]$&#xA;$\vec{a} = [{a(N), a(MS), a(A)}]$&#xA;$\vec{h} = M\vec{a}$&#xA;Here M represents adjacent matrix.&lt;/p&gt;</description>
     </item>
     <item>
       <title>5002 Data Warehouse Memo</title>
