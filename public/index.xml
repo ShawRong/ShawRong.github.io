@@ -6,8 +6,22 @@
     <description>Recent content on My New Hugo Site</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 14 May 2025 17:10:29 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 16 May 2025 21:17:29 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>5002 Association Memo</title>
+      <link>http://localhost:1313/posts/5002-association-memo/</link>
+      <pubDate>Fri, 16 May 2025 21:17:29 +0800</pubDate>
+      <guid>http://localhost:1313/posts/5002-association-memo/</guid>
+      <description>&lt;h1 id=&#34;basic-concept&#34;&gt;Basic concept&lt;/h1&gt;&#xA;&lt;p&gt;The support of itemset of different size like:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;itemset-size1 :{B}&lt;/li&gt;&#xA;&lt;li&gt;itemset-size2: {A, B}&#xA;supp({B}) = count of apparence of B. &amp;hellip;&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;Association rule: {A, B} -&amp;gt; C&#xA;support of associaiton rule: supp({A, B}-&amp;gt;C) = supp({A, B, C})&#xA;confidence of association rule: conf({A, B}-&amp;gt;C) = supp({A, B, C}) / supp({A, B})&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>5002 Bayesian Classifier Memo</title>
+      <link>http://localhost:1313/posts/5002-bayesian-classifier-memo/</link>
+      <pubDate>Fri, 16 May 2025 21:17:29 +0800</pubDate>
+      <guid>http://localhost:1313/posts/5002-bayesian-classifier-memo/</guid>
+      <description>&lt;h1 id=&#34;conditional-probability&#34;&gt;Conditional Probability&lt;/h1&gt;&#xA;&lt;p&gt;$P(B | A) = \frac {P(A | B) P(B)} {P(A)}$&#xA;Assuming x, y, z are independent, we have:&#xA;$P(x, y, z | A) = P(x | A) + P(y | A) + P(z | A)$&lt;/p&gt;&#xA;&lt;h1 id=&#34;naive-bayesian-classifier&#34;&gt;Naive Bayesian Classifier&lt;/h1&gt;&#xA;&lt;p&gt;Assume all the attribute are independent, and we get:&#xA;$$\begin{align}&#xA;P(yes | race, income) &amp;amp;= \frac {P(race, income | yes) P(yes)} {P(race, income)} \&#xA;&amp;amp;= \frac {P(race | yes) P(income | yes) P(yes)} {P(race, income)}&#xA;\end{align}$$&lt;/p&gt;</description>
+    </item>
     <item>
       <title>5002 Data Warehouse Memo</title>
       <link>http://localhost:1313/posts/5002-memo-data-warehouse/</link>
