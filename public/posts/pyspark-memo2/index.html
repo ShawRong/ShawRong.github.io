@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Chapter 1
+Content
+
+PySpark Datafram
+Reading The Dataset
+Checking the Datatype of the Column(Schema)
+Selecting Columns And indexing
+Check Describe option similar to Pandas
+Adding Columns
+Droping Columns
+Renaming Columns
+
+Codes:
+from pyspark.sql import SparkSession
+
+# To use spark dataframe, we need session first
+spark = SparkSession.builder.appName(&#39;DataFrame&#39;).getOrCreate()
+# This read will not infer header and the types
+spark.read().csv(&#39;test.csv&#39;)
+
+#or you can use read option(k, v)
+df_spark = spark.read().option(&#39;header&#39;, &#39;true&#39;).csv(&#39;test.csv&#39;)
+#And if you want to use something like auto casting, you can add inferSchema
+df_spark = spark.read().option(&#39;header&#39;, &#39;true&#39;).csv(&#39;test.csv&#39;, inferSchema=True)
+
+# check your schema
+df_spark.printSchema()
+&gt;&gt;&gt; root
+ |-- Name: string (nullable = true)
+ |-- age: integer (nullable = true)
+ |-- Experience: integer (nullable = true)
+
+#You can do the read this way, too.
+df_spark = spark.read.csv(&#39;test.csv&#39;, header=True, inferSchema=True)
+df_spark.show()
+&gt;&gt;&gt;
+&#43;---------&#43;---&#43;----------&#43;
+|     Name|age|Experience|
+&#43;---------&#43;---&#43;----------&#43;
+|    Krish| 31|        10|
+|Sudhanshu| 30|         8|
+|    Sunny| 29|         4|
+&#43;---------&#43;---&#43;----------&#43;
+
+df_spark.head(3)
+df_spark.show()
+
+# if you want to select some columns
+df_spark.select(&#39;Name&#39;).show()
+df_spark.select([&#39;Name&#39;, &#39;Experience&#39;]).show()
+#The select will return you dataframe by the way.
+
+# If you want just a column, you can do this.
+df_spark[&#39;Name&#39;]
+&gt;&gt;&gt; Column&lt;&#39;Name&#39;&gt;
+
+# and like in pandas, there are &#39;describe&#39;, which can help you to print the statistics of your data. by the way, describe returns you a dataframe. 
+df_spark.describe().show()
+
+# So how can you replace, adding or *renaming columns?
+# This is adding new columns. And it is not in-place.
+df_spark = df_spark.withColumn(&#39;Experience After 2 year&#39;, df_spark[&#39;Experience&#39;] &#43; 2)
+# You can drop, not in-place, too.
+df_spark = df_spark.drop(&#39;Experinece After 2 year&#39;)
+# You can rename
+df_spark = df_spark.withColumnRenamed(&#39;Name&#39;, &#39;New Name&#39;)
+">  
+
+  <title>
+    
+      pyspark memo
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-05-06 21:17:29 &#43;0800 HKT">
+                            2025-05-06
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>pyspark memo</h1>
+
+    
+
+    <h1 id="chapter-1">Chapter 1</h1>
+<h1 id="content">Content</h1>
+<ul>
+<li>PySpark Datafram</li>
+<li>Reading The Dataset</li>
+<li>Checking the Datatype of the Column(Schema)</li>
+<li>Selecting Columns And indexing</li>
+<li>Check Describe option similar to Pandas</li>
+<li>Adding Columns</li>
+<li>Droping Columns</li>
+<li>Renaming Columns</li>
+</ul>
+<h2 id="codes">Codes:</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> pyspark.sql <span style="color:#f92672">import</span> SparkSession
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># To use spark dataframe, we need session first</span>
+</span></span><span style="display:flex;"><span>spark <span style="color:#f92672">=</span> SparkSession<span style="color:#f92672">.</span>builder<span style="color:#f92672">.</span>appName(<span style="color:#e6db74">&#39;DataFrame&#39;</span>)<span style="color:#f92672">.</span>getOrCreate()
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># This read will not infer header and the types</span>
+</span></span><span style="display:flex;"><span>spark<span style="color:#f92672">.</span>read()<span style="color:#f92672">.</span>csv(<span style="color:#e6db74">&#39;test.csv&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#or you can use read option(k, v)</span>
+</span></span><span style="display:flex;"><span>df_spark <span style="color:#f92672">=</span> spark<span style="color:#f92672">.</span>read()<span style="color:#f92672">.</span>option(<span style="color:#e6db74">&#39;header&#39;</span>, <span style="color:#e6db74">&#39;true&#39;</span>)<span style="color:#f92672">.</span>csv(<span style="color:#e6db74">&#39;test.csv&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#And if you want to use something like auto casting, you can add inferSchema</span>
+</span></span><span style="display:flex;"><span>df_spark <span style="color:#f92672">=</span> spark<span style="color:#f92672">.</span>read()<span style="color:#f92672">.</span>option(<span style="color:#e6db74">&#39;header&#39;</span>, <span style="color:#e6db74">&#39;true&#39;</span>)<span style="color:#f92672">.</span>csv(<span style="color:#e6db74">&#39;test.csv&#39;</span>, inferSchema<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># check your schema</span>
+</span></span><span style="display:flex;"><span>df_spark<span style="color:#f92672">.</span>printSchema()
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> root
+</span></span><span style="display:flex;"><span> <span style="color:#f92672">|--</span> Name: string (nullable <span style="color:#f92672">=</span> true)
+</span></span><span style="display:flex;"><span> <span style="color:#f92672">|--</span> age: integer (nullable <span style="color:#f92672">=</span> true)
+</span></span><span style="display:flex;"><span> <span style="color:#f92672">|--</span> Experience: integer (nullable <span style="color:#f92672">=</span> true)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#You can do the read this way, too.</span>
+</span></span><span style="display:flex;"><span>df_spark <span style="color:#f92672">=</span> spark<span style="color:#f92672">.</span>read<span style="color:#f92672">.</span>csv(<span style="color:#e6db74">&#39;test.csv&#39;</span>, header<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>, inferSchema<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>df_spark<span style="color:#f92672">.</span>show()
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">+---------+---+----------+</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">|</span>     Name<span style="color:#f92672">|</span>age<span style="color:#f92672">|</span>Experience<span style="color:#f92672">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">+---------+---+----------+</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">|</span>    Krish<span style="color:#f92672">|</span> <span style="color:#ae81ff">31</span><span style="color:#f92672">|</span>        <span style="color:#ae81ff">10</span><span style="color:#f92672">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">|</span>Sudhanshu<span style="color:#f92672">|</span> <span style="color:#ae81ff">30</span><span style="color:#f92672">|</span>         <span style="color:#ae81ff">8</span><span style="color:#f92672">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">|</span>    Sunny<span style="color:#f92672">|</span> <span style="color:#ae81ff">29</span><span style="color:#f92672">|</span>         <span style="color:#ae81ff">4</span><span style="color:#f92672">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">+---------+---+----------+</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>df_spark<span style="color:#f92672">.</span>head(<span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>df_spark<span style="color:#f92672">.</span>show()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># if you want to select some columns</span>
+</span></span><span style="display:flex;"><span>df_spark<span style="color:#f92672">.</span>select(<span style="color:#e6db74">&#39;Name&#39;</span>)<span style="color:#f92672">.</span>show()
+</span></span><span style="display:flex;"><span>df_spark<span style="color:#f92672">.</span>select([<span style="color:#e6db74">&#39;Name&#39;</span>, <span style="color:#e6db74">&#39;Experience&#39;</span>])<span style="color:#f92672">.</span>show()
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#The select will return you dataframe by the way.</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># If you want just a column, you can do this.</span>
+</span></span><span style="display:flex;"><span>df_spark[<span style="color:#e6db74">&#39;Name&#39;</span>]
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> Column<span style="color:#f92672">&lt;</span><span style="color:#e6db74">&#39;Name&#39;</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># and like in pandas, there are &#39;describe&#39;, which can help you to print the statistics of your data. by the way, describe returns you a dataframe. </span>
+</span></span><span style="display:flex;"><span>df_spark<span style="color:#f92672">.</span>describe()<span style="color:#f92672">.</span>show()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># So how can you replace, adding or *renaming columns?</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># This is adding new columns. And it is not in-place.</span>
+</span></span><span style="display:flex;"><span>df_spark <span style="color:#f92672">=</span> df_spark<span style="color:#f92672">.</span>withColumn(<span style="color:#e6db74">&#39;Experience After 2 year&#39;</span>, df_spark[<span style="color:#e6db74">&#39;Experience&#39;</span>] <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># You can drop, not in-place, too.</span>
+</span></span><span style="display:flex;"><span>df_spark <span style="color:#f92672">=</span> df_spark<span style="color:#f92672">.</span>drop(<span style="color:#e6db74">&#39;Experinece After 2 year&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># You can rename</span>
+</span></span><span style="display:flex;"><span>df_spark <span style="color:#f92672">=</span> df_spark<span style="color:#f92672">.</span>withColumnRenamed(<span style="color:#e6db74">&#39;Name&#39;</span>, <span style="color:#e6db74">&#39;New Name&#39;</span>)
+</span></span></code></pre></div>
+</article>
+
+            </div>
+        </main>
+    </body></html>
