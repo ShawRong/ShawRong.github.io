@@ -13,3 +13,5 @@ yabai --start-service
 yabai 是软件本体 brew 安装
 skhd是配套的快捷键编辑器
  spacebar 还没研究
+
+rong
