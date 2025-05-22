@@ -1,6 +1,6 @@
 ---
 title: "Tmux-Memo"
-date: 2025-05-22T17:21:51.169Z
+date: 2025-05-22T17:30:53.861Z
 draft: false
 tags: []
 ---
@@ -8,4 +8,5 @@ tags: []
 - C-b " split vertical
 - C-b % split ..
 - C-b x delete
-- C-w show all the window
+- C-b w show all the window
+- C-b \[ get into vim mode
