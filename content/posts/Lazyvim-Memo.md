@@ -1,6 +1,6 @@
 ---
 title: "Lazyvim-Memo"
-date: 2025-05-23T07:33:31.656Z
+date: 2025-05-23T12:07:09.673Z
 draft: false
 tags: []
 ---
@@ -50,4 +50,42 @@ vim.opt.timeoutlen = 300           -- 快捷键超时时间（降低延迟）
 
 -- 如果仍有卡顿，可以尝试关闭语法高亮（临时测试）
 -- vim.cmd("syntax off")
+```
+
+# Luasnippet configuration
+- toggle lazy extra: luasnip
+- add file luasnip.lua under path /lua/plugins/..
+- add customed snip file in /lua/luasnippets
+- add file all.latex
+
+file luasnip.lua
+```lua
+return {
+  "L3MON4D3/LuaSnip",
+  dependencies = {
+    {
+      "rafamadriz/friendly-snippets",
+      config = function()
+        require("luasnip.loaders.from_vscode").lazy_load()
+        require("luasnip.loaders.from_lua").load({ paths = "./lua/luasnippets" })
+      end,
+    },
+  },
+}
+
+```
+
+
+file all.lua
+``` lua
+return {
+  s("trig", {
+    t("\\textcolor{"),
+    i(1, "color"),
+    t("}{"),
+    i(2, "text"),
+    t("}"),
+  }),
+  -- 更多片段...
+}
 ```

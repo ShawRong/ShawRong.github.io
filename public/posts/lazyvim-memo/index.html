@@ -44,7 +44,7 @@ Fixed by dragging the little bar down side to the bottom.">
                     <a href="/">..</a>
 
                     <p>
-                        <time datetime="2025-05-23 07:33:31.656 &#43;0000 UTC">
+                        <time datetime="2025-05-23 12:07:09.673 &#43;0000 UTC">
                             2025-05-23
                         </time>
                     </p>
@@ -94,6 +94,37 @@ Fixed by dragging the little bar down side to the bottom.</p>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e">-- 如果仍有卡顿，可以尝试关闭语法高亮（临时测试）</span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e">-- vim.cmd(&#34;syntax off&#34;)</span>
+</span></span></code></pre></div><h1 id="luasnippet-configuration">Luasnippet configuration</h1>
+<ul>
+<li>toggle lazy extra: luasnip</li>
+<li>add file luasnip.lua under path /lua/plugins/..</li>
+<li>add customed snip file in /lua/luasnippets</li>
+<li>add file all.latex</li>
+</ul>
+<p>file luasnip.lua</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-lua" data-lang="lua"><span style="display:flex;"><span><span style="color:#66d9ef">return</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;L3MON4D3/LuaSnip&#34;</span>,
+</span></span><span style="display:flex;"><span>  dependencies <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;rafamadriz/friendly-snippets&#34;</span>,
+</span></span><span style="display:flex;"><span>      config <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>()
+</span></span><span style="display:flex;"><span>        require(<span style="color:#e6db74">&#34;luasnip.loaders.from_vscode&#34;</span>).lazy_load()
+</span></span><span style="display:flex;"><span>        require(<span style="color:#e6db74">&#34;luasnip.loaders.from_lua&#34;</span>).load({ paths <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;./lua/luasnippets&#34;</span> })
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">end</span>,
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>  },
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>file all.lua</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-lua" data-lang="lua"><span style="display:flex;"><span><span style="color:#66d9ef">return</span> {
+</span></span><span style="display:flex;"><span>  s(<span style="color:#e6db74">&#34;trig&#34;</span>, {
+</span></span><span style="display:flex;"><span>    t(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">textcolor{&#34;</span>),
+</span></span><span style="display:flex;"><span>    i(<span style="color:#ae81ff">1</span>, <span style="color:#e6db74">&#34;color&#34;</span>),
+</span></span><span style="display:flex;"><span>    t(<span style="color:#e6db74">&#34;}{&#34;</span>),
+</span></span><span style="display:flex;"><span>    i(<span style="color:#ae81ff">2</span>, <span style="color:#e6db74">&#34;text&#34;</span>),
+</span></span><span style="display:flex;"><span>    t(<span style="color:#e6db74">&#34;}&#34;</span>),
+</span></span><span style="display:flex;"><span>  }),
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">-- 更多片段...</span>
+</span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div>
 </article>
 
