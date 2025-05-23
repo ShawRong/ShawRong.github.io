@@ -6,8 +6,15 @@
     <description>Recent content in Posts on My New Hugo Site</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 23 May 2025 07:33:31 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 23 May 2025 08:47:59 +0000</lastBuildDate>
     <atom:link href="https://example.org/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Zathura</title>
+      <link>https://example.org/posts/zathura/</link>
+      <pubDate>Fri, 23 May 2025 08:47:59 +0000</pubDate>
+      <guid>https://example.org/posts/zathura/</guid>
+      <description>&lt;p&gt;first, tap this repo and install:&lt;/p&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;brew tap homebrew-zathura/zathura&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;brew install zathura&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;install some plugins:&lt;/p&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;brew install zathura-djvu zathura-pdf-mupdf zathura-ps&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;After you install all required plugins you need to put them in a directory where zathura can find them. To do this, run the following command. You have to run this command only after installing new plugins.&lt;/p&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;d&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;brew --prefix zathura&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;/lib/zathura ; mkdir -p $d ; &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; n in cb djvu pdf-mupdf pdf-poppler ps ; &lt;span style=&#34;color:#66d9ef&#34;&gt;do&lt;/span&gt; p&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;brew --prefix zathura-$n&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;/lib$n.dylib ; &lt;span style=&#34;color:#f92672&#34;&gt;[[&lt;/span&gt; -f $p &lt;span style=&#34;color:#f92672&#34;&gt;]]&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; ln -s $p $d ; &lt;span style=&#34;color:#66d9ef&#34;&gt;done&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;To use zathura as macOS application, run following command. You have to run this command each time you&amp;rsquo;re installing new plugins to update bundle info.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Lazyvim-Memo</title>
       <link>https://example.org/posts/lazyvim-memo/</link>

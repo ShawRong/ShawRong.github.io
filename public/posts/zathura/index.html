@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="first, tap this repo and install:
+brew tap homebrew-zathura/zathura
+brew install zathura
+install some plugins:
+brew install zathura-djvu zathura-pdf-mupdf zathura-ps
+After you install all required plugins you need to put them in a directory where zathura can find them. To do this, run the following command. You have to run this command only after installing new plugins.
+d=$(brew --prefix zathura)/lib/zathura ; mkdir -p $d ; for n in cb djvu pdf-mupdf pdf-poppler ps ; do p=$(brew --prefix zathura-$n)/lib$n.dylib ; [[ -f $p ]] &amp;&amp; ln -s $p $d ; done
+To use zathura as macOS application, run following command. You have to run this command each time you&rsquo;re installing new plugins to update bundle info.">  
+
+  <title>
+    
+      Zathura
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-05-23 08:47:59.134 &#43;0000 UTC">
+                            2025-05-23
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>Zathura</h1>
+
+    
+
+    <p>first, tap this repo and install:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>brew tap homebrew-zathura/zathura
+</span></span><span style="display:flex;"><span>brew install zathura
+</span></span></code></pre></div><p>install some plugins:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>brew install zathura-djvu zathura-pdf-mupdf zathura-ps
+</span></span></code></pre></div><p>After you install all required plugins you need to put them in a directory where zathura can find them. To do this, run the following command. You have to run this command only after installing new plugins.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>d<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>brew --prefix zathura<span style="color:#66d9ef">)</span>/lib/zathura ; mkdir -p $d ; <span style="color:#66d9ef">for</span> n in cb djvu pdf-mupdf pdf-poppler ps ; <span style="color:#66d9ef">do</span> p<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>brew --prefix zathura-$n<span style="color:#66d9ef">)</span>/lib$n.dylib ; <span style="color:#f92672">[[</span> -f $p <span style="color:#f92672">]]</span> <span style="color:#f92672">&amp;&amp;</span> ln -s $p $d ; <span style="color:#66d9ef">done</span>
+</span></span></code></pre></div><p>To use zathura as macOS application, run following command. You have to run this command each time you&rsquo;re installing new plugins to update bundle info.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>curl https://raw.githubusercontent.com/homebrew-zathura/homebrew-zathura/refs/heads/master/convert-into-app.sh | sh
+</span></span></code></pre></div><h1 id="uninstall">Uninstall</h1>
+<p><a href="https://github.com/homebrew-zathura/homebrew-zathura#uninstall"></a></p>
+<p>Homebrew will throw errors unless you uninstall plugins before Zathura.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>brew uninstall --force zathura-pdf-mupdf
+</span></span><span style="display:flex;"><span>brew uninstall --ignore-dependencies --force girara
+</span></span><span style="display:flex;"><span>brew uninstall zathura
+</span></span></code></pre></div><p>Optionally untap the repo</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>brew untap <span style="color:#66d9ef">$(</span>brew tap | grep zathura<span style="color:#66d9ef">)</span>
+</span></span></code></pre></div><h1 id="how-to-use">How to use</h1>
+<h2 id="navigate">navigate</h2>
+<p>j/k
+h/l
+n/p: next page, last page
+gg/G
+:page number
++/-: zoom in/out
+0: reset zoom
+ctrl + scroll: zoom in/out
+f: full screen
+r: rotate
+s: 120%?
+b: bookmark
+ctrl b: add bookmark
+/: search
+?: search
+n/N: next match
+q: quit
+F1: help</p>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>
