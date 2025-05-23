@@ -44,8 +44,8 @@ Fixed by dragging the little bar down side to the bottom.">
                     <a href="/">..</a>
 
                     <p>
-                        <time datetime="2025-05-22 17:17:38.735 &#43;0000 UTC">
-                            2025-05-22
+                        <time datetime="2025-05-23 07:33:31.656 &#43;0000 UTC">
+                            2025-05-23
                         </time>
                     </p>
                 </div>
@@ -82,7 +82,19 @@ Fixed by dragging the little bar down side to the bottom.</p>
 <li>Toggle rust lang plugin in lazyvim (just get into the front page, and use &lsquo;x&rsquo; to select)</li>
 <li>Done</li>
 </ul>
-
+<h1 id="minimize-the-animation">Minimize the Animation</h1>
+<p>put following code to init.lua</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-lua" data-lang="lua"><span style="display:flex;"><span><span style="color:#75715e">-- 禁用动画和优化性能</span>
+</span></span><span style="display:flex;"><span>vim.opt.winblend <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>               <span style="color:#75715e">-- 禁用窗口透明混合</span>
+</span></span><span style="display:flex;"><span>vim.opt.pumblend <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>               <span style="color:#75715e">-- 禁用补全菜单透明</span>
+</span></span><span style="display:flex;"><span>vim.opt.cursorline <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>         <span style="color:#75715e">-- 禁用光标行高亮（显著提升流畅度）</span>
+</span></span><span style="display:flex;"><span>vim.opt.lazyredraw <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>          <span style="color:#75715e">-- 延迟重绘（减少宏/操作时的卡顿）</span>
+</span></span><span style="display:flex;"><span>vim.opt.updatetime <span style="color:#f92672">=</span> <span style="color:#ae81ff">300</span>           <span style="color:#75715e">-- 更快的响应时间（默认4000ms）</span>
+</span></span><span style="display:flex;"><span>vim.opt.timeoutlen <span style="color:#f92672">=</span> <span style="color:#ae81ff">300</span>           <span style="color:#75715e">-- 快捷键超时时间（降低延迟）</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- 如果仍有卡顿，可以尝试关闭语法高亮（临时测试）</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- vim.cmd(&#34;syntax off&#34;)</span>
+</span></span></code></pre></div>
 </article>
 
             </div>

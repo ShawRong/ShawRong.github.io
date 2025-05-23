@@ -6,8 +6,15 @@
     <description>Recent content in Posts on My New Hugo Site</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 22 May 2025 17:30:53 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 23 May 2025 07:33:31 +0000</lastBuildDate>
     <atom:link href="https://example.org/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Lazyvim-Memo</title>
+      <link>https://example.org/posts/lazyvim-memo/</link>
+      <pubDate>Fri, 23 May 2025 07:33:31 +0000</pubDate>
+      <guid>https://example.org/posts/lazyvim-memo/</guid>
+      <description>&lt;p&gt;I come across an error when I tried to use nvim in iterm2(set to a background).&#xA;The down side of termnial start to wink when using nvim.&#xA;The error is fixed by changing the nvim background to transparent.&lt;/p&gt;&#xA;&lt;p&gt;add a new file in ~/.config/nvim/lua/plugins/colorscheme.lua&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;return {&#xA;{&#xA;  &amp;#34;folke/tokyonight.nvim&amp;#34;,&#xA;  opts = {&#xA;    transparent = true,&#xA;    styles = {&#xA;      sidebars = &amp;#34;transparent&amp;#34;,&#xA;      floats = &amp;#34;transparent&amp;#34;,&#xA;    },&#xA;  },&#xA;},&#xA;}&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;note&#34;&gt;Note:&lt;/h2&gt;&#xA;&lt;p&gt;Actually, it doesn&amp;rsquo;t work at all.&#xA;Fixed by dragging the little bar down side to the bottom.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Tmux-Memo</title>
       <link>https://example.org/posts/tmux-memo/</link>
@@ -20,7 +27,7 @@
       <link>https://example.org/posts/yabai-memo/</link>
       <pubDate>Thu, 22 May 2025 17:17:45 +0000</pubDate>
       <guid>https://example.org/posts/yabai-memo/</guid>
-      <description>&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;brew install koekeishiya/formulae/yabai&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;yabai --start-service&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;yabai 是软件本体 brew 安装&#xA;skhd是配套的快捷键编辑器&#xA;spacebar 还没研究&lt;/p&gt;</description>
+      <description>&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;brew install koekeishiya/formulae/yabai&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;yabai --start-service&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;yabai 是软件本体 brew 安装&#xA;skhd是配套的快捷键编辑器&#xA;spacebar 还没研究&lt;/p&gt;&#xA;&lt;p&gt;rong&lt;/p&gt;</description>
     </item>
     <item>
       <title>Vscode-Memo</title>
@@ -28,13 +35,6 @@
       <pubDate>Thu, 22 May 2025 17:17:43 +0000</pubDate>
       <guid>https://example.org/posts/vscode-memo/</guid>
       <description>&lt;p&gt;Open vscode in terminal with reusing the current window:&lt;/p&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;code -r .&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;-r stand for reuse.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Lazyvim-Memo</title>
-      <link>https://example.org/posts/lazyvim-memo/</link>
-      <pubDate>Thu, 22 May 2025 17:17:38 +0000</pubDate>
-      <guid>https://example.org/posts/lazyvim-memo/</guid>
-      <description>&lt;p&gt;I come across an error when I tried to use nvim in iterm2(set to a background).&#xA;The down side of termnial start to wink when using nvim.&#xA;The error is fixed by changing the nvim background to transparent.&lt;/p&gt;&#xA;&lt;p&gt;add a new file in ~/.config/nvim/lua/plugins/colorscheme.lua&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;return {&#xA;{&#xA;  &amp;#34;folke/tokyonight.nvim&amp;#34;,&#xA;  opts = {&#xA;    transparent = true,&#xA;    styles = {&#xA;      sidebars = &amp;#34;transparent&amp;#34;,&#xA;      floats = &amp;#34;transparent&amp;#34;,&#xA;    },&#xA;  },&#xA;},&#xA;}&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;note&#34;&gt;Note:&lt;/h2&gt;&#xA;&lt;p&gt;Actually, it doesn&amp;rsquo;t work at all.&#xA;Fixed by dragging the little bar down side to the bottom.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Iterm-Memo</title>
