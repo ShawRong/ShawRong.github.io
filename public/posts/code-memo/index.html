@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="MPI
+broadcast k, and n
+MPI_Bcast(&amp;k, 1, MPI_INT, 0, comm); // or MPI_COMM_WORLD
+MPI_Bcast(&amp;n, 1, MPI_INT, 0, comm); // or MPI_COMM_WORLD
+set num_of_reads_local
+num_of_reads_local = n / num_process;
+allocate csr displs and csr offs
+int readCSR_displs[MAX_PROCESS&#43;1], readCSR_counts[MAX_PROCESS&#43;1];
+int readCSRoffs_displs[MAX_PROCESS&#43;1],readCSRoffs_counts[MAX_PROCESS&#43;1]; 
+
+MPI_Bcast(&amp;max_readCSR_size_local, 1, MPI_INT, 0, comm);
+MPI_Bcast(readCSR_counts, num_process, MPI_INT, 0, comm);
+MPI_Bcast(readCSRoffs_counts, num_process, MPI_INT, 0, comm);
+copy data
+num_of_read_local_p0 = n - num_of_reads_local * (num_process - 1);
+readCSRoffs_displs[i] = readCSRoffs_displs[i-1] &#43; n / num_process;
+readCSR_displs[i] = reads_CSR_offs[readCSRoffs_displs[i]];
+readCSR_counts[i-1] = readCSR_displs[i] - readCSR_displs[i-1];
+readCSRoffs_counts[i-1] = readCSRoffs_displs[i] - readCSRoffs_displs[i-1] &#43; 1;
+
+reads_CSR_local = new char[max_readCSR_size_local&#43;1];//
+reads_CSR_offs_local = new int[num_of_reads_local&#43;2];//
+generate universal minimizer
+um_lists_local.push_back(generate_universal_minimizer_list(k, reads_CSR_offs_local[i&#43;1] - reads_CSR_offs_local[i], reads_CSR_local &#43; reads_CSR_offs_local[i]));
+process modified offset array">  
+
+  <title>
+    
+      Code Memo
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-05-28 09:06:15.768 &#43;0000 UTC">
+                            2025-05-28
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>Code Memo</h1>
+
+    
+
+    <h1 id="mpi">MPI</h1>
+<p>broadcast k, and n</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#a6e22e">MPI_Bcast</span>(<span style="color:#f92672">&amp;</span>k, <span style="color:#ae81ff">1</span>, MPI_INT, <span style="color:#ae81ff">0</span>, comm); <span style="color:#75715e">// or MPI_COMM_WORLD
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">MPI_Bcast</span>(<span style="color:#f92672">&amp;</span>n, <span style="color:#ae81ff">1</span>, MPI_INT, <span style="color:#ae81ff">0</span>, comm); <span style="color:#75715e">// or MPI_COMM_WORLD
+</span></span></span></code></pre></div><p>set num_of_reads_local</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>num_of_reads_local <span style="color:#f92672">=</span> n <span style="color:#f92672">/</span> num_process;
+</span></span></code></pre></div><p>allocate csr displs and csr offs</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> readCSR_displs[MAX_PROCESS<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>], readCSR_counts[MAX_PROCESS<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>];
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> readCSRoffs_displs[MAX_PROCESS<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>],readCSRoffs_counts[MAX_PROCESS<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]; 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">MPI_Bcast</span>(<span style="color:#f92672">&amp;</span>max_readCSR_size_local, <span style="color:#ae81ff">1</span>, MPI_INT, <span style="color:#ae81ff">0</span>, comm);
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">MPI_Bcast</span>(readCSR_counts, num_process, MPI_INT, <span style="color:#ae81ff">0</span>, comm);
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">MPI_Bcast</span>(readCSRoffs_counts, num_process, MPI_INT, <span style="color:#ae81ff">0</span>, comm);
+</span></span></code></pre></div><p>copy data</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>num_of_read_local_p0 <span style="color:#f92672">=</span> n <span style="color:#f92672">-</span> num_of_reads_local <span style="color:#f92672">*</span> (num_process <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>readCSRoffs_displs[i] <span style="color:#f92672">=</span> readCSRoffs_displs[i<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>] <span style="color:#f92672">+</span> n <span style="color:#f92672">/</span> num_process;
+</span></span><span style="display:flex;"><span>readCSR_displs[i] <span style="color:#f92672">=</span> reads_CSR_offs[readCSRoffs_displs[i]];
+</span></span><span style="display:flex;"><span>readCSR_counts[i<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> readCSR_displs[i] <span style="color:#f92672">-</span> readCSR_displs[i<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>];
+</span></span><span style="display:flex;"><span>readCSRoffs_counts[i<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> readCSRoffs_displs[i] <span style="color:#f92672">-</span> readCSRoffs_displs[i<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>] <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>reads_CSR_local <span style="color:#f92672">=</span> new <span style="color:#66d9ef">char</span>[max_readCSR_size_local<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>];<span style="color:#75715e">//
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>reads_CSR_offs_local <span style="color:#f92672">=</span> new <span style="color:#66d9ef">int</span>[num_of_reads_local<span style="color:#f92672">+</span><span style="color:#ae81ff">2</span>];<span style="color:#75715e">//
+</span></span></span></code></pre></div><p>generate universal minimizer</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>um_lists_local.<span style="color:#a6e22e">push_back</span>(<span style="color:#a6e22e">generate_universal_minimizer_list</span>(k, reads_CSR_offs_local[i<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>] <span style="color:#f92672">-</span> reads_CSR_offs_local[i], reads_CSR_local <span style="color:#f92672">+</span> reads_CSR_offs_local[i]));
+</span></span></code></pre></div><p>process modified offset array</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>; i<span style="color:#f92672">&lt;=</span>num_of_reads_local; i<span style="color:#f92672">++</span>) reads_CSR_offs_local[i] <span style="color:#f92672">-=</span> first_offset;
+</span></span></code></pre></div><p>recv and send</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#a6e22e">MPI_Recv</span>(um_lists_CSR[i], num_of_ums_proc[i], MPI_UNSIGNED, i, <span style="color:#ae81ff">10</span>, comm, MPI_STATUS_IGNORE);
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">MPI_Recv</span>(um_lists_CSR_offs[i], readCSRoffs_counts[i], MPI_INT, i, <span style="color:#ae81ff">20</span>, comm, MPI_STATUS_IGNORE);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">MPI_Send</span>(um_lists_CSR_local, num_of_ums_local, MPI_UNSIGNED, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">10</span>, comm);
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">MPI_Send</span>(um_lists_CSR_offs_local, num_of_reads_local<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>, MPI_INT, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">20</span>, comm);
+</span></span></code></pre></div><p>convert and insert</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">kmer_t</span><span style="color:#f92672">&gt;&gt;</span> um_lists_proc;
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">CSR2Vector</span>(readCSRoffs_counts[i]<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>, um_lists_CSR[i], um_lists_CSR_offs[i], um_lists_proc);
+</span></span><span style="display:flex;"><span>um_lists.<span style="color:#a6e22e">insert</span>(um_lists.<span style="color:#a6e22e">end</span>(), um_lists_proc.<span style="color:#a6e22e">begin</span>(), um_lists_proc.<span style="color:#a6e22e">end</span>());
+</span></span></code></pre></div><h1 id="pthread">Pthread</h1>
+<p>set local</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>pthread_args <span style="color:#f92672">*</span>args_ptr <span style="color:#f92672">=</span> (pthread_args <span style="color:#f92672">*</span>)args;
+</span></span><span style="display:flex;"><span>vector<span style="color:#f92672">&lt;</span>string<span style="color:#f92672">&gt;&amp;</span> reads <span style="color:#f92672">=</span> args_ptr<span style="color:#f92672">-&gt;</span>reads;
+</span></span><span style="display:flex;"><span>vector<span style="color:#f92672">&lt;</span>vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">kmer_t</span><span style="color:#f92672">&gt;&gt;&amp;</span> um_lists <span style="color:#f92672">=</span> args_ptr<span style="color:#f92672">-&gt;</span>um_lists;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> k <span style="color:#f92672">=</span> args_ptr<span style="color:#f92672">-&gt;</span>k;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> n <span style="color:#f92672">=</span> args_ptr<span style="color:#f92672">-&gt;</span>n;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> num_threads <span style="color:#f92672">=</span> args_ptr<span style="color:#f92672">-&gt;</span>num_threads;
+</span></span><span style="display:flex;"><span>read_range ranges <span style="color:#f92672">=</span> args_ptr<span style="color:#f92672">-&gt;</span>ranges;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> my_rank <span style="color:#f92672">=</span> (<span style="color:#66d9ef">long</span>)args_ptr<span style="color:#f92672">-&gt;</span>my_rank;
+</span></span></code></pre></div><p>generate</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> ranges.start; i <span style="color:#f92672">&lt;</span> ranges.end; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>	um_lists[i] <span style="color:#f92672">=</span> <span style="color:#a6e22e">generate_universal_minimizer_list</span>(k, reads[i]);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>thread handles</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">pthread_t</span><span style="color:#f92672">*</span> thread_handles;
+</span></span><span style="display:flex;"><span>thread_handles <span style="color:#f92672">=</span> (<span style="color:#66d9ef">pthread_t</span><span style="color:#f92672">*</span>)<span style="color:#a6e22e">malloc</span>(num_threads <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">pthread_t</span>));
+</span></span></code></pre></div><p>k-mer total</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> tot_kmers <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> n; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>	tot_kmers <span style="color:#f92672">+=</span> reads[i].<span style="color:#a6e22e">length</span>() <span style="color:#f92672">-</span> k <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> target <span style="color:#f92672">=</span> tot_kmers <span style="color:#f92672">/</span> num_threads;
+</span></span></code></pre></div><p>create and call (args &amp; function)</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>pthread_args<span style="color:#f92672">*</span> args <span style="color:#f92672">=</span> new <span style="color:#a6e22e">pthread_args</span>(reads, um_lists, k, n, num_threads, ranges[<span style="color:#66d9ef">thread</span>], (<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span>)<span style="color:#66d9ef">thread</span>);
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">pthread_create</span>(<span style="color:#f92672">&amp;</span>thread_handles[<span style="color:#66d9ef">thread</span>], NULL, gen_um_lists, (<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span>)args);
+</span></span></code></pre></div><p>join</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#a6e22e">pthread_join</span>(thread_handles[<span style="color:#66d9ef">thread</span>], NULL);
+</span></span></code></pre></div><h1 id="cuda">CUDA</h1>
+<p>find read id</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>offset_inside_read <span style="color:#f92672">=</span> thread_id <span style="color:#f92672">-</span> reads_offset[mid];
+</span></span></code></pre></div><p>cuda malloc</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#a6e22e">cudaMalloc</span>((<span style="color:#66d9ef">void</span><span style="color:#f92672">**</span>)<span style="color:#f92672">&amp;</span>d_reads_array, total_length <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">char</span>));
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">cudaMemcpy</span>(d_reads_array, reads_array, total_length <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">char</span>), cudaMemcpyHostToDevice);
+</span></span></code></pre></div><p>cuda memcpy</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span><span style="color:#f92672">*</span> d_reads_offset_array;
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">cudaMalloc</span>((<span style="color:#66d9ef">void</span><span style="color:#f92672">**</span>)<span style="color:#f92672">&amp;</span>d_reads_offset_array, (n <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">int</span>));
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">cudaMemcpy</span>(d_reads_offset_array, reads_offset_array, (n <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">int</span>), cudaMemcpyHostToDevice);
+</span></span></code></pre></div><p>call of kernel</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>gen_um_lists_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>gridSize, blockSize<span style="color:#f92672">&gt;&gt;&gt;</span>(k, n, d_reads_array, d_reads_offset_array, 
+</span></span></code></pre></div><p>tid and total num calculate</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> thread_id <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> total_length <span style="color:#f92672">=</span> reads_offset[num_reads];
+</span></span></code></pre></div><p>condition</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">is_universal_minimizer</span>(kmer))
+</span></span></code></pre></div>
+</article>
+
+            </div>
+        </main>
+    </body></html>

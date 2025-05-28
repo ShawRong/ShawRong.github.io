@@ -2,10 +2,25 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://example.org/posts/lazyvim-memo/</loc>
-    <lastmod>2025-05-23T12:07:09+00:00</lastmod>
-  </url><url>
     <loc>https://example.org/posts/</loc>
+    <lastmod>2025-05-28T09:06:21+00:00</lastmod>
+  </url><url>
+    <loc>https://example.org/posts/pthread-memo/</loc>
+    <lastmod>2025-05-28T09:06:21+00:00</lastmod>
+  </url><url>
+    <loc>https://example.org/posts/openmp-memo/</loc>
+    <lastmod>2025-05-28T09:06:20+00:00</lastmod>
+  </url><url>
+    <loc>https://example.org/posts/mpi-memo/</loc>
+    <lastmod>2025-05-28T09:06:19+00:00</lastmod>
+  </url><url>
+    <loc>https://example.org/posts/cuda-memo/</loc>
+    <lastmod>2025-05-28T09:06:17+00:00</lastmod>
+  </url><url>
+    <loc>https://example.org/posts/code-memo/</loc>
+    <lastmod>2025-05-28T09:06:15+00:00</lastmod>
+  </url><url>
+    <loc>https://example.org/posts/lazyvim-memo/</loc>
     <lastmod>2025-05-23T12:07:09+00:00</lastmod>
   </url><url>
     <loc>https://example.org/posts/zathura/</loc>

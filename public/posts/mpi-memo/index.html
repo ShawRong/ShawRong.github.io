@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Compile &amp; Run
+using a wrapper for the C compiler.
+mpicc -g -Wall -o mpi_hello mpi_hello.c
+mpicc is a wrapper script, that telling c compiler where to find header file and what libraries should be linked.
+using mpiexec to run a mpi program
+mpiexec -n 4 ./mpi_hello
+MPI
+feature
+
+Distributed Memory
+
+API
+These apis are included by &lt;mpi.h&gt;
+MPI_Init
+int MPI_Init(int* argc_p, char*** argv_p);
+the parameter is pointer to argc and argv. If main(void), just pass NULL.">  
+
+  <title>
+    
+      MPI Memo
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-05-28 09:06:19.269 &#43;0000 UTC">
+                            2025-05-28
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>MPI Memo</h1>
+
+    
+
+    <h1 id="compile--run">Compile &amp; Run</h1>
+<p>using a <strong>wrapper</strong> for the C compiler.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>mpicc -g -Wall -o mpi_hello mpi_hello.c
+</span></span></code></pre></div><p>mpicc is a wrapper script, that telling c compiler where to find header file and what libraries should be linked.</p>
+<p>using mpiexec to run a mpi program</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>mpiexec <span style="color:#f92672">-</span>n <span style="color:#ae81ff">4</span> .<span style="color:#f92672">/</span>mpi_hello
+</span></span></code></pre></div><h1 id="mpi">MPI</h1>
+<h2 id="feature">feature</h2>
+<ul>
+<li>Distributed Memory</li>
+</ul>
+<h2 id="api">API</h2>
+<p>These apis are included by &lt;mpi.h&gt;</p>
+<h3 id="mpi_init">MPI_Init</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">MPI_Init</span>(<span style="color:#66d9ef">int</span><span style="color:#f92672">*</span> argc_p, <span style="color:#66d9ef">char</span><span style="color:#f92672">***</span> argv_p);
+</span></span></code></pre></div><p>the parameter is pointer to argc and argv. If main(void), just pass NULL.</p>
+<p>it allocate storage for message buffers, and decide which process gets which rank</p>
+<h3 id="mpi_finalize">MPI_Finalize</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">MPI_Finalize</span>(<span style="color:#66d9ef">void</span>);
+</span></span></code></pre></div><p>resources allocated for MPI can be freed.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e"># basic framework for MPI program
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;mpi.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> argv[]) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">MPI_Init</span>(<span style="color:#f92672">&amp;</span>argc, <span style="color:#f92672">&amp;</span>argv);
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">#...
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">MPI_Finalize</span>();
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="communicators-and-mpi_comm_size--mpi_comm_rank">Communicators and MPI_Comm_size &amp; MPI_Comm_rank</h2>
+<p><strong>communicator</strong> is a collection of processes that can send messages to each other. This communicator is called <strong>MPI_COMM_WORLD</strong>.</p>
+<p>These apis get information about MPI_COMM_WORLD</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e"># get size 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">MPI_Comm_size</span>(
+</span></span><span style="display:flex;"><span>	MPI_Comm comm,
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> <span style="color:#f92672">*</span> comm_sz_p; <span style="color:#75715e">/*a int pointer*/</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># get rank
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">MPI_Comm_rank</span>(
+</span></span><span style="display:flex;"><span>	MPI_Comm comm,
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> <span style="color:#f92672">*</span> comm_rank_p; <span style="color:#75715e">/*a int pointer*/</span>
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><p>MPI_Comm typically refer to MPI_COMM_WORLD</p>
+<h2 id="mpi_send--mpi_recv">MPI_Send &amp; MPI_Recv</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">MPI_Send</span>(
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> msg_buf_p <span style="color:#75715e">/*in*/</span>,
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> msg_size  <span style="color:#75715e">/*in*/</span>,
+</span></span><span style="display:flex;"><span>	MPI_Datatype msg_type <span style="color:#75715e">/*in*/</span>,
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span>   dest<span style="color:#75715e">/*in*/</span>,
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span>   tag<span style="color:#75715e">/*in*/</span>,  <span style="color:#75715e">/*this is used to specify the usage of different send message, for example tag0 for print and tag1 for computation*/</span>
+</span></span><span style="display:flex;"><span>	MPI_Comm communicator<span style="color:#75715e">/*in*/</span>;
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">MPI_Recv</span>(
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> msg_buf_p <span style="color:#75715e">/*out*/</span>,
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> buf_size  <span style="color:#75715e">/*in*/</span>,
+</span></span><span style="display:flex;"><span>	MPI_Datatype buf_type <span style="color:#75715e">/*in*/</span>,
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span>   source<span style="color:#75715e">/*in*/</span>,
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span>   tag<span style="color:#75715e">/*in*/</span>,  <span style="color:#75715e">/*this is used to specify the usage of different send message, for example tag0 for print and tag1 for computation*/</span>
+</span></span><span style="display:flex;"><span>	MPI_Comm communicator<span style="color:#75715e">/*in*/</span>,
+</span></span><span style="display:flex;"><span>	MPI_Status<span style="color:#f92672">*</span> status_p;  <span style="color:#75715e">// usually MPI_STATUS_IGNORE
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>)
+</span></span></code></pre></div><p>About first 3 parameter: If recv_type = send_type &amp; recv_buf_sz &gt;= send_buf_sz, the message sent by q can be successfully received by r.</p>
+<p>there is a special parameter MPI_ANY_SOURCE, to receive message from any source.
+there is a special parameter MPI_ANY_TAG, too. (for receive)
+only receiver can use a wildcard argument.</p>
+<h2 id="mpi_status">MPI_Status</h2>
+<p>The receiver can receive message without knowing: 1. the amount of data in message 2. the sender of the message and 3. the tag of the message. So where to find these message? use MPI_Status</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>MPI_Status status;
+</span></span><span style="display:flex;"><span>status.MPI_SOURCE;
+</span></span><span style="display:flex;"><span>status.MPI_TAG;
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// you need func to get the amount of data that&#39;s been received
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">MPI_Get_count</span>(<span style="color:#f92672">&amp;</span>status, recv_type, <span style="color:#f92672">&amp;</span>count); 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">MPI_Get_count</span>(
+</span></span><span style="display:flex;"><span>	MPI_Status<span style="color:#f92672">*</span> status_p; <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	MPI_Datatype<span style="color:#f92672">*</span> type;   <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">int</span><span style="color:#f92672">*</span> count_p;         <span style="color:#75715e">//out
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>)
+</span></span></code></pre></div><h2 id="detail-of-mpi_send--mpi_recv">detail of MPI_Send &amp; MPI_Recv</h2>
+<p>if the size of message is less than the cutoff, it will be buffered(not blocked), if the size of message is greater than the cutoff, MPI_Send will block.
+MPI_Recv will block utill matching messages has been received.
+The message sent by the same process will follow the order to be received. but it&rsquo;s not guaranteed between different process.</p>
+<h2 id="pitfall">pitfall</h2>
+<p>MPI_Recv will block when no correspond message get sent.
+MPI_Send also(If not block, but buffered, the message will lost)</p>
+<h2 id="input--output">Input &amp; Output</h2>
+<p>Output: all process can get access to stdout, but usually, we utilize rank 0 to get all the information and print
+Input: Only process 0 in MPI_COMM_WORLD get access to stdin.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">// a typcial get input
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Get_input</span>(
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> my_rank,
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> comm_sz,
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">double</span><span style="color:#f92672">*</span> a_p, <span style="color:#75715e">//out
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">double</span><span style="color:#f92672">*</span> b_p, <span style="color:#75715e">//out
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">double</span><span style="color:#f92672">*</span> n_p, <span style="color:#75715e">//out
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> dest;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span>(my_rank <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Enter a., b. and n</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">scanf</span>(<span style="color:#e6db74">&#34;%lf %lf %d&#34;</span>, a_p, b_p, n_p);
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">for</span> (dest <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; dest <span style="color:#f92672">&lt;</span> comm_sz; dest<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">MPI_Send</span>(a_p, <span style="color:#ae81ff">1</span>, MPI_DOUBLE, dest, <span style="color:#ae81ff">0</span>, MPI_COMM_WORLD);
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">MPI_Send</span>(b_p, <span style="color:#ae81ff">1</span>, MPI_DOUBLE, dest, <span style="color:#ae81ff">0</span>, MPI_COMM_WORLD);
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">MPI_Send</span>(n_p, <span style="color:#ae81ff">1</span>, MPI_INT, dest, <span style="color:#ae81ff">0</span>, MPI_COMM_WORLD);
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	} <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">MPI_Recv</span>(a_p, <span style="color:#ae81ff">1</span>, MPI_DOUBLE, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">MPI_Recv</span>(b_p, <span style="color:#ae81ff">1</span>, MPI_DOUBLE, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">MPI_Recv</span>(n_p, <span style="color:#ae81ff">1</span>, MPI_DOUBLE, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="mpi_reduce">MPI_Reduce</h2>
+<p>global-sum function (tree-like) (not only sum).
+<strong>collective communications</strong>: communication functions that involve all the processes in a communicator. MPI_Send and MPI_Recv are called point-to-point communications.</p>
+<p>operator list:</p>
+<ul>
+<li>MPI_MAX</li>
+<li>MPI_MIN</li>
+<li>MPI_SUM</li>
+<li>MPI_PROD (product)</li>
+<li>MPI_LAND  (logical and)</li>
+<li>MPI_BAND  (bitwise and)</li>
+<li>MPI_LOR  (logical or)</li>
+<li>MPI_LXOR  (logical exclusive or)</li>
+<li>MPI_BXOR  (bitwise exclusive or)</li>
+<li>MPI_MAXLOC  (maximum and location of maximum)</li>
+<li>MPI_MIXLOC  (minimum and location of minimum)</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">MPI_Reduce</span>(
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> input_data_p,    <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> output_data_p,   <span style="color:#75715e">//out
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">int</span> count,             <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	MPI_Datatype datatype, <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	MPI_Op  operator,      <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">int</span> dest_process       <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	MPI_Comm  comm         <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">MPI_Reduce</span>(<span style="color:#f92672">&amp;</span>local_int, <span style="color:#f92672">&amp;</span>total_int, <span style="color:#ae81ff">1</span>, MPI_DOUBLE, MPI_SUM, <span style="color:#ae81ff">0</span>, MPI_COMM_WROLD);
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//or
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">double</span> local_x[N], sum[N];
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">MPI_Reduce</span>(local_x, sum, N, MPI_DOUBLE, MPI_SUM, <span style="color:#ae81ff">0</span>, MPI_COMM_WORLD);
+</span></span></code></pre></div><h2 id="collective-vs-point-to-point-communications">Collective vs. point-to-point communications</h2>
+<ul>
+<li>all processes in the communicator must call the same collective function. MPI_Reduce will not corresponde to MPI_Recv</li>
+<li>all collective communication must be compatible(like dest)</li>
+<li>Collective don&rsquo;t use tags. It match solely on the basic of the communicator.</li>
+<li>using the same buffer for both input and output is illegal for MPI_Reduce: MPI_Reduce(&amp;x, &amp;x, 1, MPI_DOUBLE, MPI_SUM, 0, comm);</li>
+</ul>
+<h2 id="mpi_allreduce">MPI_Allreduce</h2>
+<p>It&rsquo;s not hard to imagine a situation in which all of the processes need the reuslt of a global sum. We can use allreduce. (strucutre like a butterfly. It&rsquo;s butterfly-structured global sum)</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">MPI_Allreduce</span>(
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> input_data_p   <span style="color:#75715e">/*in*/</span>,
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> output_data_p  <span style="color:#75715e">/*out*/</span>,
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> count          <span style="color:#75715e">/*in*/</span>,
+</span></span><span style="display:flex;"><span>	MPI_Datatype datatype <span style="color:#75715e">/*in*/</span>,
+</span></span><span style="display:flex;"><span>	MPI_Op operator      <span style="color:#75715e">/*in*/</span>,
+</span></span><span style="display:flex;"><span>	MPI_Comm comm        <span style="color:#75715e">/*in*/</span>,
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// there is no dest_process compared with reduce.
+</span></span></span></code></pre></div><h2 id="mpi_broadcast">MPI_Broadcast</h2>
+<p>It&rsquo;s commonly used to distribute input data. It&rsquo;s a reverse tree-structure of MPI_Reduce</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">MPI_Bcast</span>(
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> data_p,         <span style="color:#75715e">// in out
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">int</span>   count,          <span style="color:#75715e">// in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	MPI_Datatype datatype <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">int</span>   source_proc     <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	MPI_Comm comm         <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//send data_p from source_proce to all processes
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//example code
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Get_input</span>(
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> my_rank,
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> comm_sz,
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">double</span><span style="color:#f92672">*</span> a_p, <span style="color:#75715e">//out
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">double</span><span style="color:#f92672">*</span> b_p, <span style="color:#75715e">//out
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">double</span><span style="color:#f92672">*</span> n_p, <span style="color:#75715e">//out
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span>(my_rank <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Enter a., b. and n</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">scanf</span>(<span style="color:#e6db74">&#34;%lf %lf %d&#34;</span>, a_p, b_p, n_p);
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">MPI_Bcast</span>(a_p, <span style="color:#ae81ff">1</span>, MPI_DOUBLE, <span style="color:#ae81ff">0</span>, MPI_COMM_WORLD);
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">MPI_Bcast</span>(b_p, <span style="color:#ae81ff">1</span>, MPI_DOUBLE, <span style="color:#ae81ff">0</span>, MPI_COMM_WORLD);
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">MPI_Bcast</span>(n_p, <span style="color:#ae81ff">1</span>, MPI_INT, <span style="color:#ae81ff">0</span>, MPI_COMM_WORLD);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="mpi_scatter">MPI_Scatter</h2>
+<p>To distribute partial input data(like partial vector instead of whole vector when doing vector adding).</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">MPI_Scatter</span>(
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> send_buf_p, <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">int</span>   send_count, <span style="color:#75715e">//in   // it&#39;s the amount of data going to each process, not the amount of data in memory refered by send_buf_p.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	MPI_Datatype send_type, <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> recv_buf_p, <span style="color:#75715e">//out
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">int</span>   recv_count, <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	MPI_Datatype recv_type, <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">int</span>   src_proc,   <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	MPI_Comm comm     <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//exmaple code
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">if</span> (my_rank <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>	a <span style="color:#f92672">=</span> <span style="color:#a6e22e">malloc</span>(n <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">double</span>));
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Enter the vector %s</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, vec_name);
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> (i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> n; i<span style="color:#f92672">++</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">scanf</span>(<span style="color:#e6db74">&#34;%lf&#34;</span>, <span style="color:#f92672">&amp;</span>a[i]);
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">MPI_Scatter</span>(a, local_n, MPI_DOUBLE, local_a, local_n, MPI_DOUBLE, <span style="color:#ae81ff">0</span>, comm);
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">free</span>(a)
+</span></span><span style="display:flex;"><span>} <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">MPI_Scatter</span>(a, local_n, MPI_DOUBLE, local_a, local_n, MPI_DOUBLE, <span style="color:#ae81ff">0</span>, comm);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//the out will be local_a
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// you can notice that local_n is a given parameter
+</span></span></span></code></pre></div><h2 id="mpi_gather">MPI_Gather</h2>
+<p>If we ditribute the input data, and do some transformation, then we need to gather the data to a whole vector.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">MPI_Gather</span>(
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> send_buf_p, <span style="color:#75715e">//in 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">int</span> send_count, <span style="color:#75715e">//in 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	MPI_Datatype send_type, <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> recv_buf_p, <span style="color:#75715e">//out
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">int</span> recv_count, <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	MPI_Datatype recv_type, <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">int</span> dest_proc, <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	MPI_Comm
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//example:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">double</span><span style="color:#f92672">*</span> b <span style="color:#f92672">=</span> NULL; <span style="color:#75715e">//recv buff
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> i;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (my_rank <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>	b <span style="color:#f92672">=</span> <span style="color:#a6e22e">malloc</span>(n <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">double</span>));
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">MPI_Gather</span>(local_b, local_n, MPI_DOUBLE, b, local_n, MPI_DOUBLE, <span style="color:#ae81ff">0</span>, comm);
+</span></span><span style="display:flex;"><span>} <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">MPI_Gather</span>(local_b, local_n, MPI_DOUBLE, b, local_n, MPI_DOULBE, <span style="color:#ae81ff">0</span>, comm);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="mpi_allgather">MPI_Allgather</h2>
+<p>This give every process to get a distributed array to a whole one.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">MPI_Allgather</span>(
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> send_buf_p, <span style="color:#75715e">//in 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">int</span> send_count, <span style="color:#75715e">//in 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	MPI_Datatype send_type, <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> recv_buf_p, <span style="color:#75715e">//out
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">int</span> recv_count, <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	MPI_Datatype recv_type, <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	MPI_Comm
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// no dest here.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// it concatednates each send_buf_p and store in each process&#39;s recv_buf_p. recv_count is the amount of data being received from each process. So in most cases, recv_count will be the same as send_count &gt;
+</span></span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">// code of Mat mult
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Mat_vect_mult</span>(
+</span></span><span style="display:flex;"><span>	doulbe local_A[], <span style="color:#75715e">/*in*/</span>
+</span></span><span style="display:flex;"><span>	doulbe local_x[], <span style="color:#75715e">/*in*/</span>
+</span></span><span style="display:flex;"><span>	doulbe local_y[], <span style="color:#75715e">/*out*/</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> local_m[],    <span style="color:#75715e">/*in*/</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> n,    <span style="color:#75715e">/*in*/</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> local_n,    <span style="color:#75715e">/*in*/</span>
+</span></span><span style="display:flex;"><span>	MPI_Comm comm,    <span style="color:#75715e">/*in*/</span>
+</span></span><span style="display:flex;"><span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">double</span><span style="color:#f92672">*</span> x;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> local_i, j;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> local_ok <span style="color:#f92672">=</span> l;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">//gather x, it&#39;s previous y.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	x <span style="color:#f92672">=</span> <span style="color:#a6e22e">malloc</span>(n <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">double</span>))<span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">MPI_Allgather</span>(local_x, local_n, MPI_DOUBLE, x, local_n, MPI_DOUBLE, comm);
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> (local_i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; local_i <span style="color:#f92672">&lt;</span> local_m; local_i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>		local_y[local_i] <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.0</span>;
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">for</span> (j <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; j <span style="color:#f92672">&lt;</span> n; j<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>			local_y[local_i] <span style="color:#f92672">+=</span> local_A[local_i <span style="color:#f92672">*</span> n <span style="color:#f92672">+</span> j] <span style="color:#f92672">*</span> x[j];
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">free</span>(x);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h1 id="mpi-derived-datatypes">MPI-derived datatypes</h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">double</span> x[<span style="color:#ae81ff">1000</span>];
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (my_rank <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> (i <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">1000</span>; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">MPI_Send</span>(<span style="color:#f92672">&amp;</span>x[i], <span style="color:#ae81ff">1</span>, MPI_DOUBLE, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0</span>, comm);
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>} <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> (i <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">1000</span>; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">MPI_Recv</span>(<span style="color:#f92672">&amp;</span>x[i], <span style="color:#ae81ff">1</span>, MPI_DOUBLE, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, comm, <span style="color:#f92672">&amp;</span>status);
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// faster one
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">if</span> (my_rank <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">MPI_Send</span>(x, <span style="color:#ae81ff">1000</span>, MPI_DOUBLE, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0</span>, comm);
+</span></span><span style="display:flex;"><span>} <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">MPI_Recv</span>(x, <span style="color:#ae81ff">1000</span>, MPI_DOUBLE, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, comm, <span style="color:#f92672">&amp;</span>status);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>So to consolidate the data, we can use a derived datatypes: MPI_PACK/Unpack. (the count argument is used to group continuous array elements into single message).
+<strong>Derived datatype</strong> can be used to represent any collection of data items in memory.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">// example code
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">MPI_Type_create_struct</span>(
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> count; <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">int</span> array_of_blocklengths[] <span style="color:#75715e">//in,   how much each type of element is. for example {1, 1, 1} represents, 1 of first, 1 of second, 1 of third.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	MPI_Aint array_of_displacements[] <span style="color:#75715e">//in, the displacemnt
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	MPI_Datatype array_of_types[]  <span style="color:#75715e">//in  type array
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	MPI_Datatype<span style="color:#f92672">*</span> new_type_p <span style="color:#75715e">//out  the output new type
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//usage
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// we want a type consisting of 2 double, 1 int
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> array_of_blocklengths[<span style="color:#ae81ff">3</span>] <span style="color:#f92672">=</span> {<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>};
+</span></span><span style="display:flex;"><span>MPI_Datatype array_of_types[<span style="color:#ae81ff">3</span>] <span style="color:#f92672">=</span> {MPI_DOUBLE, MPI_DOUBLE, MPI_INT};
+</span></span><span style="display:flex;"><span>MPI_Aint a_addr, b_addr, n_addr;
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">MPI_Get_address</span>(a_p, <span style="color:#f92672">&amp;</span>a_addr);  <span style="color:#75715e">//use this func to calculate the array_of_displacement
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">MPI_Get_address</span>(b_p, <span style="color:#f92672">&amp;</span>b_addr);  
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">MPI_Get_address</span>(n_p, <span style="color:#f92672">&amp;</span>n_addr);  
+</span></span><span style="display:flex;"><span>array_of_displacements[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> b_addr<span style="color:#f92672">-</span>a_addr;
+</span></span><span style="display:flex;"><span>array_of_displacements[<span style="color:#ae81ff">2</span>] <span style="color:#f92672">=</span> n_addr<span style="color:#f92672">-</span>a_addr;
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">MPI_Type_create_struct</span>(<span style="color:#ae81ff">3</span>, array_of_blocklengths, array_of_displacements, array_of_types, input_mpi_t_p); <span style="color:#75715e">//MPI_Datatype* input_mpi_t_p is the output type
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">MPI_Type_commit</span>(input_mpi_t_p);
+</span></span></code></pre></div><h2 id="mpi_wtime">MPI_Wtime</h2>
+<p>code:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>start <span style="color:#f92672">=</span> <span style="color:#a6e22e">MPI_Wtime</span>();
+</span></span><span style="display:flex;"><span>finish <span style="color:#f92672">=</span> <span style="color:#a6e22e">MPI_Wtime</span>();
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">printf</span>(<span style="color:#960050;background-color:#1e0010">&#39;</span>time: <span style="color:#f92672">%</span>e<span style="color:#960050;background-color:#1e0010">&#39;</span>, finish <span style="color:#f92672">-</span> start);
+</span></span></code></pre></div><h2 id="mpi_barrier">MPI_Barrier</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">MPI_Barrier</span>(MPI_Comm comm);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// a timer using barrier
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">double</span> local_start, local_finish, local_elapsed, elapsed;
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//...
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">MPI_Barrier</span>(comm)<span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>local_start <span style="color:#f92672">=</span> <span style="color:#a6e22e">MPI_Wtime</span>();
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//code to be timed
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>loca_finished <span style="color:#f92672">=</span> <span style="color:#a6e22e">MPI_Wtime</span>();
+</span></span><span style="display:flex;"><span>local_elapsed <span style="color:#f92672">=</span> local_finish <span style="color:#f92672">-</span> local_start;
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">MPI_Reduce</span>(<span style="color:#f92672">&amp;</span>local_elapsed, <span style="color:#f92672">&amp;</span>elapsed, <span style="color:#ae81ff">1</span>, <span style="color:#f92672">&amp;</span>elapsed, <span style="color:#ae81ff">1</span>, MPI_DOUBLE, MPI_MAX, <span style="color:#ae81ff">0</span>, comm);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (my_rank <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">prinf</span>(<span style="color:#e6db74">&#34;Elapsed time = %e&#34;</span>, elapsed);
+</span></span></code></pre></div><h2 id="timming">Timming</h2>
+<p>$T_{parallel}(n, p) = T_{serial}(n)/p + T_{overhead}$
+n for size of task, p for num of processor.</p>
+<p>Speed up:
+$S(n, p) = \frac{T_{serial}(n)}{T_{parallel}(n,p)}$
+The best result for speedup is n</p>
+<p>Efficiency:
+$E(n, p) = \frac{S(n, p)}{p} = \frac{T_{serial}(n)}{p \times T_{parallel}(n, p)}$
+best performance, linear speedup is efficiency equal to 1.</p>
+<h1 id="scalablity">Scalablity</h1>
+<p>A parallel program is said to be strongly scalable if its efficiency can be kept constant with increase in number of processors. it&rsquo;s weakly scalable if its efficiency can be kept constant with both increase in number of processors and problem size at the same rate.</p>
+<h1 id="somethign">somethign</h1>
+<p><strong>Wallclock time</strong> (also called <strong>real time</strong> or <strong>elapsed time</strong>) refers to the actual time taken by a process or task as measured by a clock on the wall (or a stopwatch).</p>
+<h1 id="todo">TODO</h1>
+<ul>
+<li><input disabled="" type="checkbox"> sort</li>
+<li><input disabled="" type="checkbox"> safety need to do!</li>
+</ul>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

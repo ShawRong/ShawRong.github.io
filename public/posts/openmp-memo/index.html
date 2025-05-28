@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="feature
+
+shared-memory MIMD(Multi-Instruction Multi Data).
+Need support from the compiler
+simple to code (small change to serialized program)
+
+words
+
+Directive-based shared memory: allows multiple processing units to access a common memory space using compiler directives. It uses pragmas(compiler hints). (If pragmas are supported, then it will be parallelized; otherwise, it will still be serialized.)
+
+Header APIs
+# pragma omp parallel num_threads(thread_count)
+  Hello()
+# You DO NOT have to specify how many threads should be here.
+# It will utilize all the cores if you didn&#39;t specify the number of cores.
+
+# This comes from omp.h header file
+int my_rank = omp_get_thread_num();
+int thread_count = omp_get_num_threads();
+Critical
+To avoid the race condition, when we aggregate values, we need critical directive">  
+
+  <title>
+    
+      OpenMP Memo
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-05-28 09:06:20.417 &#43;0000 UTC">
+                            2025-05-28
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>OpenMP Memo</h1>
+
+    
+
+    <h1 id="feature">feature</h1>
+<ul>
+<li>shared-memory MIMD(Multi-Instruction Multi Data).</li>
+<li>Need support from the compiler</li>
+<li>simple to code (small change to serialized program)</li>
+</ul>
+<h1 id="words">words</h1>
+<ul>
+<li>Directive-based shared memory: allows multiple processing units to access a common memory space using compiler <strong>directives</strong>. It uses <strong>pragmas</strong>(compiler hints). (If pragmas are supported, then it will be parallelized; otherwise, it will still be serialized.)</li>
+</ul>
+<h1 id="header-apis">Header APIs</h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e"># pragma omp parallel num_threads(thread_count)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">Hello</span>()
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># You DO NOT have to specify how many threads should be here.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"># It will utilize all the cores if you didn&#39;t specify the number of cores.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># This comes from omp.h header file
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> my_rank <span style="color:#f92672">=</span> <span style="color:#a6e22e">omp_get_thread_num</span>();
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> thread_count <span style="color:#f92672">=</span> <span style="color:#a6e22e">omp_get_num_threads</span>();
+</span></span></code></pre></div><h2 id="critical">Critical</h2>
+<p>To avoid the race condition, when we aggregate values, we need critical directive</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e"># pragma omp critical
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  global_result <span style="color:#f92672">+=</span> my_result;
+</span></span></code></pre></div><h2 id="reduction-clause">Reduction clause</h2>
+<p>use reduction clause to the parallel directive.
+syntax of reduction clause:
+reduction(&lt;operator&gt;: &lt;variable list&gt;)</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>	global _ result <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.0</span>;
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   pragma omp parallel num_threads(thread_count) \
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">		reduction(+: global_result)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	global_result <span style="color:#f92672">+=</span> <span style="color:#a6e22e">local_trap</span>(<span style="color:#66d9ef">double</span> a, <span style="color:#66d9ef">double</span> b, <span style="color:#66d9ef">int</span> n);
+</span></span></code></pre></div><p>This is the supplement of the following code:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e"># wrong one: this will lead to a serialized runtime.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	global_result <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.0</span>;
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   pragma omp parallel num_threads(thread_count)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	{
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#      progma omp critical  
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		global_result <span style="color:#f92672">+=</span> <span style="color:#a6e22e">local_trap</span>(<span style="color:#66d9ef">double</span> a, <span style="color:#66d9ef">double</span> b, <span style="color:#66d9ef">int</span> n);
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># trivial one:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>	global_result <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.0</span>;
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   pragma omp parallel num_threads(thread_count)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	{
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">double</span> my_result <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.0</span>
+</span></span><span style="display:flex;"><span>		my_result <span style="color:#f92672">+=</span> <span style="color:#a6e22e">local_trap</span>(<span style="color:#66d9ef">double</span> a, <span style="color:#66d9ef">double</span> b, <span style="color:#66d9ef">int</span> n);
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#.  pragma omp critical
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		global_result <span style="color:#f92672">+=</span> my_result. 
+</span></span><span style="display:flex;"><span>	}
+</span></span></code></pre></div><h3 id="subtraction">subtraction</h3>
+<p>OpenMP treats <code>reduction(-:var)</code> as a <strong>special case</strong> to avoid non-associativity.</p>
+<h3 id="floating">floating</h3>
+<p>float can be different when reduction.</p>
+<h2 id="private-clause">private clause</h2>
+<p>make a default variable private(make a copy each thread)</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#   pragma omp parallel for num_threads(tread_count) \
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">        reduction(+:sum) private(factor)    
+</span></span></span></code></pre></div><p>the print of a private variable is not specified.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>pragma omp parallel <span style="color:#a6e22e">num_threads</span>(thread_count) <span style="color:#a6e22e">private</span>(x)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> my_rank <span style="color:#f92672">=</span> <span style="color:#a6e22e">omp_get_thread_num</span>();
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">#no specified since x is not initialized
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Thread %d &gt; before initialization. x = %d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, my_rank, x);
+</span></span><span style="display:flex;"><span>	x <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">*</span> my_rank <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span>;
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># ok
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Thread %d &gt; after initialization. x = %d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, my_rank, x);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># not specified, since x is private, and we print it after parallel block
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;After parallel block, x = %d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, x);
+</span></span></code></pre></div><h2 id="for-directive">For directive</h2>
+<h3 id="feature-1">feature</h3>
+<ul>
+<li>must be after a parallel directive</li>
+<li>the thread created by parallel directive will split the for loop equally to execute.</li>
+<li>the variable i is not share, each thread get their own copy.</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>    <span style="color:#75715e">#pragma omp parallel num_threads(4)  </span><span style="color:#75715e">// Create 4 threads
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">int</span> thread_id <span style="color:#f92672">=</span> <span style="color:#a6e22e">omp_get_thread_num</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">#pragma omp for  </span><span style="color:#75715e">// Split loop iterations among the 4 threads
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">8</span>; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Thread %d processes iteration %d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, thread_id, i);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">&gt;&gt;&gt;</span> 
+</span></span><span style="display:flex;"><span>	Thread <span style="color:#ae81ff">0</span> processes iteration <span style="color:#ae81ff">0</span>  
+</span></span><span style="display:flex;"><span>	Thread <span style="color:#ae81ff">0</span> processes iteration <span style="color:#ae81ff">1</span>  
+</span></span><span style="display:flex;"><span>	Thread <span style="color:#ae81ff">1</span> processes iteration <span style="color:#ae81ff">2</span>  
+</span></span><span style="display:flex;"><span>	Thread <span style="color:#ae81ff">1</span> processes iteration <span style="color:#ae81ff">3</span>  
+</span></span><span style="display:flex;"><span>	Thread <span style="color:#ae81ff">2</span> processes iteration <span style="color:#ae81ff">4</span>  
+</span></span><span style="display:flex;"><span>	Thread <span style="color:#ae81ff">2</span> processes iteration <span style="color:#ae81ff">5</span>  
+</span></span><span style="display:flex;"><span>	Thread <span style="color:#ae81ff">3</span> processes iteration <span style="color:#ae81ff">6</span>  
+</span></span><span style="display:flex;"><span>	Thread <span style="color:#ae81ff">3</span> processes iteration <span style="color:#ae81ff">7</span>  
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># example 2
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">double</span> <span style="color:#a6e22e">Trap</span>(<span style="color:#66d9ef">double</span> a, <span style="color:#66d9ef">double</span> b, <span style="color:#66d9ef">int</span> n, <span style="color:#66d9ef">int</span> thread_count) {
+</span></span><span style="display:flex;"><span>   <span style="color:#66d9ef">double</span>  h, approx;
+</span></span><span style="display:flex;"><span>   <span style="color:#66d9ef">int</span>  i;
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e"># here i is declare outside the parallel directive scope
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e"># but it will be modifies to a private, to make sure the
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e"># correctness of parallel for.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>   h <span style="color:#f92672">=</span> (b<span style="color:#f92672">-</span>a)<span style="color:#f92672">/</span>n; 
+</span></span><span style="display:flex;"><span>   approx <span style="color:#f92672">=</span> (<span style="color:#a6e22e">f</span>(a) <span style="color:#f92672">+</span> <span style="color:#a6e22e">f</span>(b))<span style="color:#f92672">/</span><span style="color:#ae81ff">2.0</span>; 
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#  pragma omp parallel for num_threads(thread_count) \
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">      reduction(+: approx)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#66d9ef">for</span> (i <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; i <span style="color:#f92672">&lt;=</span> n<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>; i<span style="color:#f92672">++</span>)
+</span></span><span style="display:flex;"><span>     approx <span style="color:#f92672">+=</span> <span style="color:#a6e22e">f</span>(a <span style="color:#f92672">+</span> i<span style="color:#f92672">*</span>h);
+</span></span><span style="display:flex;"><span>   approx <span style="color:#f92672">=</span> h<span style="color:#f92672">*</span>approx; 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#66d9ef">return</span> approx;
+</span></span><span style="display:flex;"><span>}  <span style="color:#75715e">/* Trap */</span>
+</span></span></code></pre></div><h3 id="little-summary-about-parallel-and-for">Little summary about parallel and for</h3>
+<h4 id="parallel">parallel</h4>
+<ul>
+<li>When placed <strong>before a block</strong>, it creates a <strong>team of threads</strong>.</li>
+<li><strong>Every thread executes the entire block</strong> (redundantly, unless work is split explicitly).</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#pragma omp parallel  </span><span style="color:#75715e">// All threads run this block
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>{
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Hello from thread %d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, <span style="color:#a6e22e">omp_get_thread_num</span>());
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#or
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#  pragma omp parallel num_threads(thread_count) 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#a6e22e">Trap</span>(a, b, n, <span style="color:#f92672">&amp;</span>global_result);
+</span></span></code></pre></div><h4 id="for">for</h4>
+<ul>
+<li><strong>Must be nested inside a <code>parallel</code> block</strong> (or combined with <code>parallel for</code>).</li>
+<li>Splits loop iterations across threads (work-sharing).</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#pragma omp parallel  </span><span style="color:#75715e">// Team of threads
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>{
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">#pragma omp for  </span><span style="color:#75715e">// Loop iterations divided
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">10</span>; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;%d by thread %d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, i, <span style="color:#a6e22e">omp_get_thread_num</span>());
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#pragma omp parallel for  </span><span style="color:#75715e">// Team of threads + split loop
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">10</span>; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;%d by thread %d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, i, <span style="color:#a6e22e">omp_get_thread_num</span>());
+</span></span></code></pre></div><h2 id="alert">Alert</h2>
+<ul>
+<li>while or do-while will not be parallelized</li>
+<li>only the for loop with number of iterations can be determined</li>
+<li>no exit point in the for loop, like return or break</li>
+<li>only deal with canonical form: for(index=start: index &lt;:&lt;=:&gt;=:&gt; end; index++:++index:index&ndash;:&hellip;)</li>
+<li>index in for loop can only be modified by increment expression in for statement (these restrictions allow the run-time system to determine the number of iterations prior to execution of loop)</li>
+<li>no dependencies are allowed between element of array. like: fibo[i] = fibo[i-1] + fibo[i-2];</li>
+<li>OpenMp compiler don&rsquo;t check for dependences among iterations in loop.</li>
+<li>A loop in which the results of one or more iterations depend on other iterations cannot, in general, be correctly parallelized by OpenMP without features like Tasking API.</li>
+<li>the dependency like fibo, is called a loop-carried dependence</li>
+</ul>
+<h2 id="defaultnone-clause">Default(none) clause</h2>
+<p>If you add this cluase, you need to specify all the variable scope in the block.</p>
+<h2 id="odd-even-transposition-sort">Odd-even transposition sort</h2>
+<p>We can reuse threads we created this way:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#   pragma omp parallel num_threads(thread_count) \
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">		default(none) shared(a, n) private(i, tmp, phase)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">for</span> (phase <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; phase <span style="color:#f92672">&lt;</span> n; phase<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> (phase <span style="color:#f92672">%</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>			pragma omp <span style="color:#66d9ef">for</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">for</span> (i <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; i<span style="color:#f92672">&lt;</span> n; i <span style="color:#f92672">+=</span> <span style="color:#ae81ff">2</span>) {
+</span></span><span style="display:flex;"><span>				<span style="color:#66d9ef">if</span> (a[i<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>] <span style="color:#f92672">&gt;</span> a[i]){
+</span></span><span style="display:flex;"><span>					<span style="color:#75715e">//swamp
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>				}
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># barrier here
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>			pragma omp <span style="color:#66d9ef">for</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">for</span>(i <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; i <span style="color:#f92672">&lt;</span> n <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>; i <span style="color:#f92672">+=</span> <span style="color:#ae81ff">2</span>){
+</span></span><span style="display:flex;"><span>				<span style="color:#66d9ef">if</span> (a[i] <span style="color:#f92672">&gt;</span> a[i<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]) {
+</span></span><span style="display:flex;"><span>					<span style="color:#75715e">//swap
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>				}
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>	}
+</span></span></code></pre></div><h2 id="schedule-clause">Schedule clause</h2>
+<p>schedule(&lt;type&gt;, [,&lt;chunksize&gt;])</p>
+<p>If we want work-load balance, when come across work-load distributes according to index, we can use cylic schedule, i.e. schedule.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>sum <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.9</span>;
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#  pragma omp parallel for num_threads(thread_count) \
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">       reduction(+:sum) schedule(static, 1) 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">for</span>(i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;=</span> n; i<span style="color:#f92672">++</span>)
+</span></span><span style="display:flex;"><span>		sum <span style="color:#f92672">+=</span> <span style="color:#a6e22e">f</span>(i);
+</span></span></code></pre></div><ul>
+<li>static. assigned to threads before loop is executed</li>
+<li>dynamic or guided. assigned while executing. so after thread completes its current set of iterations, it can request more.</li>
+<li>auto. compiler or run-time determine the schedule</li>
+<li>runtime. schedule is determined at run-time based on an environment variable.</li>
+</ul>
+<h3 id="comparison">Comparison</h3>
+<ul>
+<li>static is good for each iteration takes roughly the same amount of time; and can improve the speed of memory accesses</li>
+<li>in guided schedule, as chunks are completed, the size of the new chunks decreases. good for when later iterations are more compute-intensive.</li>
+</ul>
+<h2 id="runtime">runtime</h2>
+<p>takes type from env variable (static, dynamic or guided)</p>
+<h2 id="atomic-directive">Atomic Directive</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#   pragma omp atomic
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	x <span style="color:#f92672">+=</span> expression;
+</span></span></code></pre></div><p>can be many thing, like + - * /, ++, etc.</p>
+<h2 id="comparison-between-critical-lock-and-atomic">Comparison between critical, lock and atomic</h2>
+<ul>
+<li>atomic is equivalent to using unnamed critical, s.t. it can block different part at the same time.</li>
+<li>using unnamed critical need to watch out the dependencies between different part, it can be ok to parallel sometimes.</li>
+<li>use named critical can be hard to implement, since you need explicitly name all the critical directive, so you can use lock
+example code:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#pragma omp critical(phase1)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>{<span style="color:#75715e">/*code A*/</span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#pragma omp critical(phase2)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>{<span style="color:#75715e">/*code A*/</span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">omp_set_lock</span>(<span style="color:#f92672">&amp;</span>q_p<span style="color:#f92672">-&gt;</span>lock);
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Enqueue</span>(q_p, my_rank, mesg);
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">omp_unset_lock</span>(<span style="color:#f92672">&amp;</span>q_p<span style="color:#f92672">-&gt;</span>lock);
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># omp_init_lock(lock);
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"># omp_destroy)lock(lock);
+</span></span></span></code></pre></div><h2 id="alert-1">Alert</h2>
+<ul>
+<li>different type of mutual exclusion for a single critical section can be bad. like you use atomic and use critical, they can lead to misunderstanding cause they will exclude each other.</li>
+<li>no fairness is guaranteed in a exclusion. Some thread can wait very long time to get access</li>
+<li>nest exclusion in exclusion can lead to deadlock</li>
+</ul>
+<h2 id="criticalname-and-lock">Critical(name) and lock</h2>
+<h1 id="trapezoidal-rule">Trapezoidal rule</h1>
+<p>the approximation of integration of f from a to b:
+$h[f(x_0)/2 + f(x_1) + \cdots + f(x_{n-1})+f(x_{x_n})/2]$</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>h <span style="color:#f92672">=</span> (b<span style="color:#f92672">-</span>a)<span style="color:#f92672">/</span>n;
+</span></span><span style="display:flex;"><span>approx <span style="color:#f92672">=</span> (<span style="color:#a6e22e">f</span>(a) <span style="color:#f92672">+</span> <span style="color:#a6e22e">f</span>(b))<span style="color:#f92672">/</span><span style="color:#ae81ff">2.0</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> (i <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; i <span style="color:#f92672">&lt;=</span> n <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>	x_i <span style="color:#f92672">=</span> a <span style="color:#f92672">+</span> i <span style="color:#f92672">*</span> h;
+</span></span><span style="display:flex;"><span>	approx <span style="color:#f92672">+=</span> <span style="color:#a6e22e">f</span>(x_i);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>approx <span style="color:#f92672">=</span> h <span style="color:#f92672">*</span> approx;
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e"># omp one
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>h <span style="color:#f92672">=</span> (b<span style="color:#f92672">-</span>a)<span style="color:#f92672">/</span>n;
+</span></span><span style="display:flex;"><span>local_n <span style="color:#f92672">=</span> n <span style="color:#f92672">/</span> thread_count;
+</span></span><span style="display:flex;"><span>local_a <span style="color:#f92672">=</span> a <span style="color:#f92672">+</span> my_rank <span style="color:#f92672">*</span> local_n <span style="color:#f92672">*</span> h;
+</span></span><span style="display:flex;"><span>local_b <span style="color:#f92672">=</span> local_a <span style="color:#f92672">+</span> local_n <span style="color:#f92672">*</span> h;
+</span></span><span style="display:flex;"><span>approx <span style="color:#f92672">=</span> (<span style="color:#a6e22e">f</span>(local_a) <span style="color:#f92672">+</span> <span style="color:#a6e22e">f</span>(local_b)) <span style="color:#f92672">/</span> <span style="color:#ae81ff">2.0</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> (i <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; i <span style="color:#f92672">&lt;=</span> local_n <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>	x <span style="color:#f92672">=</span> local_a <span style="color:#f92672">+</span> i <span style="color:#f92672">*</span> h;
+</span></span><span style="display:flex;"><span>	approx <span style="color:#f92672">+=</span> <span style="color:#a6e22e">f</span>(x);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>approx <span style="color:#f92672">=</span> approx <span style="color:#f92672">*</span> h;
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#critical here
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>global_approx <span style="color:#f92672">+=</span> approx;
+</span></span></code></pre></div><h1 id="details">Details</h1>
+<ul>
+<li>There&rsquo;s an implicit barrier. Threads in a team will wait for the completion of other members in the team before they terminate.</li>
+<li>To check OPENMP is supported or not, we need:
+<pre tabindex="0"><code>#ifdef _OPENMP
+#    include &lt;omp.h&gt;
+#endif
+</code></pre></li>
+</ul>
+<h2 id="some-formula">Some formula</h2>
+<p>Efficiency $E = \frac{S}{t}$
+Speedup $S = (\frac{T_{serial}}{T_{parallel}})$</p>
+<h1 id="todo">TODO</h1>
+<ul>
+<li><input disabled="" type="checkbox"> defualt cluase</li>
+<li><input disabled="" type="checkbox"> bubble sort</li>
+<li><input disabled="" type="checkbox"> odd-even transposition sort</li>
+<li><input disabled="" type="checkbox"> scheduling loops</li>
+<li><input disabled="" type="checkbox"> 1</li>
+<li><input disabled="" type="checkbox"> 1</li>
+</ul>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

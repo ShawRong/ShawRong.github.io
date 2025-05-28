@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Hello world
+#include &lt;stdio.h&gt;
+#include &lt;cuda.h&gt;
+
+/*Device code: runs on GPU*/
+__global__ void Hello(void) { // always return type with void
+	printf(&#34;Hello from thread %d!\n&#34;, threadIdx.x);
+}
+
+/*Host code: runs on CPU*/
+int main(int argc, char* argv[]) {
+	int thread_count;
+	thread_count = strtol(argv[1], NULL, 10);
+	Hello &lt;&lt;&lt;1, thread_count&gt;&gt;&gt;(); // 1st arg specify how many SMs, 2nd arg specify how many SPs in each SMs. i.e. 1st arg specify the number of thread blocks. 2nd arg specifies the number of threads in each thread block.
+	cudaDeviceSynchronize();  // this will cause main program to wait until all the threads have finished.
+	return 0;
+}
+nvcc -o cuda_hello cuda_hello.cu
+./cuda_hello 1
+Build-in variables
+
+threadIdx: the rank or index of the thread in its thread blocks
+blockDim: the dimensions, shape, or size of the thread of blocks (how many thread in block)
+blockIdx: the rank or index of the block within the grid
+griddim: the dimensions, shape, or size of grid. (how many block in grid)
+they all get fields x, y, and z
+
+int blk_ct, th_per_blk;
+...
+Hello &lt;&lt;&lt;blk_ct, th_per_blk&gt;&gt;&gt;();
+//there gridDim.x = blk_ct, blockDim.x = th_per_blk
+
+//if 3 dim,
+dim3 grid_dims, block_dims;
+grid_dims.x = 2;
+grid_dims.y = 3;
+grid_dims.z = 1;
+block_dims.x = 4;
+block_dims.y = 4;
+block_dims.z = 4;
+Kenerl &lt;&lt;&lt;grid_dims, block_dims&gt;&gt;&gt;();
+Vec-add
+__global__ void Vec_add(
+	const float x[], //in
+	const float y[], //in
+	float z[],       //out
+	const int n //in
+) {
+	int my_elt = blockDim.x * blockIdx.x &#43; threadIdx.x ;  //important
+	if (my_elt &lt; n) // global variable n
+		z[my_elt] = x[my_elt] &#43; y[my_elt];
+}
+key idea: assign the iterations of a loop to a individual threads">  
+
+  <title>
+    
+      Cuda Memo
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-05-28 09:06:17.777 &#43;0000 UTC">
+                            2025-05-28
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>Cuda Memo</h1>
+
+    
+
+    <h1 id="hello-world">Hello world</h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cuda.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/*Device code: runs on GPU*/</span>
+</span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Hello</span>(<span style="color:#66d9ef">void</span>) { <span style="color:#75715e">// always return type with void
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Hello from thread %d!</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, threadIdx.x);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/*Host code: runs on CPU*/</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> argv[]) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> thread_count;
+</span></span><span style="display:flex;"><span>	thread_count <span style="color:#f92672">=</span> <span style="color:#a6e22e">strtol</span>(argv[<span style="color:#ae81ff">1</span>], NULL, <span style="color:#ae81ff">10</span>);
+</span></span><span style="display:flex;"><span>	Hello <span style="color:#f92672">&lt;&lt;&lt;</span><span style="color:#ae81ff">1</span>, thread_count<span style="color:#f92672">&gt;&gt;&gt;</span>(); <span style="color:#75715e">// 1st arg specify how many SMs, 2nd arg specify how many SPs in each SMs. i.e. 1st arg specify the number of thread blocks. 2nd arg specifies the number of threads in each thread block.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">cudaDeviceSynchronize</span>();  <span style="color:#75715e">// this will cause main program to wait until all the threads have finished.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>nvcc -o cuda_hello cuda_hello.cu
+</span></span><span style="display:flex;"><span>./cuda_hello <span style="color:#ae81ff">1</span>
+</span></span></code></pre></div><h1 id="build-in-variables">Build-in variables</h1>
+<ul>
+<li>threadIdx: the rank or index of the thread in its thread blocks</li>
+<li>blockDim: the dimensions, shape, or size of the thread of blocks (how many thread in block)</li>
+<li>blockIdx: the rank or index of the block within the grid</li>
+<li>griddim: the dimensions, shape, or size of grid. (how many block in grid)
+they all get fields x, y, and z</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> blk_ct, th_per_blk;
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>Hello <span style="color:#f92672">&lt;&lt;&lt;</span>blk_ct, th_per_blk<span style="color:#f92672">&gt;&gt;&gt;</span>();
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//there gridDim.x = blk_ct, blockDim.x = th_per_blk
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//if 3 dim,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>dim3 grid_dims, block_dims;
+</span></span><span style="display:flex;"><span>grid_dims.x <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>;
+</span></span><span style="display:flex;"><span>grid_dims.y <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>;
+</span></span><span style="display:flex;"><span>grid_dims.z <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>block_dims.x <span style="color:#f92672">=</span> <span style="color:#ae81ff">4</span>;
+</span></span><span style="display:flex;"><span>block_dims.y <span style="color:#f92672">=</span> <span style="color:#ae81ff">4</span>;
+</span></span><span style="display:flex;"><span>block_dims.z <span style="color:#f92672">=</span> <span style="color:#ae81ff">4</span>;
+</span></span><span style="display:flex;"><span>Kenerl <span style="color:#f92672">&lt;&lt;&lt;</span>grid_dims, block_dims<span style="color:#f92672">&gt;&gt;&gt;</span>();
+</span></span></code></pre></div><h1 id="vec-add">Vec-add</h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Vec_add</span>(
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span> x[], <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span> y[], <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">float</span> z[],       <span style="color:#75715e">//out
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span> n <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> my_elt <span style="color:#f92672">=</span> blockDim.x <span style="color:#f92672">*</span> blockIdx.x <span style="color:#f92672">+</span> threadIdx.x ;  <span style="color:#75715e">//important
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> (my_elt <span style="color:#f92672">&lt;</span> n) <span style="color:#75715e">// global variable n
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		z[my_elt] <span style="color:#f92672">=</span> x[my_elt] <span style="color:#f92672">+</span> y[my_elt];
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>key idea: assign the iterations of a loop to a individual threads</p>
+<h1 id="memory-malloc">Memory Malloc</h1>
+<p>We can use normal malloc in cuda c, but only for host.</p>
+<ul>
+<li>cudaMalloc, it allocate memory on the device</li>
+<li>cudaMallocManaged, it allocates memory that can be accessed by both CPU and GPU (auto transfer, only supported on newer version, Unified Memory).</li>
+<li>cudaHostAlloc, allocates pinned host memory for faster CPU-GPU transfers.</li>
+<li>cudaMemcpy, copy memo, use key word cudaMemcpyHostToDevice,etc.</li>
+</ul>
+<h1 id="api">API</h1>
+<h2 id="cudafree">cudaFree</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>__host__ __device__ <span style="color:#66d9ef">cudaError_t</span> <span style="color:#a6e22e">cudaFree</span>(<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> ptr)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//__device__ indicate this function can be called from the device
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// it frees storage allocated on the device.
+</span></span></span></code></pre></div><h2 id="cudamemcpy">cudaMemcpy</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>__host__ <span style="color:#66d9ef">cudaError_t</span> <span style="color:#a6e22e">cudaMemcpy</span>(
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> dest, <span style="color:#75715e">//out, dest is the first.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> source, <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">size_t</span> count, <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	cudaMemcpyKind kind <span style="color:#75715e">//in cudaMemcpyHostToDevice or cudaMemcpyDeviceToHost
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>) <span style="color:#75715e">// this function is synchronous
+</span></span></span></code></pre></div><h2 id="returing-results-from-cuda-kernels">Returing results from cuda kernels</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">// wrong way
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Add</span>(<span style="color:#66d9ef">int</span> x, <span style="color:#66d9ef">int</span> y, <span style="color:#66d9ef">int</span><span style="color:#f92672">*</span> sum_p) {
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">*</span>sum_p <span style="color:#f92672">=</span> x <span style="color:#f92672">+</span> y;  <span style="color:#75715e">// invalid address in device
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">void</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> sum <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">5</span>;
+</span></span><span style="display:flex;"><span>	Add <span style="color:#f92672">&lt;&lt;&lt;</span><span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span><span style="color:#f92672">&gt;&gt;&gt;</span> (<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#f92672">&amp;</span>sum);
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">cudaDeviceSynchronize</span>();
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;The sum is %d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, sum);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//using managed memory
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Add</span>(<span style="color:#66d9ef">int</span> x, <span style="color:#66d9ef">int</span> y, <span style="color:#66d9ef">int</span><span style="color:#f92672">*</span> sum_p) {
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">*</span>sum_p <span style="color:#f92672">=</span> x <span style="color:#f92672">+</span> y;  <span style="color:#75715e">// invalid address in device
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">void</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span><span style="color:#f92672">*</span> sum_p;
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">cudaMallocManaged</span>(<span style="color:#f92672">&amp;</span>sum_p, <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">int</span>));
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">*</span>sum_p <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">5</span>
+</span></span><span style="display:flex;"><span>	Add <span style="color:#f92672">&lt;&lt;&lt;</span><span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span><span style="color:#f92672">&gt;&gt;&gt;</span> (<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, sum_p);
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">cudaDeviceSynchronize</span>();
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;The sum is %d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, sum);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//using explicity copying 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Add</span>(<span style="color:#66d9ef">int</span> x, <span style="color:#66d9ef">int</span> y, <span style="color:#66d9ef">int</span><span style="color:#f92672">*</span> sum_p) {
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">*</span>sum_p <span style="color:#f92672">=</span> x <span style="color:#f92672">+</span> y;  <span style="color:#75715e">// invalid address in device
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">void</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span><span style="color:#f92672">*</span> hsum_p, <span style="color:#f92672">*</span>dsum_p;
+</span></span><span style="display:flex;"><span>	hsum_p <span style="color:#f92672">=</span> (<span style="color:#66d9ef">int</span><span style="color:#f92672">*</span>) <span style="color:#a6e22e">malloc</span>(<span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">int</span>));
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">cudaMalloc</span>(<span style="color:#f92672">&amp;</span>dsum_p, <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">int</span>));
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">*</span>hsum_p <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">5</span>
+</span></span><span style="display:flex;"><span>	Add <span style="color:#f92672">&lt;&lt;&lt;</span><span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span><span style="color:#f92672">&gt;&gt;&gt;</span> (<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, dsum_p);
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">cudaMemcpy</span>(hsum_p, dsum_p, <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">int</span>), cudaMemcpyDeviceToHost);
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">cudaDeviceSynchronize</span>();
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;The sum is %d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, sum);
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">free</span>(hsum_p);
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">cudaFree</span>(dsum_p);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// we can a managed qualifier, it&#39;s just like a variable managed by cudaMallocManaged
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>__managed__ <span style="color:#66d9ef">int</span> sum;
+</span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Add</span>(<span style="color:#66d9ef">int</span> x, <span style="color:#66d9ef">int</span> y) {
+</span></span><span style="display:flex;"><span>	sum <span style="color:#f92672">=</span> x <span style="color:#f92672">+</span> y;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">void</span>) {
+</span></span><span style="display:flex;"><span>	sum <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">5</span>;
+</span></span><span style="display:flex;"><span>	Add <span style="color:#f92672">&lt;&lt;&lt;</span><span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span><span style="color:#f92672">&gt;&gt;&gt;</span> (<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>);
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">cudaDeviceSynchronize</span>();
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;After kernel: The sum is %d </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, sum);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="recall-of-serial-trapezoidal-rule">Recall of serial trapezoidal rule</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">float</span> <span style="color:#a6e22e">Serial_trap</span>(
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span> a, <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span> b, <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span> n, <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">float</span> x, h <span style="color:#f92672">=</span> (b <span style="color:#f92672">-</span> a) <span style="color:#f92672">/</span> n;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">float</span> trap <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.5</span> <span style="color:#f92672">*</span> (<span style="color:#a6e22e">f</span>(a) <span style="color:#f92672">+</span> <span style="color:#a6e22e">f</span>(b));
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; i <span style="color:#f92672">&lt;=</span> n <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>		x <span style="color:#f92672">=</span> a <span style="color:#f92672">+</span> i <span style="color:#f92672">*</span> h;
+</span></span><span style="display:flex;"><span>		trap <span style="color:#f92672">+=</span> <span style="color:#a6e22e">f</span>(x);
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	trap <span style="color:#f92672">=</span> trap <span style="color:#f92672">*</span> h;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> trap;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>A kernel version:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Dev_trap</span>(
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span> a, <span style="color:#75715e">// in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span> b, <span style="color:#75715e">// in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span> h, <span style="color:#75715e">// in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span> n, <span style="color:#75715e">// in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> trap_p <span style="color:#75715e">//in and out
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> my_i <span style="color:#f92672">=</span> blockDim.x <span style="color:#f92672">*</span> blockIdx.x <span style="color:#f92672">+</span> threadIdx.x;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> (<span style="color:#ae81ff">0</span> <span style="color:#f92672">&lt;</span> my_i <span style="color:#f92672">&amp;&amp;</span> my_i <span style="color:#f92672">&lt;</span> n) {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">float</span> my_x <span style="color:#f92672">=</span> a <span style="color:#f92672">+</span> my_i <span style="color:#f92672">*</span> h;
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">float</span> my_trap <span style="color:#f92672">=</span> <span style="color:#a6e22e">f</span>(my_x);
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">atomicAdd</span>(trap_p, my_trap);
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Trap_wrapper</span>(
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span> a, <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span> b, <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span> n, <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> trap_p, <span style="color:#75715e">//out
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span> blk_ct, <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span> th_per_blk, <span style="color:#75715e">//in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// trap p is allocated in main with cudaMallocManaged, and it&#39;s shared for all threads
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#f92672">*</span>trap_p <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.5</span> <span style="color:#f92672">*</span> (<span style="color:#a6e22e">f</span>(a) <span style="color:#f92672">+</span> <span style="color:#a6e22e">f</span>(b));
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">float</span> h <span style="color:#f92672">=</span> (b <span style="color:#f92672">-</span> a) <span style="color:#f92672">/</span> n;
+</span></span><span style="display:flex;"><span>	Dev_trap<span style="color:#f92672">&lt;&lt;&lt;</span>blk_ct, th_per_blk<span style="color:#f92672">&gt;&gt;&gt;</span>(a, b, h, n, trap_p);
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">cudaDeviceSynchronoize</span>();
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">*</span>trap_p <span style="color:#f92672">=</span> h<span style="color:#f92672">*</span>(<span style="color:#f92672">*</span>trap_p);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="warp-shuffle">warp shuffle</h2>
+<p>warp shuffle allow a collection of threads within a warp to read variables stored by other threads in the warp.</p>
+<p>In cuda, warp is a set of threads with consecutive ranks belonging to a thread block. The threads in a warp operate in SIMD fashion. So threads in different warps can execute different statements with no penalty. If threads in a warp take different branches in an if-else, the threads are said to have diverged.</p>
+<p>The rank of a thread within a warp is called the thread&rsquo;s lane, and it can be computed using the formula:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>lane <span style="color:#f92672">=</span> threadIdx.x <span style="color:#f92672">%</span> warpSize;
+</span></span></code></pre></div><h1 id="coalesced-access">Coalesced Access</h1>
+<p>If memory address accessed by threads in the same thread block are consecutive, then these memory accesses are grouped into one memory transaction.</p>
+<h1 id="qualifier">Qualifier</h1>
+<h1 id="device"><strong>device</strong></h1>
+<ul>
+<li>callable from the device only</li>
+<li>synchronous</li>
+</ul>
+<h2 id="host">host</h2>
+<ul>
+<li>can be used with device to compile the function both on host and the device</li>
+</ul>
+<h1 id="variable-type-qualifiers">Variable Type Qualifiers</h1>
+<p>a variable declared in device code without a type qualifier typically resides in the register.</p>
+<h2 id="device-1">device</h2>
+<p>declare a variable that resides on the device.</p>
+<ul>
+<li>resides in global memory space</li>
+<li>has lifetime of an application</li>
+<li>is accessible from all the threads within the grid</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>__device__ <span style="color:#66d9ef">int</span> d_value;
+</span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">test_Kernel</span>()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> threadID <span style="color:#f92672">=</span> threadIdx.x;
+</span></span><span style="display:flex;"><span>	d_value <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;threadID %-3d d_value %3d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, threadID, d_value);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="constant">constant</h2>
+<ul>
+<li>reside in constant memory space</li>
+<li>is accessible from all the threads within the grid and fom the host</li>
+</ul>
+<h2 id="shared">shared</h2>
+<ul>
+<li>resides in the shared memory space of a thread block</li>
+<li>has lifetime of the block</li>
+<li>is accessible from all the threads within the block</li>
+</ul>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>
