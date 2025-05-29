@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Tier
+3373. 连接两棵树后最大目标节点数目 II
+The traverse of tier can be viewed as the traverse of graph.
+We can do the following to traverse the tier to get depth, from root. This is based on depth first search.
+# This is for build children list, for dfs
+# edges represents: [[1, 2], [2, 3], [3, 4]], i.e. node 1 links to 2 etc...
+def builder(edges):
+	n = len(edges) &#43; 1 #how many node
+	children = [[] for _ in range(n)]
+	for u, v in edges:
+		children[u].append(v)
+		children[v].append(u) #there are duplicate, so you need to check using parent == child?
+	return children
+
+# node for current search for node, just a index for node, like 1
+# parent, the parent of current searching node. 
+# depth, mark depth here
+# children, comes from builder
+def dfs(node, parent, depth, children):
+	# res update here
+	for child in children[node]:
+		if child == parent: # for duplicate checking
+			continue
+		# res accumulate with children
+		dfs(child, node, depth &#43; 1, children)
+	return res
+">  
+
+  <title>
+    
+      Leetcode Memo
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-05-29 09:46:50.443 &#43;0000 UTC">
+                            2025-05-29
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>Leetcode Memo</h1>
+
+    
+
+    <h1 id="tier">Tier</h1>
+<p><a href="https://leetcode.cn/problems/maximize-the-number-of-target-nodes-after-connecting-trees-ii/">3373. 连接两棵树后最大目标节点数目 II</a>
+The traverse of tier can be viewed as the traverse of graph.
+We can do the following to traverse the tier to get depth, from root. This is based on depth first search.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># This is for build children list, for dfs</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># edges represents: [[1, 2], [2, 3], [3, 4]], i.e. node 1 links to 2 etc...</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">builder</span>(edges):
+</span></span><span style="display:flex;"><span>	n <span style="color:#f92672">=</span> len(edges) <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span> <span style="color:#75715e">#how many node</span>
+</span></span><span style="display:flex;"><span>	children <span style="color:#f92672">=</span> [[] <span style="color:#66d9ef">for</span> _ <span style="color:#f92672">in</span> range(n)]
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> u, v <span style="color:#f92672">in</span> edges:
+</span></span><span style="display:flex;"><span>		children[u]<span style="color:#f92672">.</span>append(v)
+</span></span><span style="display:flex;"><span>		children[v]<span style="color:#f92672">.</span>append(u) <span style="color:#75715e">#there are duplicate, so you need to check using parent == child?</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> children
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># node for current search for node, just a index for node, like 1</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># parent, the parent of current searching node. </span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># depth, mark depth here</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># children, comes from builder</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">dfs</span>(node, parent, depth, children):
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># res update here</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> child <span style="color:#f92672">in</span> children[node]:
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> child <span style="color:#f92672">==</span> parent: <span style="color:#75715e"># for duplicate checking</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">continue</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># res accumulate with children</span>
+</span></span><span style="display:flex;"><span>		dfs(child, node, depth <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>, children)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> res
+</span></span></code></pre></div>
+</article>
+
+            </div>
+        </main>
+    </body></html>
