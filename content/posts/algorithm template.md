@@ -1,6 +1,6 @@
 ---
-title: "algorithm template"
-date: 2025-06-01T10:42:13.426Z
+title: "Algorithm Template"
+date: 2025-06-01T10:43:01.863Z
 draft: false
 tags: []
 ---
