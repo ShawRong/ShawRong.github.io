@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Ch1
+Hardware of system
+Bus
+It&rsquo;s a lot of different things, but we can describe them as a whole abstract thing, and call it bus.
+There are several features of it.
+
+It passes message base on a uniform width called WORD (4 bytes or 8 bytes).
+It can be implemented by different kinds of hardware(mostly PCIe).
+It basically connect between cpu and other components like I/O devices and Memory (in older architecture, they called southern bridge and northern bridge).
+People classify buses base on what they do. There are data bus, address bus and control bus.
+
+Some key idea:">  
+
+  <title>
+    
+      CSAPP Memo
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-06-07 13:13:47.477 &#43;0000 UTC">
+                            2025-06-07
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>CSAPP Memo</h1>
+
+    
+
+    <h1 id="ch1">Ch1</h1>
+<h2 id="hardware-of-system">Hardware of system</h2>
+<h3 id="bus">Bus</h3>
+<p>It&rsquo;s a lot of different things, but we can describe them as a whole abstract thing, and call it bus.
+There are several features of it.</p>
+<ul>
+<li>It passes message base on a uniform width called WORD (4 bytes or 8 bytes).</li>
+<li>It can be implemented by different kinds of hardware(mostly PCIe).</li>
+<li>It basically connect between cpu and other components like I/O devices and Memory (in older architecture, they called southern bridge and northern bridge).</li>
+<li>People classify buses base on what they do. There are data bus, address bus and control bus.</li>
+</ul>
+<p>Some key idea:</p>
+<ul>
+<li>bus width, a word (4 or 8 bytes)</li>
+<li>bus speed, measured in MHz/GHz</li>
+<li>bandwidth (throughput), total data transferred per second.</li>
+</ul>
+<p>modern bus:</p>
+<ul>
+<li>modern bus(PCIe and USB) use high-speed serial lanes instead of wide parallel wires.</li>
+<li>PCIe lanes straight to CPU for I/O devices (some of them).</li>
+<li>There are no so call northern bridge in modern architecture.  (It&rsquo;s built-in memory controller now and some GPU controller now.)</li>
+<li>There are still southern bridge chip-set now. Because modern cpu can only handle limited number of PCIe directly connected to it.</li>
+<li>There devices connected to cpu through southern bridge chip-set are slower. (Mostly some disk dirver, usb, network things)</li>
+</ul>
+<h3 id="io-devices">I/O devices</h3>
+<p>It contains a lot of things, like keyboard, mouse or monitor.</p>
+<p>I/O devices connected to I/O bus through <strong>adaptor</strong>
+or <strong>controller</strong>.
+<strong>Difference</strong>:</p>
+<ul>
+<li>Adaptor is a device plugin in mother board through some slot</li>
+<li>Controller is some built-in chip set in the mother board.</li>
+</ul>
+<h3 id="main-memory">Main Memory</h3>
+<p>DRAM: Dynamic random access memory</p>
+<h3 id="cpu">CPU</h3>
+<p><strong>register file</strong> : the group of registers</p>
+<h3 id="dma-gpu-etc">DMA, GPU etc.</h3>
+<p>There is a trend to make extra device to help cpu to do something it can not do very well. We know cpu is a computing device for general purpose. And we need some new computing device for specific purpose. It&rsquo;s a good idea to introduce some device like DMA, GPU or DPU to help CPU. We can regard DMA, DPU and GPU just like a different kind of CPU reside in the bus.</p>
+<p><strong>DMA</strong>(direct memory access): If we want load blocks to main memory from disks or ssd without DMA, we need first load things to CPU register file, and put things from register file to main memory. This is trivial.  So we use DMA to do this dirty work.</p>
+<p><strong>GPU</strong>:</p>
+<h3 id="cache">Cache</h3>
+<p>Usually there are cache in L1 and L2 level, there exists L3 cache in some architectures.</p>
+<p>Cache is using hardware call <strong>SRAM</strong> (static random access memory).</p>
+<h2 id="os">OS</h2>
+<p>Operating system provide three important thing to the user:</p>
+<ul>
+<li>file</li>
+<li>virtual memory</li>
+<li>process
+file is abstraction of I/O devices.
+virtual memory is abstraction of main memory and I/O device.
+process is abstraction of I/O device, main memory and processor.</li>
+</ul>
+<p>The application built based on OS interacts with OS instead of hardware directly.</p>
+<h3 id="process">process</h3>
+<p><strong>context</strong>: It includes pc, values in the register file and content in the memory (virtual memory of the process).
+<strong>context switch</strong>: save the context of old process. load the context of new process.</p>
+<p><strong>system call</strong>: If application needs operating system to do something, it will trigger a command system call. kernel is not a process, it&rsquo;s a collection of code and data structure for OS to manage all the process.</p>
+<p><strong>thread</strong>: It uses the context of the same process, and share the same code and global data. Advantage: It&rsquo;s easier to share data between thread comparing with process.</p>
+<h3 id="virtual-memory">virtual memory</h3>
+<p>Every process gets its own virtual address space .</p>
+<p>from 0 to maximum address, we get:</p>
+<ul>
+<li>code and data(.BSS .DATA), some global variable and constant (loaded from executable file)</li>
+<li>heap, dynamic alloced memory</li>
+<li>skip&hellip;</li>
+<li>shared library. It&rsquo;s for standard c lib and math lib. recall dynamic lib linking</li>
+<li>stack. For function call</li>
+<li>kernel space. system call</li>
+</ul>
+<h3 id="file">file</h3>
+<p>including every I/O devices, disk, keyboard, monitor and network.</p>
+<h2 id="sundry">Sundry</h2>
+<h3 id="compile">Compile</h3>
+<p><strong>Compile</strong>: There are several key points when we talk about compiling
+There is a clear pipeline if we consider the process of compiling a <strong>source file</strong> into a <strong>executable program</strong>.</p>
+<pre tabindex="0"><code>hello.c -pre-processor(cpp)-&gt; hello.i -compiler(ccl)-&gt; hello.s -assembler-&gt; hello.o -linker(ld)-&gt; hello
+</code></pre><ul>
+<li>the pre processor (cpp) will translate the original source file into a full file, like unfold the # include, or other things start with #.</li>
+<li>assembly. It will translate a .i file into .s file, it&rsquo;s a plain text file containing program in assemble language form.</li>
+<li>The (as) will translate .s into real machine language command, i.e .o file. These command are packaged as a file in a format called <strong>relocatable object program</strong>.</li>
+<li>link (ld). We know we need to link several different .o file (and dynamic library) to get a real executable file. This is what linker do. It can merge printf.o into our hello.o file, to get executable hello program (It can be loaded into memory and executed by operating system).</li>
+</ul>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

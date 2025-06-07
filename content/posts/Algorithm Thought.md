@@ -1,6 +1,6 @@
 ---
 title: "Algorithm Thought"
-date: 2025-06-01T10:42:10.737Z
+date: 2025-06-07T13:13:51.346Z
 draft: false
 tags: []
 ---
