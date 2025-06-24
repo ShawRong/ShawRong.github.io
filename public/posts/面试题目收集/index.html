@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="ThreadsPerBlock和Blocks的数量受哪些条件约束。
+
+ThreadsPerBlock 受 SM寄存器数量, 共享内存大小 和 硬件上限(1024 threads/block)
+Block数量 受 SM数量和资源容量限制(需要保证所有active blocks的资源总和不超过SM容量)
+理论占用率怎么计算？
+Occupancy = (active warp/SM) / (max warps/SM). 它表示SM上活跃的Warp数量与最大支持的Warp数量之比. 高占用率可以更好地隐藏内存访问延迟, 提高计算吞吐量.
+GPU以Block为粒度分配资源(寄存器, 共享内存, 线程槽位). 而不是以Warp分配.
+寄存器, 共享内存, 线程调度 都是以Block为基础调度的
+假如SM支持最多2048个线程(64个warp), 如果每个block有256个线程, 那么SM最多能驻留8个block. 但是因为寄存器和共享内存可能达到上限, SM可能只能驻留4个block.
+计算每个block的warp数. Warp per Block = upper bound(Thread per Block / 32)
+计算SM能驻留的Block数量, 受限于 寄存器, 共享内存和线程数
+Active Warp = Warps Per Block x Active Block Per SM
+之后计算占用率
+什么是warp，什么是warp divergence？
+Warp 是 SM的基本执行单元, 包含32个线程
+Warp Divergence 是同以warp内的线程执行不同branch时, 会造成不同branch串行执行, 造成性能损失.
+cuda的内存模型里有多少种memory，它们的位置(片上还是板上)，带宽和延迟的相对大小？
+register, on chip, 1 cycle latency, highest bandwidth, private for single thread
+shared memory, on chip, 30 cycle latency, high bandwidth, shared by block
+local memory, off-chip, dram, in global memory(reality), logically private for single thread
+global memory, off-chip, dram, 400-800 cycle, low bandwidth, shared by all threads
+texture and constant, medium latency, medium bandwidth, shared by all threads
+global memory的访存合并是什么？
+coalescing access, 同一个warp上的连续线程访问连续global memory地址时会被合并为单个事务. gpu的global memory的事务粒度是128字节.
+对于shared memory的优化是避免bank conflict, 共享内存有32个bank. 避免冲突可以使用: 使用padding, 改变访问模式(转置), 使用广播机制(32个线程访问同一个bank上的内容)
+register分配, 对于自动分配的局部变量, 可能会溢出到local memory上.
+什么样的变量会被分配在register上？
+分配到寄存器的变量: 小型标量(int, float&hellip;), 未取地址的临时变量
+不会分配到寄存器的变量: 大数组, 取地址变量, 寄存器溢出
+什么样的变量会被分配在local memory上？
+大数组
+动态索引的数组
+
+__global__ void kernel(int index) {
+	int arr[10];
+	arr[index] = 0; // dynamic indexing
+}
+
+指针操作
+
+__global__ void kernel() {
+	int x;
+	int *ptr = &amp;x;  // 取地址, register没有地址, 因此存放到local memory
+}
+
+溢出的变量
+
+__global__ void complex_calc() {
+	float a1, a2, a3, a4, ..., a100;
+}
+Block是怎么被SM调度执行的？">  
+
+  <title>
+    
+      面试题目收集
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-06-24 15:37:09.408 &#43;0000 UTC">
+                            2025-06-24
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>面试题目收集</h1>
+
+    
+
+    <p>ThreadsPerBlock和Blocks的数量受哪些条件约束。</p>
+<ul>
+<li>ThreadsPerBlock 受 SM寄存器数量, 共享内存大小 和 硬件上限(1024 threads/block)</li>
+<li>Block数量 受 SM数量和资源容量限制(需要保证所有active blocks的资源总和不超过SM容量)
+理论占用率怎么计算？</li>
+<li>Occupancy = (active warp/SM) / (max warps/SM). 它表示SM上活跃的Warp数量与最大支持的Warp数量之比. 高占用率可以更好地隐藏内存访问延迟, 提高计算吞吐量.</li>
+<li>GPU以Block为粒度分配资源(寄存器, 共享内存, 线程槽位). 而不是以Warp分配.</li>
+<li>寄存器, 共享内存, 线程调度 都是以Block为基础调度的</li>
+<li>假如SM支持最多2048个线程(64个warp), 如果每个block有256个线程, 那么SM最多能驻留8个block. 但是因为寄存器和共享内存可能达到上限, SM可能只能驻留4个block.</li>
+<li>计算每个block的warp数. Warp per Block = upper bound(Thread per Block / 32)</li>
+<li>计算SM能驻留的Block数量, 受限于 寄存器, 共享内存和线程数</li>
+<li>Active Warp = Warps Per Block x Active Block Per SM</li>
+<li>之后计算占用率
+什么是warp，什么是warp divergence？</li>
+<li>Warp 是 SM的基本执行单元, 包含32个线程</li>
+<li>Warp Divergence 是同以warp内的线程执行不同branch时, 会造成不同branch串行执行, 造成性能损失.
+cuda的内存模型里有多少种memory，它们的位置(片上还是板上)，带宽和延迟的相对大小？</li>
+<li><strong>register</strong>, on chip, <strong>1</strong> cycle latency, <strong>highest</strong> bandwidth, private for <strong>single thread</strong></li>
+<li><strong>shared memory</strong>, on chip, <strong>30</strong> cycle latency, <strong>high</strong> bandwidth, shared by <strong>block</strong></li>
+<li><strong>local memory</strong>, off-chip, <strong>dram</strong>, in <strong>global</strong> memory(reality), logically private for single thread</li>
+<li><strong>global memory</strong>, off-chip, <strong>dram</strong>, 400-800 cycle, <strong>low</strong> bandwidth, shared by all threads</li>
+<li>texture and constant, medium latency, medium bandwidth, shared by all threads
+global memory的访存合并是什么？</li>
+<li>coalescing access, 同一个warp上的连续线程访问连续<strong>global memory</strong>地址时会被合并为单个事务. gpu的global memory的事务粒度是128字节.</li>
+<li>对于shared memory的优化是避免bank conflict, 共享内存有32个bank. 避免冲突可以使用: 使用padding, 改变访问模式(转置), 使用广播机制(32个线程访问同一个bank上的内容)</li>
+<li>register分配, 对于自动分配的局部变量, 可能会溢出到local memory上.
+什么样的变量会被分配在register上？</li>
+<li>分配到寄存器的变量: 小型标量(int, float&hellip;), 未取地址的临时变量</li>
+<li>不会分配到寄存器的变量: 大数组, 取地址变量, 寄存器溢出
+什么样的变量会被分配在local memory上？</li>
+<li>大数组</li>
+<li>动态索引的数组</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">kernel</span>(<span style="color:#66d9ef">int</span> index) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> arr[<span style="color:#ae81ff">10</span>];
+</span></span><span style="display:flex;"><span>	arr[index] <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#75715e">// dynamic indexing
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span></code></pre></div><ul>
+<li>指针操作</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">kernel</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> x;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> <span style="color:#f92672">*</span>ptr <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>x;  <span style="color:#75715e">// 取地址, register没有地址, 因此存放到local memory
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span></code></pre></div><ul>
+<li>溢出的变量</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">complex_calc</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">float</span> a1, a2, a3, a4, ..., a100;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Block是怎么被SM调度执行的？</p>
+<ul>
+<li>kernel启动时, block分配到gpu的全局队列中去</li>
+<li>SM 从队列中选择一个或多个block加载到自己的资源池中, 数量由 寄存器总量, 共享内存, 线程槽位(SM支持的线程上限)决定
+SM内部的执行调度?</li>
+<li>Block分解为warp</li>
+<li>每个sm有多个warp调度器, 每个周期选择就绪的warp发射指令(要求warp所有的操作数准备好, 也就是没有数据依赖或等待内存访问)</li>
+<li>当某个warp因内存访问或计算延迟停滞的时候, 调度器立即切换到其他就绪warp</li>
+<li>高占用率能更好的隐藏延迟
+什么是cuda core？</li>
+<li>nvidia的并行计算核心, 负责浮点或整数运算. 支持fp16, fp32 和fp64.
+什么是tensor core？</li>
+<li>nvidia用来加速矩阵计算的计算核心,
+核心功能包括:
+<ul>
+<li>矩阵乘累加操作(MMA, D=AxB + C). 支持混合精度计算, (fp16输入, fp32累加)</li>
+<li>每个时钟周期能完成更多矩阵操作</li>
+<li>固化电路实现矩阵乘法, 减少指令开销, 提高能效.
+什么是bank conflict？</li>
+</ul>
+</li>
+<li>bank conflict发生在shared memory被访问时. 当多个线程试图访问同一个bank的不同地址时, 这些访问会被串行化.</li>
+<li>同一个时钟周期, 多个线程(无论是否属于同一个warp)访问同一个bank的不同地址时, 会发生bank conflict.
+怎么避免bank conflict，你能想到多少方法？</li>
+<li>使用padding, 调整数据布局</li>
+<li>使用广播机制
+描述一下Block reduce的大致实现。</li>
+<li>共享内存暂存数据, 循环折半求和</li>
+<li>thread 内部在register上做reduce</li>
+<li>warp 使用shuffle指令做reduce操作</li>
+<li>block使用shared memory 做reduce操作
+描述一下double buffer(ping pong buffer）的大概原理和实现。</li>
+<li>双缓冲区交替执行计算和数据传输, 隐藏延迟(一个buffer进行绘制, 绘制完成后, 这个buffer被指定为输出buffer, 进行画面输出)
+什么是roofline model？</li>
+<li>roofline model 是一个判断模型所能达到性能上限由什么决定的模型(memory bound or computation bound). 通过计算一个模型的计算强度I和I_max(算力平台的 算力 / 带宽) 做对比, 在I_max左侧的, 其模型性能与计算强度成正比, 是memory bound的. 如果在I_max右侧, 其模型性能与最大算力pi
+什么是memory bound，什么是computation bound？</li>
+<li><strong>Memory Bound</strong>：性能随计算强度线性增长，但无法超过内存带宽的限制。
+- <strong>Compute Bound</strong>：计算强度足够高，性能受限于硬件算力上限。
+kernel fusion为什么能提升性能？</li>
+<li>什么是kernel fusion? kernel fusion就是将多个小kernel合并成一个更大的kernel. 从而减少内核启动开销, 并减少冗余内存访问(因为小kernel需要将结果写到global memory并读取).</li>
+<li>减少内核启动开销</li>
+<li>提高数据局部性(不需要读和写global memory, 直接使用register和shared memory)</li>
+<li>节省显存带宽
+还有哪些好处？举几个fusion的例子。gpu上有分支预测吗？</li>
+<li>深度学习中的激活函数和卷积融合</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>conv2d_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>...<span style="color:#f92672">&gt;&gt;&gt;</span>(input, weights, conv_output);
+</span></span><span style="display:flex;"><span>relu_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>...<span style="color:#f92672">&gt;&gt;&gt;</span>(conv_output, output);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//fusion
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>fused_conv_relu_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>...<span style="color:#f92672">&gt;&gt;&gt;</span>(input, weights, output);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">FMA</span>(fused multiple and add)
+</span></span><span style="display:flex;"><span>multiply_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>...<span style="color:#f92672">&gt;&gt;&gt;</span>(A, B, C);
+</span></span><span style="display:flex;"><span>add_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>...<span style="color:#f92672">&gt;&gt;&gt;</span>(C, D, E);
+</span></span><span style="display:flex;"><span>fused_multiply_add_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>...<span style="color:#f92672">&gt;&gt;&gt;</span>(A, B, D, E);
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// use fused multiply-add, FMA directly
+</span></span></span></code></pre></div><ul>
+<li>gpu有简单的分支预测
+gpu上有指令集并行吗？</li>
+</ul>
+<p>常用profile工具和方法。</p>
+<ul>
+<li>
+<p>nsight 系列(nsight systems, nsight compute)</p>
+</li>
+<li>
+<p>nsight systems 是系统级分析, 主要功能包括: CPU/GPU时间线, API调用, CUDA内核执行, 显存/带宽等.</p>
+</li>
+<li>
+<p>nsight compute 主要是详细分析寄存器使用, 吞吐量, 内存访问模式等.</p>
+</li>
+<li>
+<p>重要的指标: GPU Utilization, Bandwidth, Warp 效率, 寄存器/共享内存: spill? kernel耗时.</p>
+</li>
+<li>
+<p>方法论: 时间线分析, 例如是否有太多Memcpy导致的的GPU空转等等. 定位低效的kernel进行重点优化.
+float的计算一定比int消耗更多的cycle吗(主要是加法和乘法）？</p>
+</li>
+<li>
+<p>在相同位宽（如INT32 vs FP32）下，简单运算(add and mul)可能cycle相近，但复杂运算浮点更慢(div)。
+常见的float格式。fp32，tf32，fp16，bf16的联系和区别？</p>
+</li>
+<li>
+<p>浮点数, fp32 在ieee754标准中, 由 (1符号位 + 8指数位 + 23位尾数位组成) 使用的基数是2(二进制). 例如对于 0 10000001 01000&hellip; 这个fp32浮点数, 其应为 positive(符号位为0), 10000001 = 127 + 2, 表示指数位为2(加127为了给负指数腾出位置, 这里指数的基数为2), 尾数去掉了第一个隐藏1. 因此其表示的数字是 1.01 x 2^2</p>
+</li>
+<li>
+<p>fp32 单精度浮点数, 7位有效十进制数字 (1, 8, 23)</p>
+</li>
+<li>
+<p>tf32 19位(1符号数, 8指数, 10尾数) 在Ampere架构中(使用tensor core), 用于加速矩阵乘(GEMM). 替代FP32在AI训练中的部分计算, 无需修改代码即可加速. (不是存储格式, 仅用于计算时的中间表示) (1, 8, 10)</p>
+</li>
+<li>
+<p>FP16(半精度浮点) 16位(1符号位 + 5指数位 + 10尾数位) (1, 5, 10). 指数位小, 动态范围小.</p>
+</li>
+<li>
+<p>BF16(Brain float 16)  (1, 8, 7). 因为指数位相比fp16更多, 动态范围更大, 适合大梯度计算.
+ptx和sass是什么，和cuda的关系？</p>
+</li>
+<li>
+<p>ptx(parallel thread execution)类似于汇编代码, sass(shader assembly)类似于机器码.</p>
+</li>
+<li>
+<p>cuda 是nvidia推出的并行计算平台和编程模型, 允许开发者用c/cpp编写gpu加速程序
+cuda上的排序和topk算法原理和实现。</p>
+</li>
+<li>
+<p>radix sort, merge sort, bitonic sort</p>
+</li>
+<li>
+<p>top-k: radix sort后取前k个. 或者分块数据, 计算局部top-k. 之后对局部top-k进行reduce.</p>
+</li>
+<li>
+<p>radix sort在gpu上的实现. 首先需要做直方图, 统计当前位为0或1的频率. 然后根据直方图, 得到前缀和, 从而知道要排序元素所放的位置, 进行元素重排.
+matmul的优化，超级加分题。</p>
+</li>
+<li>
+<p>tiling, 通过将大矩阵分解为合适gpu处理的小块</p>
+</li>
+<li>
+<p>共享内存, 每个thread在进行矩阵计算之前, 先将小块的数据加载到共享内存中(合作加载). 之后再进行计算</p>
+</li>
+<li>
+<p>共享内存会有bank冲突问题, 为了解决冲突, 使用padding.</p>
+</li>
+<li>
+<p>双buffer. 在声明shared memory的时候生成两份. 这样可以实现加载下一个块和计算当前块.
+flash attention的优化，超级加分题。</p>
+</li>
+<li>
+<p>分块计算, 将QKV矩阵分成小块, 进行计算. 以此实现加载到SRAM上计算</p>
+</li>
+<li>
+<p>实现计算和IO重叠, (双buffer). 加载下一块到SRAM时, 同时计算当前块</p>
+</li>
+<li>
+<p>在线softmax. 分块统计最大值(逐块计算局部最大值, 并通过递推公式更新全局最大值), 增量归一化(根据全局最大值和求和结果动态调整输出) 需要额外维护两个变量, 当前块的最大值m和指数求和l</p>
+</li>
+<li>
+<p>kernel fusion. 注意力计算的所有步骤(矩阵乘, softmax, 掩码, dropout)都融合到单个kernel中, 减少启动多个kernel的开销. 提高数据局部性, 节省显存带宽
+page attention是什么?</p>
+</li>
+<li>
+<p>flash attention通过优化注意力计算中的内存访问模式, 减少了gpu显存的读写次数, 从而加速了计算</p>
+</li>
+<li>
+<p>但是它假设了所有的k, v都能连续存储在显存中, 但在长序列任务中不成立</p>
+</li>
+<li>
+<p>使用分页机制, 将kv cache分成多个页, 动态加载到显存中. 从而避免了显存溢出(OOM).
+TMA是什么? 和Page attention的关系?</p>
+</li>
+<li>
+<p>TMA(Tensor Memory Accelerator) 是英伟达在Hopper架构中引入的硬件加速技术. 通过硬件级别的paging和内存管理机制, 显著提高大规模张量计算的性能.
+什么是专家并行, 张量并行, 数据并行?</p>
+</li>
+<li>
+<p>数据并行(Data Parallel)是将训练数据划分位多个batch, 分配到不同设备上, 每个设备有模型的完整副本. 独立计算梯度, 最后通过 同步(集合通信, 如all reduce), 聚合梯度更新模型</p>
+</li>
+<li>
+<p>张量并行(Tensor Parallel) 将模型的单个tensor操作(如矩阵乘法)拆分到多个设备上进行计算. 例如一个大的权重矩阵按行或列分割, 每个设备计算部分结果, 再通过通信拼接输出. 典型场景例如 transformer层中的MLP或注意力计算.</p>
+</li>
+<li>
+<p>专家并行(Expert Parallel) 专用于混合专家模型(MoE). 将模型中的不同子网络分配到不同设备上, 每个输入样本仅routing到部分专家计算.</p>
+</li>
+<li>
+<p>存在不同组合, 例如 数据+专家并行, 数据+张量并行, 3D并行(数据, 张量, 流水线)</p>
+</li>
+</ul>
+<p>什么是HBM(high bandwidth memory), 与traditional dram的区别是什么?
+当前gpu架构的基本信息(寄存器数量, 内存大小 等等)?</p>
+<p>ieee754浮点数标准</p>
+<ul>
+<li>指数非全0且非全1, 规格化数字, 正常计算</li>
+<li>指数全0, 尾数非0, 非规格化数, 尾数隐藏位不是1, 而是0, 即0.xxxxx, 表示非常小的数字</li>
+<li>指数全1, 尾数全0, 正无穷大/负无穷大(看符号位)</li>
+<li>指数全0, 且尾数全0时, 表示浮点数为0</li>
+</ul>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

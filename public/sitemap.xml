@@ -2,10 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://example.org/posts/dpu-memo/</loc>
-    <lastmod>2025-06-07T13:13:53+00:00</lastmod>
-  </url><url>
     <loc>https://example.org/posts/</loc>
+    <lastmod>2025-06-24T15:37:09+00:00</lastmod>
+  </url><url>
+    <loc>https://example.org/posts/%E9%9D%A2%E8%AF%95%E9%A2%98%E7%9B%AE%E6%94%B6%E9%9B%86/</loc>
+    <lastmod>2025-06-24T15:37:09+00:00</lastmod>
+  </url><url>
+    <loc>https://example.org/posts/dpu-memo/</loc>
     <lastmod>2025-06-07T13:13:53+00:00</lastmod>
   </url><url>
     <loc>https://example.org/posts/algorithm-thought/</loc>
