@@ -6,8 +6,15 @@
     <description>Recent content on My New Hugo Site</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 24 Jun 2025 15:37:09 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 04 Jul 2025 14:16:29 +0000</lastBuildDate>
     <atom:link href="https://example.org/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Sparsity</title>
+      <link>https://example.org/posts/sparsity/</link>
+      <pubDate>Fri, 04 Jul 2025 14:16:29 +0000</pubDate>
+      <guid>https://example.org/posts/sparsity/</guid>
+      <description>&lt;h1 id=&#34;how-sparsity-is-employed-in-acceleration&#34;&gt;How sparsity is employed in Acceleration&lt;/h1&gt;&#xA;&lt;p&gt;When multiplying by zero or very small values, we can avoid the computation entirely.&lt;/p&gt;&#xA;&lt;p&gt;If 90% percent of values are zero, we can theoretically only need to compute 10% of the operations.&lt;/p&gt;&#xA;&lt;p&gt;The hardware like GPU support this acceleration in hardware way.&lt;/p&gt;&#xA;&lt;p&gt;It can:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Reduce memory bandwidth. (no load zero values)&lt;/li&gt;&#xA;&lt;li&gt;Fewer arithmetic operations. (skip some multiplications and addition)&lt;/li&gt;&#xA;&lt;li&gt;Lower energy consumption. (based on previous 2 optimization)&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h1 id=&#34;three-types-of-sparsity-in-llm&#34;&gt;Three types of Sparsity in LLM&lt;/h1&gt;&#xA;&lt;p&gt;&lt;strong&gt;Weight Sparsity&lt;/strong&gt;: Zeros in model parameters. These weights pruned during &lt;strong&gt;training or post-training&lt;/strong&gt;.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>面试题目收集</title>
       <link>https://example.org/posts/%E9%9D%A2%E8%AF%95%E9%A2%98%E7%9B%AE%E6%94%B6%E9%9B%86/</link>
