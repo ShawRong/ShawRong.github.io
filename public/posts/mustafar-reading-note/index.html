@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="-claude link
+KV Cache and Pruning Strategies - Study Notes
+What is KV Cache?
+Purpose
+KV cache is a memory optimization technique used in transformer models during text generation to avoid redundant computations.
+How it Works
+
+Problem: Without caching, generating each new token requires recomputing Key (K) and Value (V) matrices for all previous tokens
+Solution: Store K and V representations of previous tokens, only compute K and V for the new token
+
+Example Process
+Generating &#34;The cat sat on&#34;
+
+Step 1: Generate &#34;cat&#34;
+- Input: &#34;The&#34;
+- Compute K₁, V₁ for &#34;The&#34;
+- Cache: K=[K₁], V=[V₁]
+
+Step 2: Generate &#34;sat&#34; 
+- Input: &#34;The cat&#34;
+- Compute K₂, V₂ for &#34;cat&#34; 
+- Cache: K=[K₁, K₂], V=[V₁, V₂]
+- Reuse K₁, V₁ (no recomputation!)
+
+Step 3: Generate &#34;on&#34;
+- Input: &#34;The cat sat&#34;
+- Compute K₃, V₃ for &#34;sat&#34;
+- Cache: K=[K₁, K₂, K₃], V=[V₁, V₂, V₃]
+KV Cache Structure
+Matrix Dimensions
+
+Format: [tokens × channels]
+Tokens: Sequence positions (words/subwords in the input)
+Channels: Feature dimensions (hidden size of the model, e.g., 768, 1024, 4096)
+Growth: Cache grows as sequence lengthens: [1×channels] → [2×channels] → [3×channels]&hellip;
+
+Key Properties
+
+Both K and V caches have identical dimensions
+Channels size is determined by model architecture
+Each element represents the intersection of a token and a channel
+
+Pruning Strategies
+Core Concepts
+
+Pruning Direction: Which axis to remove elements from
+Output-Awareness: Using scoring metrics to estimate element importance
+Local Dense Window: Keep recent 32 tokens untouched during decoding
+
+1. Per-Channel Pruning
+Definition: For each channel (column), selectively remove some token entries">  
+
+  <title>
+    
+      MUSTAFAR reading note
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-07-06 09:56:31.418 &#43;0000 UTC">
+                            2025-07-06
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>MUSTAFAR reading note</h1>
+
+    
+
+    <p>-<a href="https://claude.ai/public/artifacts/18d1f408-412d-42aa-af07-9853577253ba">claude link</a></p>
+<h1 id="kv-cache-and-pruning-strategies---study-notes">KV Cache and Pruning Strategies - Study Notes</h1>
+<h2 id="what-is-kv-cache">What is KV Cache?</h2>
+<h3 id="purpose">Purpose</h3>
+<p>KV cache is a memory optimization technique used in transformer models during text generation to avoid redundant computations.</p>
+<h3 id="how-it-works">How it Works</h3>
+<ul>
+<li><strong>Problem</strong>: Without caching, generating each new token requires recomputing Key (K) and Value (V) matrices for all previous tokens</li>
+<li><strong>Solution</strong>: Store K and V representations of previous tokens, only compute K and V for the new token</li>
+</ul>
+<h3 id="example-process">Example Process</h3>
+<pre tabindex="0"><code>Generating &#34;The cat sat on&#34;
+
+Step 1: Generate &#34;cat&#34;
+- Input: &#34;The&#34;
+- Compute K₁, V₁ for &#34;The&#34;
+- Cache: K=[K₁], V=[V₁]
+
+Step 2: Generate &#34;sat&#34; 
+- Input: &#34;The cat&#34;
+- Compute K₂, V₂ for &#34;cat&#34; 
+- Cache: K=[K₁, K₂], V=[V₁, V₂]
+- Reuse K₁, V₁ (no recomputation!)
+
+Step 3: Generate &#34;on&#34;
+- Input: &#34;The cat sat&#34;
+- Compute K₃, V₃ for &#34;sat&#34;
+- Cache: K=[K₁, K₂, K₃], V=[V₁, V₂, V₃]
+</code></pre><h2 id="kv-cache-structure">KV Cache Structure</h2>
+<h3 id="matrix-dimensions">Matrix Dimensions</h3>
+<ul>
+<li><strong>Format</strong>: [tokens × channels]</li>
+<li><strong>Tokens</strong>: Sequence positions (words/subwords in the input)</li>
+<li><strong>Channels</strong>: Feature dimensions (hidden size of the model, e.g., 768, 1024, 4096)</li>
+<li><strong>Growth</strong>: Cache grows as sequence lengthens: [1×channels] → [2×channels] → [3×channels]&hellip;</li>
+</ul>
+<h3 id="key-properties">Key Properties</h3>
+<ul>
+<li>Both K and V caches have identical dimensions</li>
+<li>Channels size is determined by model architecture</li>
+<li>Each element represents the intersection of a token and a channel</li>
+</ul>
+<h2 id="pruning-strategies">Pruning Strategies</h2>
+<h3 id="core-concepts">Core Concepts</h3>
+<ul>
+<li><strong>Pruning Direction</strong>: Which axis to remove elements from</li>
+<li><strong>Output-Awareness</strong>: Using scoring metrics to estimate element importance</li>
+<li><strong>Local Dense Window</strong>: Keep recent 32 tokens untouched during decoding</li>
+</ul>
+<h3 id="1-per-channel-pruning">1. Per-Channel Pruning</h3>
+<p><strong>Definition</strong>: For each channel (column), selectively remove some token entries</p>
+<p><strong>How it works</strong>:</p>
+<ul>
+<li>Look at each channel across all tokens</li>
+<li>Apply different sparsity patterns to different channels</li>
+<li>Remove elements within each channel vector</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<pre tabindex="0"><code>Original:
+        Ch1  Ch2  Ch3  Ch4  Ch5  Ch6
+Token1: [a,   b,   c,   d,   e,   f]
+Token2: [g,   h,   i,   j,   k,   l]
+Token3: [m,   n,   o,   p,   q,   r]
+Token4: [s,   t,   u,   v,   w,   x]
+
+After Per-Channel Pruning:
+        Ch1  Ch2  Ch3  Ch4  Ch5  Ch6
+Token1: [a,   -,   c,   d,   -,   f]
+Token2: [g,   h,   -,   -,   k,   l]
+Token3: [-,   n,   o,   p,   q,   -]
+Token4: [s,   -,   u,   v,   -,   x]
+</code></pre><h3 id="2-per-token-pruning">2. Per-Token Pruning</h3>
+<p><strong>Definition</strong>: For each token (row), selectively remove some channel entries</p>
+<p><strong>How it works</strong>:</p>
+<ul>
+<li>Look at each token across all channels</li>
+<li>Apply different sparsity patterns to different tokens</li>
+<li>Remove elements within each token&rsquo;s representation</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<pre tabindex="0"><code>Original:
+        Ch1  Ch2  Ch3  Ch4  Ch5  Ch6
+Token1: [a,   b,   c,   d,   e,   f]
+Token2: [g,   h,   i,   j,   k,   l]
+Token3: [m,   n,   o,   p,   q,   r]
+Token4: [s,   t,   u,   v,   w,   x]
+
+After Per-Token Pruning:
+        Ch1  Ch2  Ch3  Ch4  Ch5  Ch6
+Token1: [a,   b,   -,   -,   e,   f]  ← 66% kept
+Token2: [g,   -,   i,   j,   -,   l]  ← 66% kept
+Token3: [m,   n,   -,   p,   q,   r]  ← 83% kept
+Token4: [-,   t,   u,   -,   w,   x]  ← 66% kept
+</code></pre><h2 id="key-differences-between-pruning-strategies">Key Differences Between Pruning Strategies</h2>
+<table>
+  <thead>
+      <tr>
+          <th>Aspect</th>
+          <th>Per-Channel Pruning</th>
+          <th>Per-Token Pruning</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>Direction</strong></td>
+          <td>Vertical (across tokens)</td>
+          <td>Horizontal (across channels)</td>
+      </tr>
+      <tr>
+          <td><strong>Unit</strong></td>
+          <td>Channel vector</td>
+          <td>Token vector</td>
+      </tr>
+      <tr>
+          <td><strong>Sparsity Pattern</strong></td>
+          <td>Different for each channel</td>
+          <td>Different for each token</td>
+      </tr>
+      <tr>
+          <td><strong>What&rsquo;s Removed</strong></td>
+          <td>Token entries within channels</td>
+          <td>Channel entries within tokens</td>
+      </tr>
+  </tbody>
+</table>
+<h2 id="important-notes">Important Notes</h2>
+<ul>
+<li>Both strategies create <strong>unstructured sparsity</strong> (irregular patterns)</li>
+<li>Each channel captures different features/aspects of the representation</li>
+<li>Each token has its own unique representation across channels</li>
+<li>The choice between strategies depends on the specific use case and model characteristics</li>
+<li>Recent tokens (last 32) are typically preserved for accuracy</li>
+</ul>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>
