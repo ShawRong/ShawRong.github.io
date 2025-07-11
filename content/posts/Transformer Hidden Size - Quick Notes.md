@@ -1,6 +1,6 @@
 ---
 title: "Transformer Hidden Size - Quick Notes"
-date: 2025-07-11T03:21:24.914Z
+date: 2025-07-11T04:16:29.715Z
 draft: false
 tags: []
 ---

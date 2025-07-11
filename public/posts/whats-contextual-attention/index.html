@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Self-Attention vs Contextual Attention
+Important Clarification
+&ldquo;Contextual attention&rdquo; is not a standard term in the field. You might be thinking of different types of attention mechanisms. Let me explain the key distinctions:
+Self-Attention (Standard Term)
+Definition: Each token attends to all tokens in the same sequence (including itself)
+Key Characteristics:
+
+Input sequence: [&ldquo;The&rdquo;, &ldquo;bank&rdquo;, &ldquo;river&rdquo;, &ldquo;flows&rdquo;]
+Each word looks at ALL words in the same sentence
+&ldquo;bank&rdquo; attends to: &ldquo;The&rdquo;, &ldquo;bank&rdquo;, &ldquo;river&rdquo;, &ldquo;flows&rdquo;
+Used in: BERT, GPT, most modern transformers
+
+Formula:">  
+
+  <title>
+    
+      What&#39;s Contextual Attention
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-07-11 07:21:58.192 &#43;0000 UTC">
+                            2025-07-11
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>What&#39;s Contextual Attention</h1>
+
+    
+
+    <h1 id="self-attention-vs-contextual-attention">Self-Attention vs Contextual Attention</h1>
+<h2 id="important-clarification">Important Clarification</h2>
+<p><strong>&ldquo;Contextual attention&rdquo; is not a standard term in the field.</strong> You might be thinking of different types of attention mechanisms. Let me explain the key distinctions:</p>
+<h2 id="self-attention-standard-term">Self-Attention (Standard Term)</h2>
+<p><strong>Definition</strong>: Each token attends to all tokens in the same sequence (including itself)</p>
+<p><strong>Key Characteristics</strong>:</p>
+<ul>
+<li>Input sequence: [&ldquo;The&rdquo;, &ldquo;bank&rdquo;, &ldquo;river&rdquo;, &ldquo;flows&rdquo;]</li>
+<li>Each word looks at ALL words in the same sentence</li>
+<li>&ldquo;bank&rdquo; attends to: &ldquo;The&rdquo;, &ldquo;bank&rdquo;, &ldquo;river&rdquo;, &ldquo;flows&rdquo;</li>
+<li>Used in: BERT, GPT, most modern transformers</li>
+</ul>
+<p><strong>Formula</strong>:</p>
+<pre tabindex="0"><code>Attention(Q,K,V) = softmax(QK^T/√d)V
+where Q, K, V all come from the same input sequence
+</code></pre><h2 id="cross-attention-what-you-might-mean-by-contextual">Cross-Attention (What you might mean by &ldquo;contextual&rdquo;)</h2>
+<p><strong>Definition</strong>: Tokens from one sequence attend to tokens from another sequence</p>
+<p><strong>Key Characteristics</strong>:</p>
+<ul>
+<li>Two sequences: Source and Target</li>
+<li>Example: Translation - English sentence attends to French sentence</li>
+<li>Query comes from target, Key/Value from source</li>
+<li>Used in: Encoder-decoder models, T5, original Transformer</li>
+</ul>
+<p><strong>Formula</strong>:</p>
+<pre tabindex="0"><code>CrossAttention(Q,K,V) = softmax(QK^T/√d)V
+where Q comes from sequence A, K,V come from sequence B
+</code></pre><h2 id="common-confusion-points">Common Confusion Points</h2>
+<h3 id="1-self-attention-creates-contextual-embeddings">1. Self-Attention Creates Contextual Embeddings</h3>
+<ul>
+<li><strong>Self-attention mechanism</strong> → produces <strong>contextual embeddings</strong></li>
+<li>The mechanism is &ldquo;self-attention&rdquo;</li>
+<li>The output is &ldquo;contextual embeddings&rdquo;</li>
+</ul>
+<h3 id="2-types-of-self-attention">2. Types of Self-Attention</h3>
+<table>
+  <thead>
+      <tr>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Example</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>Bidirectional</strong></td>
+          <td>Can attend to past and future tokens</td>
+          <td>BERT</td>
+      </tr>
+      <tr>
+          <td><strong>Causal/Masked</strong></td>
+          <td>Can only attend to past tokens</td>
+          <td>GPT</td>
+      </tr>
+      <tr>
+          <td><strong>Local</strong></td>
+          <td>Only attends to nearby tokens</td>
+          <td>Some efficient transformers</td>
+      </tr>
+      <tr>
+          <td><strong>Global</strong></td>
+          <td>Attends to all tokens</td>
+          <td>Standard transformers</td>
+      </tr>
+  </tbody>
+</table>
+<h3 id="3-attention-variants">3. Attention Variants</h3>
+<table>
+  <thead>
+      <tr>
+          <th>Variant</th>
+          <th>What it means</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>Self-Attention</strong></td>
+          <td>Same sequence attends to itself</td>
+      </tr>
+      <tr>
+          <td><strong>Cross-Attention</strong></td>
+          <td>Different sequences attend to each other</td>
+      </tr>
+      <tr>
+          <td><strong>Multi-Head</strong></td>
+          <td>Multiple attention computations in parallel</td>
+      </tr>
+      <tr>
+          <td><strong>Scaled Dot-Product</strong></td>
+          <td>Standard attention formula with scaling</td>
+      </tr>
+  </tbody>
+</table>
+<h2 id="visual-comparison">Visual Comparison</h2>
+<h3 id="self-attention-bertgpt-style">Self-Attention (BERT/GPT style):</h3>
+<pre tabindex="0"><code>Input: &#34;The bank river flows&#34;
+       ↓    ↓    ↓     ↓
+    [Attend to all tokens in same sequence]
+       ↓    ↓    ↓     ↓
+Output: Contextual embeddings
+</code></pre><h3 id="cross-attention-translation-style">Cross-Attention (Translation style):</h3>
+<pre tabindex="0"><code>English: &#34;The bank&#34;  →  French: &#34;La banque&#34;
+         ↓                      ↑
+      [Attend across languages]
+</code></pre><h2 id="in-modern-llms">In Modern LLMs</h2>
+<h3 id="gpt-models">GPT Models:</h3>
+<ul>
+<li>Use <strong>causal self-attention</strong></li>
+<li>Each token attends to previous tokens only</li>
+<li>Creates contextual embeddings</li>
+</ul>
+<h3 id="bert-models">BERT Models:</h3>
+<ul>
+<li>Use <strong>bidirectional self-attention</strong></li>
+<li>Each token attends to all tokens</li>
+<li>Creates contextual embeddings</li>
+</ul>
+<h3 id="t5-models">T5 Models:</h3>
+<ul>
+<li><strong>Encoder</strong>: Bidirectional self-attention</li>
+<li><strong>Decoder</strong>: Causal self-attention + cross-attention to encoder</li>
+</ul>
+<h2 id="bottom-line">Bottom Line</h2>
+<ul>
+<li><strong>Self-attention</strong> = the mechanism</li>
+<li><strong>Contextual embeddings</strong> = the output</li>
+<li><strong>Cross-attention</strong> = attention between different sequences</li>
+<li>There&rsquo;s no standard term &ldquo;contextual attention&rdquo; - you likely mean one of the above!</li>
+</ul>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

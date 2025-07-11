@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="BERT [CLS] Token - Study Notes
+BERT Output Structure
+
+BERT outputs hidden representations for each input token position
+Example: [CLS] hello world [SEP] → 4 hidden vectors (one per token)
+Each position gets a contextual representation
+
+What is the [CLS] Token?
+
+Purpose: Designated position for sequence-level information aggregation
+Mechanism: Uses self-attention to &ldquo;see&rdquo; and combine info from all other tokens
+Design: Has no inherent meaning, so it&rsquo;s free to learn task-specific representations
+
+Key Point: Cannot Use [CLS] Directly
+❌ Pre-trained [CLS] won&rsquo;t work for your task">  
+
+  <title>
+    
+      Bert CLS token Study Notes
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-07-11 07:57:38.679 &#43;0000 UTC">
+                            2025-07-11
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>Bert CLS token Study Notes</h1>
+
+    
+
+    <h1 id="bert-cls-token---study-notes">BERT [CLS] Token - Study Notes</h1>
+<h2 id="bert-output-structure">BERT Output Structure</h2>
+<ul>
+<li>BERT outputs hidden representations for each input token position</li>
+<li>Example: <code>[CLS] hello world [SEP]</code> → 4 hidden vectors (one per token)</li>
+<li>Each position gets a contextual representation</li>
+</ul>
+<h2 id="what-is-the-cls-token">What is the [CLS] Token?</h2>
+<ul>
+<li><strong>Purpose</strong>: Designated position for sequence-level information aggregation</li>
+<li><strong>Mechanism</strong>: Uses self-attention to &ldquo;see&rdquo; and combine info from all other tokens</li>
+<li><strong>Design</strong>: Has no inherent meaning, so it&rsquo;s free to learn task-specific representations</li>
+</ul>
+<h2 id="key-point-cannot-use-cls-directly">Key Point: Cannot Use [CLS] Directly</h2>
+<p>❌ <strong>Pre-trained [CLS] won&rsquo;t work for your task</strong></p>
+<ul>
+<li>Pre-trained [CLS] is optimized for &ldquo;Next Sentence Prediction&rdquo;</li>
+<li>NOT optimized for sentiment, classification, or other downstream tasks</li>
+</ul>
+<h2 id="how-to-use-cls-properly">How to Use [CLS] Properly</h2>
+<p>✅ <strong>Fine-tuning is required</strong></p>
+<ol>
+<li>
+<p><strong>Add task-specific head</strong>:</p>
+<ul>
+<li>Take [CLS] hidden state → feed to classification layer (linear + softmax)</li>
+</ul>
+</li>
+<li>
+<p><strong>Fine-tune entire model</strong>:</p>
+<ul>
+<li>New classification head (starts random)</li>
+<li>Pre-trained BERT parameters (including [CLS] behavior)</li>
+</ul>
+</li>
+<li>
+<p><strong>Result</strong>: [CLS] learns to aggregate info relevant to YOUR specific task</p>
+</li>
+</ol>
+<h2 id="summary">Summary</h2>
+<ul>
+<li>[CLS] = learnable sequence-level aggregation point</li>
+<li>Pre-trained [CLS] ≠ ready for your task</li>
+<li>Fine-tuning required to make [CLS] useful for classification</li>
+</ul>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Contextual Embeddings - Simple Summary
+What Are They?
+Word representations that change based on context, unlike static embeddings where each word has a fixed vector.
+Example: &ldquo;bank&rdquo; gets different embeddings in:
+
+&ldquo;river bank&rdquo; (geographic)
+&ldquo;savings bank&rdquo; (financial)
+
+Where Are They Created?
+Inside the self-attention mechanism of transformer layers.
+How Do They Work?
+The Process:
+
+Static embeddings (from lookup table) &#43; positional encoding
+Self-attention calculates how much each word should &ldquo;pay attention&rdquo; to others
+Mix embeddings based on attention weights → Contextual embeddings
+
+The Formula:
+For each token i:
+contextual_embedding[i] = Σ(attention_weight[i,j] × value_embedding[j])
+                         j=0 to sequence_length
+Key insight: Each token&rsquo;s final embedding is a weighted sum of ALL tokens in the sequence (including itself).">  
+
+  <title>
+    
+      Contextual Embedding
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-07-11 07:21:28.798 &#43;0000 UTC">
+                            2025-07-11
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>Contextual Embedding</h1>
+
+    
+
+    <h1 id="contextual-embeddings---simple-summary">Contextual Embeddings - Simple Summary</h1>
+<h2 id="what-are-they">What Are They?</h2>
+<p>Word representations that <strong>change based on context</strong>, unlike static embeddings where each word has a fixed vector.</p>
+<p>Example: &ldquo;bank&rdquo; gets different embeddings in:</p>
+<ul>
+<li>&ldquo;river bank&rdquo; (geographic)</li>
+<li>&ldquo;savings bank&rdquo; (financial)</li>
+</ul>
+<h2 id="where-are-they-created">Where Are They Created?</h2>
+<p><strong>Inside the self-attention mechanism</strong> of transformer layers.</p>
+<h2 id="how-do-they-work">How Do They Work?</h2>
+<h3 id="the-process">The Process:</h3>
+<ol>
+<li><strong>Static embeddings</strong> (from lookup table) + <strong>positional encoding</strong></li>
+<li><strong>Self-attention</strong> calculates how much each word should &ldquo;pay attention&rdquo; to others</li>
+<li><strong>Mix embeddings</strong> based on attention weights → <strong>Contextual embeddings</strong></li>
+</ol>
+<h3 id="the-formula">The Formula:</h3>
+<pre tabindex="0"><code>For each token i:
+contextual_embedding[i] = Σ(attention_weight[i,j] × value_embedding[j])
+                         j=0 to sequence_length
+</code></pre><p><strong>Key insight</strong>: Each token&rsquo;s final embedding is a weighted sum of ALL tokens in the sequence (including itself).</p>
+<h2 id="current-usage-in-llms">Current Usage in LLMs</h2>
+<h3 id="modern-models">Modern Models:</h3>
+<ul>
+<li><strong>GPT-4, Claude, etc.</strong>: Use 100+ transformer layers</li>
+<li><strong>Each layer</strong> creates more sophisticated contextual embeddings</li>
+<li><strong>Context windows</strong>: Up to 2M+ tokens</li>
+<li><strong>Multi-head attention</strong>: Captures different relationship types</li>
+</ul>
+<h3 id="architecture">Architecture:</h3>
+<ul>
+<li><strong>GPT</strong>: Causal (masked) self-attention</li>
+<li><strong>BERT</strong>: Bidirectional self-attention</li>
+<li><strong>T5</strong>: Encoder-decoder attention</li>
+</ul>
+<h2 id="why-important">Why Important?</h2>
+<ul>
+<li><strong>Polysemy</strong>: Same word, different meanings</li>
+<li><strong>Context understanding</strong>: &ldquo;bank&rdquo; near &ldquo;river&rdquo; vs &ldquo;loan&rdquo;</li>
+<li><strong>Long-range dependencies</strong>: Words can influence each other across long distances</li>
+<li><strong>Foundation of modern NLP</strong>: All current LLMs are built on this principle</li>
+</ul>
+<h2 id="key-takeaway">Key Takeaway</h2>
+<p>Contextual embeddings aren&rsquo;t just used in modern LLMs - <strong>they ARE what makes modern LLMs work</strong>. Every token&rsquo;s representation dynamically incorporates information from the entire context through self-attention.</p>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

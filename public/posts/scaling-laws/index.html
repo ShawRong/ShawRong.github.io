@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Neural Network Scaling Laws - Study Notes
+Core Scaling Law Formula
+L(X) = (X/X_c)^(-α_X)
+Where:
+
+L = Loss (performance metric, lower = better)
+X = Scale factor (D for data, N for parameters, C for compute)
+X_c = Critical threshold (minimum scale where power laws apply)
+α_X = Scaling exponent (determines improvement rate)
+
+Three Key Scaling Dimensions
+1. Data Scaling: L(D) = (D/D_c)^(-α_D)
+
+D = Dataset size (training tokens/examples)
+D_c = Critical dataset size threshold
+α_D ≈ 0.095 for transformers
+Doubling data → Loss × 2^(-0.095) ≈ 6.8% improvement
+
+2. Parameter Scaling: L(N) = (N/N_c)^(-α_N)
+
+N = Number of model parameters
+N_c = Critical parameter count threshold
+α_N ≈ 0.076 for transformers
+
+3. Compute Scaling: L(C) = (C/C_c)^(-α_C)
+
+C = Total compute (FLOPs)
+C_c = Critical compute threshold
+α_C varies by compute allocation
+
+Chinchilla Optimal Scaling
+N_opt ∝ D_opt (approximately 1:1 ratio)">  
+
+  <title>
+    
+      Scaling Laws
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-07-11 04:16:22.73 &#43;0000 UTC">
+                            2025-07-11
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>Scaling Laws</h1>
+
+    
+
+    <h1 id="neural-network-scaling-laws---study-notes">Neural Network Scaling Laws - Study Notes</h1>
+<h2 id="core-scaling-law-formula">Core Scaling Law Formula</h2>
+<p><strong>L(X) = (X/X_c)^(-α_X)</strong></p>
+<p>Where:</p>
+<ul>
+<li><strong>L</strong> = Loss (performance metric, lower = better)</li>
+<li><strong>X</strong> = Scale factor (D for data, N for parameters, C for compute)</li>
+<li><strong>X_c</strong> = Critical threshold (minimum scale where power laws apply)</li>
+<li><strong>α_X</strong> = Scaling exponent (determines improvement rate)</li>
+</ul>
+<h2 id="three-key-scaling-dimensions">Three Key Scaling Dimensions</h2>
+<h3 id="1-data-scaling-ld--dd_c-α_d">1. Data Scaling: L(D) = (D/D_c)^(-α_D)</h3>
+<ul>
+<li><strong>D</strong> = Dataset size (training tokens/examples)</li>
+<li><strong>D_c</strong> = Critical dataset size threshold</li>
+<li><strong>α_D ≈ 0.095</strong> for transformers</li>
+<li><strong>Doubling data</strong> → Loss × 2^(-0.095) ≈ <strong>6.8% improvement</strong></li>
+</ul>
+<h3 id="2-parameter-scaling-ln--nn_c-α_n">2. Parameter Scaling: L(N) = (N/N_c)^(-α_N)</h3>
+<ul>
+<li><strong>N</strong> = Number of model parameters</li>
+<li><strong>N_c</strong> = Critical parameter count threshold</li>
+<li><strong>α_N ≈ 0.076</strong> for transformers</li>
+</ul>
+<h3 id="3-compute-scaling-lc--cc_c-α_c">3. Compute Scaling: L(C) = (C/C_c)^(-α_C)</h3>
+<ul>
+<li><strong>C</strong> = Total compute (FLOPs)</li>
+<li><strong>C_c</strong> = Critical compute threshold</li>
+<li><strong>α_C</strong> varies by compute allocation</li>
+</ul>
+<h2 id="chinchilla-optimal-scaling">Chinchilla Optimal Scaling</h2>
+<p><strong>N_opt ∝ D_opt</strong> (approximately 1:1 ratio)</p>
+<p>For compute budget C:</p>
+<ul>
+<li><strong>N_opt ∝ C^0.5</strong> (optimal parameters)</li>
+<li><strong>D_opt ∝ C^0.5</strong> (optimal training tokens)</li>
+</ul>
+<h2 id="key-insights">Key Insights</h2>
+<h3 id="diminishing-returns">Diminishing Returns</h3>
+<ul>
+<li>Small exponents (α &lt; 0.1) mean <strong>significant scaling needed for major improvements</strong></li>
+<li>10x increase in scale → ~1.25x improvement in loss</li>
+</ul>
+<h3 id="critical-thresholds">Critical Thresholds</h3>
+<ul>
+<li><strong>X_c exists</strong> because very small scales don&rsquo;t follow power laws</li>
+<li>Below threshold = too much noise, above threshold = predictable scaling</li>
+</ul>
+<h3 id="trade-offs">Trade-offs</h3>
+<ul>
+<li><strong>Data scaling</strong>: Modest gains, doubles training time</li>
+<li><strong>Parameter scaling</strong>: Better gains, increases inference cost</li>
+<li><strong>Optimal allocation</strong>: Balance parameters and data equally</li>
+</ul>
+<h2 id="practical-example">Practical Example</h2>
+<p><strong>Doubling Training Data:</strong></p>
+<ul>
+<li>Loss improvement: 2^(0.095) ≈ 1.068 (6.8% better)</li>
+<li>Training time: 2x longer</li>
+<li>Inference time: Unchanged</li>
+</ul>
+<h2 id="why-scaling-laws-matter">Why Scaling Laws Matter</h2>
+<ol>
+<li><strong>Predictable performance</strong> across orders of magnitude</li>
+<li><strong>Resource allocation</strong> guidance (don&rsquo;t overtrain small models)</li>
+<li><strong>ROI planning</strong> for compute investments</li>
+<li><strong>Architecture comparison</strong> via scaling exponents</li>
+</ol>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>
