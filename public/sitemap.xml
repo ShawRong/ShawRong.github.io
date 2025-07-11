@@ -2,10 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://example.org/posts/bert-cls-token-study-notes/</loc>
-    <lastmod>2025-07-11T07:57:38+00:00</lastmod>
+    <loc>https://example.org/posts/albert-feature/</loc>
+    <lastmod>2025-07-11T08:09:00+00:00</lastmod>
   </url><url>
     <loc>https://example.org/posts/</loc>
+    <lastmod>2025-07-11T08:09:00+00:00</lastmod>
+  </url><url>
+    <loc>https://example.org/posts/bert-cls-token-study-notes/</loc>
     <lastmod>2025-07-11T07:57:38+00:00</lastmod>
   </url><url>
     <loc>https://example.org/posts/whats-contextual-attention/</loc>
