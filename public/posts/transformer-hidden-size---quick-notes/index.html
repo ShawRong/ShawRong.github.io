@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Transformer Hidden Size - Quick Notes
+Core Concepts
+Hidden State: The vector representation of each token at each layer
+
+Each token position has its own hidden state vector
+Content evolves through layers, but size stays constant
+
+Hidden Size: The dimensionality of these vectors (e.g., 512, 768, 1024)
+
+Key architectural parameter
+Determines model width
+
+Size Relationships
+Single-Head Attention
+
+Q, K, V dimensions = hidden_size
+Linear projections: hidden_size → hidden_size
+
+Multi-Head Attention
+
+d_k = d_v = hidden_size / num_heads
+Each head: hidden_size → d_k
+After concat: back to hidden_size
+
+Example: hidden_size=256, heads=4">  
+
+  <title>
+    
+      Transformer Hidden Size - Quick Notes
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-07-11 03:21:24.914 &#43;0000 UTC">
+                            2025-07-11
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>Transformer Hidden Size - Quick Notes</h1>
+
+    
+
+    <h1 id="transformer-hidden-size---quick-notes">Transformer Hidden Size - Quick Notes</h1>
+<h2 id="core-concepts">Core Concepts</h2>
+<p><strong>Hidden State</strong>: The vector representation of each token at each layer</p>
+<ul>
+<li>Each token position has its own hidden state vector</li>
+<li>Content evolves through layers, but size stays constant</li>
+</ul>
+<p><strong>Hidden Size</strong>: The dimensionality of these vectors (e.g., 512, 768, 1024)</p>
+<ul>
+<li>Key architectural parameter</li>
+<li>Determines model width</li>
+</ul>
+<h2 id="size-relationships">Size Relationships</h2>
+<h3 id="single-head-attention">Single-Head Attention</h3>
+<ul>
+<li>Q, K, V dimensions = hidden_size</li>
+<li>Linear projections: hidden_size → hidden_size</li>
+</ul>
+<h3 id="multi-head-attention">Multi-Head Attention</h3>
+<ul>
+<li><code>d_k = d_v = hidden_size / num_heads</code></li>
+<li>Each head: hidden_size → d_k</li>
+<li>After concat: back to hidden_size</li>
+</ul>
+<p><strong>Example</strong>: hidden_size=256, heads=4</p>
+<ul>
+<li>Per head: 256/4 = 64</li>
+<li>Q, K, V per head: 64 dimensions</li>
+<li>Concatenated: 4 × 64 = 256</li>
+</ul>
+<h2 id="important-rules">Important Rules</h2>
+<ol>
+<li><strong>Hidden size is constant</strong> across all transformer layers</li>
+<li><strong>FFN temporarily expands</strong> (usually 4×) then contracts back</li>
+<li><strong>Hidden size determines Q/K/V dimensions</strong>, not vice versa</li>
+<li><strong>Token positions</strong> are sequence indices (0, 1, 2, &hellip;)</li>
+</ol>
+<h2 id="flow-example">Flow Example</h2>
+<pre tabindex="0"><code>Input: [batch, seq_len, hidden_size]
+Layer 1: [batch, seq_len, hidden_size] 
+Layer 2: [batch, seq_len, hidden_size]
+...
+Output: [batch, seq_len, hidden_size]
+</code></pre><p>Size never changes, only content evolves!</p>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

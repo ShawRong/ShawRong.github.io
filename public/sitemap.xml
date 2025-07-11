@@ -2,11 +2,23 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://example.org/posts/mustafar-reading-note/</loc>
-    <lastmod>2025-07-06T09:56:31+00:00</lastmod>
-  </url><url>
     <loc>https://example.org/posts/</loc>
-    <lastmod>2025-07-06T09:56:31+00:00</lastmod>
+    <lastmod>2025-07-11T03:21:24+00:00</lastmod>
+  </url><url>
+    <loc>https://example.org/posts/transformer-hidden-size---quick-notes/</loc>
+    <lastmod>2025-07-11T03:21:24+00:00</lastmod>
+  </url><url>
+    <loc>https://example.org/posts/mustafar-blog/</loc>
+    <lastmod>2025-07-11T02:42:22+00:00</lastmod>
+  </url><url>
+    <loc>https://example.org/posts/inference-process/</loc>
+    <lastmod>2025-07-06T11:05:06+00:00</lastmod>
+  </url><url>
+    <loc>https://example.org/posts/two-aspects-of-pruning/</loc>
+    <lastmod>2025-07-06T10:37:09+00:00</lastmod>
+  </url><url>
+    <loc>https://example.org/posts/mustafar-reading-note/</loc>
+    <lastmod>2025-07-06T09:59:28+00:00</lastmod>
   </url><url>
     <loc>https://example.org/posts/sparsity/</loc>
     <lastmod>2025-07-04T14:16:29+00:00</lastmod>

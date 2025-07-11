@@ -1,6 +1,6 @@
 ---
-title: "MUSTAFAR reading note"
-date: 2025-07-06T09:59:28.612Z
+title: "Two Aspects of Pruning"
+date: 2025-07-06T10:37:09.417Z
 draft: false
 tags: []
 ---

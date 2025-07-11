@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="-claude open
+Understanding Q, K, V in Attention
+What Each Represents
+
+Query (Q): &ldquo;What information do I need?&rdquo; - Search request
+Key (K): &ldquo;What information do I have?&rdquo; - Advertisement/label
+Value (V): &ldquo;Here&rsquo;s the actual information&rdquo; - Content payload
+
+How They Work Together
+
+Q × K: Compute attention weights (who should attend to whom)
+Softmax: Normalize attention weights
+Attention × V: Weighted sum of values (what information gets mixed)
+
+Training Perspective
+
+W_q, W_k, W_v: Three learned transformation matrices
+Same input: Gets transformed three different ways for different purposes
+Learning: Model learns these matrices to solve language modeling task
+
+Example
+Token &#34;queen&#34; input: [0.5, 0.8, 0.2, 0.9, ...]
+
+After transformations:
+Q = [0.000001, 1, 3, ...] # &#34;I need person/musician info, not royal info&#34;
+K = [100, 2, 4, ...]      # &#34;I&#39;m very relevant for royal queries&#34;
+V = [1, 2, 3, ...]        # &#34;I contain: royal=1, person=2, musician=3&#34;
+LLM Inference Process
+Two-Phase Approach
+Phase 1: Prefilling
+
+Purpose: Process entire input prompt
+Method: All tokens processed simultaneously (parallel)
+Output: Build initial KV cache, generate first response token
+Speed: Fast due to parallelization
+
+Phase 2: Decoding
+
+Purpose: Generate response tokens one by one
+Method: Sequential processing, append to KV cache
+Output: Complete response
+Speed: Slower due to sequential nature
+
+Complete Example
+Input: &#34;System: You are helpful. User: What is the capital of France?&#34;
+
+Prefilling:
+- Process all 17 input tokens at once
+- Build KV cache: [17 × hidden_size]
+- Generate first token: &#34;The&#34;
+
+Decoding:
+Time 1: Add &#34;The&#34; → Cache: [18 × hidden_size] → Generate &#34;capital&#34;
+Time 2: Add &#34;capital&#34; → Cache: [19 × hidden_size] → Generate &#34;of&#34;
+Time 3: Add &#34;of&#34; → Cache: [20 × hidden_size] → Generate &#34;France&#34;
+...continue until complete response
+Key Insights Gained
+
+KV Cache is Essential: Enables efficient autoregressive generation
+Pruning is Nuanced: Different strategies (per-channel vs per-token) serve different purposes
+Output-Awareness is Smart: Considers both stored information and current needs
+Q,K,V Have Distinct Roles: Not just different values, but different purposes
+Inference Has Structure: Prefilling vs decoding phases optimize for different constraints
+Everything Connects: From training objectives to inference efficiency to pruning strategies
+
+Practical Applications
+
+Memory Optimization: Pruning reduces KV cache size for long sequences
+Inference Acceleration: Smaller cache = faster attention computation
+Quality Preservation: Smart pruning maintains model performance
+Scalability: Enables processing of longer contexts within memory constraints
+
+This comprehensive understanding provides the foundation for working with modern LLM optimization techniques and understanding their trade-offs between efficiency and quality.">  
+
+  <title>
+    
+      Inference Process
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-07-06 11:05:06.522 &#43;0000 UTC">
+                            2025-07-06
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>Inference Process</h1>
+
+    
+
+    <p>-<a href="https://claude.ai/public/artifacts/42c458f2-6add-4b92-b47d-5afa5cf3c6d3">claude open</a></p>
+<h2 id="understanding-q-k-v-in-attention">Understanding Q, K, V in Attention</h2>
+<h3 id="what-each-represents">What Each Represents</h3>
+<ul>
+<li><strong>Query (Q)</strong>: &ldquo;What information do I need?&rdquo; - Search request</li>
+<li><strong>Key (K)</strong>: &ldquo;What information do I have?&rdquo; - Advertisement/label</li>
+<li><strong>Value (V)</strong>: &ldquo;Here&rsquo;s the actual information&rdquo; - Content payload</li>
+</ul>
+<h3 id="how-they-work-together">How They Work Together</h3>
+<ol>
+<li><strong>Q × K</strong>: Compute attention weights (who should attend to whom)</li>
+<li><strong>Softmax</strong>: Normalize attention weights</li>
+<li><strong>Attention × V</strong>: Weighted sum of values (what information gets mixed)</li>
+</ol>
+<h3 id="training-perspective">Training Perspective</h3>
+<ul>
+<li><strong>W_q, W_k, W_v</strong>: Three learned transformation matrices</li>
+<li><strong>Same input</strong>: Gets transformed three different ways for different purposes</li>
+<li><strong>Learning</strong>: Model learns these matrices to solve language modeling task</li>
+</ul>
+<h3 id="example">Example</h3>
+<pre tabindex="0"><code>Token &#34;queen&#34; input: [0.5, 0.8, 0.2, 0.9, ...]
+
+After transformations:
+Q = [0.000001, 1, 3, ...] # &#34;I need person/musician info, not royal info&#34;
+K = [100, 2, 4, ...]      # &#34;I&#39;m very relevant for royal queries&#34;
+V = [1, 2, 3, ...]        # &#34;I contain: royal=1, person=2, musician=3&#34;
+</code></pre><h2 id="llm-inference-process">LLM Inference Process</h2>
+<h3 id="two-phase-approach">Two-Phase Approach</h3>
+<h4 id="phase-1-prefilling">Phase 1: Prefilling</h4>
+<ul>
+<li><strong>Purpose</strong>: Process entire input prompt</li>
+<li><strong>Method</strong>: All tokens processed simultaneously (parallel)</li>
+<li><strong>Output</strong>: Build initial KV cache, generate first response token</li>
+<li><strong>Speed</strong>: Fast due to parallelization</li>
+</ul>
+<h4 id="phase-2-decoding">Phase 2: Decoding</h4>
+<ul>
+<li><strong>Purpose</strong>: Generate response tokens one by one</li>
+<li><strong>Method</strong>: Sequential processing, append to KV cache</li>
+<li><strong>Output</strong>: Complete response</li>
+<li><strong>Speed</strong>: Slower due to sequential nature</li>
+</ul>
+<h3 id="complete-example">Complete Example</h3>
+<pre tabindex="0"><code>Input: &#34;System: You are helpful. User: What is the capital of France?&#34;
+
+Prefilling:
+- Process all 17 input tokens at once
+- Build KV cache: [17 × hidden_size]
+- Generate first token: &#34;The&#34;
+
+Decoding:
+Time 1: Add &#34;The&#34; → Cache: [18 × hidden_size] → Generate &#34;capital&#34;
+Time 2: Add &#34;capital&#34; → Cache: [19 × hidden_size] → Generate &#34;of&#34;
+Time 3: Add &#34;of&#34; → Cache: [20 × hidden_size] → Generate &#34;France&#34;
+...continue until complete response
+</code></pre><h2 id="key-insights-gained">Key Insights Gained</h2>
+<ol>
+<li><strong>KV Cache is Essential</strong>: Enables efficient autoregressive generation</li>
+<li><strong>Pruning is Nuanced</strong>: Different strategies (per-channel vs per-token) serve different purposes</li>
+<li><strong>Output-Awareness is Smart</strong>: Considers both stored information and current needs</li>
+<li><strong>Q,K,V Have Distinct Roles</strong>: Not just different values, but different purposes</li>
+<li><strong>Inference Has Structure</strong>: Prefilling vs decoding phases optimize for different constraints</li>
+<li><strong>Everything Connects</strong>: From training objectives to inference efficiency to pruning strategies</li>
+</ol>
+<h2 id="practical-applications">Practical Applications</h2>
+<ul>
+<li><strong>Memory Optimization</strong>: Pruning reduces KV cache size for long sequences</li>
+<li><strong>Inference Acceleration</strong>: Smaller cache = faster attention computation</li>
+<li><strong>Quality Preservation</strong>: Smart pruning maintains model performance</li>
+<li><strong>Scalability</strong>: Enables processing of longer contexts within memory constraints</li>
+</ul>
+<p>This comprehensive understanding provides the foundation for working with modern LLM optimization techniques and understanding their trade-offs between efficiency and quality.</p>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

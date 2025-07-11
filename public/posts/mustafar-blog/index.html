@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Key statement from Abstract
+
+they claims unstructured sparsity enables sparsity levels up to 70% without compromising accuracy or requiring fine-tuning.
+they did exploration of pruning strategies, and find per-token magnitude-based pruning as highly effective for both Key and Value caches under unstructured sparsity, surpassing prior structured pruning schemes.
+Value cache surprisingly benefits from a simple magnitude-based pruning despite its uniform distribution.
+They use a bitmap-based sparse format and a custom attention kernel capable of compressing and directly computing over caches pruned to arbitrary sparsity patterns.
+Their kernel coupled with the bitmap-based format delivers substantial compression of KV cache up to 45% of dense inference and increased tokens/sec throughput of up to 2.23x compared to dense inference.
+
+Note of Introduction
+Effective pruning of the KV cache entails two core challenges:">  
+
+  <title>
+    
+      MUSTAFAR Blog
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-07-11 02:42:22.527 &#43;0000 UTC">
+                            2025-07-11
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>MUSTAFAR Blog</h1>
+
+    
+
+    <h1 id="key-statement-from-abstract">Key statement from Abstract</h1>
+<ul>
+<li>they claims <strong>unstructured sparsity</strong> enables sparsity levels up to <strong>70%</strong> <strong>without compromising accuracy</strong> or requiring fine-tuning.</li>
+<li>they did exploration of pruning strategies, and find <strong>per-token magnitude-based pruning</strong> as highly effective for both Key and Value caches under <strong>unstructured sparsity</strong>, surpassing prior structured pruning schemes.</li>
+<li>Value cache surprisingly benefits from a simple <strong>magnitude-based pruning</strong> despite its uniform distribution.</li>
+<li>They use <strong>a bitmap-based sparse format</strong> and <strong>a custom attention kernel</strong> capable of compressing and directly <strong>computing over</strong> caches pruned to arbitrary sparsity patterns.</li>
+<li>Their kernel coupled with the bitmap-based format delivers substantial compression of KV cache up to <strong>45%</strong> of dense inference and increased tokens/sec throughput of up to <strong>2.23x</strong> compared to dense inference.</li>
+</ul>
+<h1 id="note-of-introduction">Note of Introduction</h1>
+<p>Effective pruning of the KV cache entails two core challenges:</p>
+<ul>
+<li>achieving substantial <strong>reduction in KV cache</strong> size while preserving model accuracy</li>
+<li>ensuring that the runtime pruning and compression processes are sufficiently efficient. (the associated overhead <strong>must not outweigh</strong> the latency gains introduced by the resulting sparsity)</li>
+</ul>
+<h1 id="note-of-pruning-algorithm-for-unstructured-sparsity">Note of Pruning Algorithm for Unstructured Sparsity</h1>
+<p>They key 2 concepts for kv cache pruning:</p>
+<ul>
+<li>Pruning Direction: the axis along which sparsity is induced. (column-wise or row-wise).</li>
+<li>Output Awareness: scoring metric that serves as a proxy for estimating each element&rsquo;s contribution to the operation&rsquo;s output.</li>
+</ul>
+<p>They employed <strong>local dense window</strong> in the exploration, where the recent 32 tokens remain untouched during the decode phase.</p>
+<h1 id="note-of-pruning-key-cache">Note of Pruning Key Cache</h1>
+<p>About the key cache, the author cited the observation of KIVI, that key cache exhibits distinct channel-wise outlier.</p>
+<p>The author compared three scoring method, including ThinK, per-token magnitude-based unstructured pruning and output-aware unstructured pruning.</p>
+<p>The result: per-token unstructured pruning achieve better result, and output-aware mechanism can slightly improve.</p>
+<p>So the author draw a conclusion: while &ldquo;outlier channels&rdquo; show promise for per-channel structured pruning, unstructured sparsity achieves higher accuracy at greater sparsity levels&ndash;even without output-awareness.</p>
+<h1 id="note-of-pruning-value-cache">Note of Pruning Value Cache</h1>
+<p>There is a observation that value cache exhibits a more uniform distribution of activations. Making it challenging to apply the same channel-wise pruning without substantial degradation in model accuracy.</p>
+<p>And the author draw a conclusion that for value cache pruning, per-token magnitude-based pruning is already output-aware. (small value can lead to small output, it&rsquo;s not very rigorous conclusion)</p>
+<p>The author compared method: ThinK(structured), magnitude(per-channel), output-aware(per-channel) and magnitude(per-token), and draw a conclusion:</p>
+<p>unstructured pruning methods(channel or per-token) outperform structured pruning(ThinK). token-wise pruning best preserves model accuracy even at high sparsity levels. while channel-wise pruning can achieve comparable accuracy with output-awareness, token-wise pruning offers advantages in both efficiency and modularity.</p>
+<h1 id="note-of-sparse-attention-kernel">Note of Sparse Attention Kernel</h1>
+<p>The matrix-vector products(MVs) is a memory-bound operation on GPUs, which is widely used in attention mechanism.</p>
+<p>To exploit this property, bitmap-based sparse format is adopted to minimize I/O time.</p>
+<p>The compression is implemented using Triton.</p>
+<p>There are two types of attention computation in the decode stage. SpMV for the compressed KV cache, and dense MV for the KV cache with the local window(dense).</p>
+<p>About the SpMV, the kernel developed by the author follows the load-as-compressed, compute-as-dense paradigm.
+In detail, the compressed KV cache is loaded from GPU global memory into registers in compressed form.
+And it is decompressed into shared memory, and then used for tile-wise dense computation.</p>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>
