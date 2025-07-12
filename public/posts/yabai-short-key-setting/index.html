@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Basic .skhdrc configuration for yabai
+Save this as ~/.skhdrc
+Navigation - focus windows
+alt - h : yabai -m window &ndash;focus west
+alt - j : yabai -m window &ndash;focus south
+alt - k : yabai -m window &ndash;focus north
+alt - l : yabai -m window &ndash;focus east
+Moving windows
+shift &#43; alt - h : yabai -m window &ndash;warp west
+shift &#43; alt - j : yabai -m window &ndash;warp south
+shift &#43; alt - k : yabai -m window &ndash;warp north
+shift &#43; alt - l : yabai -m window &ndash;warp east">  
+
+  <title>
+    
+      yabai short key setting
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-07-12 07:26:05.558 &#43;0000 UTC">
+                            2025-07-12
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>yabai short key setting</h1>
+
+    
+
+    <h1 id="basic-skhdrc-configuration-for-yabai">Basic .skhdrc configuration for yabai</h1>
+<h1 id="save-this-as-skhdrc">Save this as ~/.skhdrc</h1>
+<h1 id="navigation---focus-windows">Navigation - focus windows</h1>
+<p>alt - h : yabai -m window &ndash;focus west
+alt - j : yabai -m window &ndash;focus south
+alt - k : yabai -m window &ndash;focus north
+alt - l : yabai -m window &ndash;focus east</p>
+<h1 id="moving-windows">Moving windows</h1>
+<p>shift + alt - h : yabai -m window &ndash;warp west
+shift + alt - j : yabai -m window &ndash;warp south
+shift + alt - k : yabai -m window &ndash;warp north
+shift + alt - l : yabai -m window &ndash;warp east</p>
+<h1 id="resize-windows">Resize windows</h1>
+<p>shift + alt - a : yabai -m window &ndash;resize left:-50:0; yabai -m window &ndash;resize right:-50:0
+shift + alt - s : yabai -m window &ndash;resize bottom:0:50; yabai -m window &ndash;resize top:0:50
+shift + alt - w : yabai -m window &ndash;resize top:0:-50; yabai -m window &ndash;resize bottom:0:-50
+shift + alt - d : yabai -m window &ndash;resize right:50:0; yabai -m window &ndash;resize left:50:0</p>
+<h1 id="balance-windows">Balance windows</h1>
+<p>shift + alt - 0 : yabai -m space &ndash;balance</p>
+<h1 id="move-windows-to-spaces">Move windows to spaces</h1>
+<p>shift + alt - 1 : yabai -m window &ndash;space 1; yabai -m space &ndash;focus 1
+shift + alt - 2 : yabai -m window &ndash;space 2; yabai -m space &ndash;focus 2
+shift + alt - 3 : yabai -m window &ndash;space 3; yabai -m space &ndash;focus 3
+shift + alt - 4 : yabai -m window &ndash;space 4; yabai -m space &ndash;focus 4</p>
+<h1 id="switch-spaces">Switch spaces</h1>
+<p>alt - 1 : yabai -m space &ndash;focus 1
+alt - 2 : yabai -m space &ndash;focus 2
+alt - 3 : yabai -m space &ndash;focus 3
+alt - 4 : yabai -m space &ndash;focus 4</p>
+<h1 id="layout-controls">Layout controls</h1>
+<p>alt - r : yabai -m space &ndash;rotate 90
+alt - y : yabai -m space &ndash;mirror y-axis
+alt - x : yabai -m space &ndash;mirror x-axis
+alt - t : yabai -m window &ndash;toggle float
+alt - f : yabai -m window &ndash;toggle zoom-fullscreen
+alt - space : yabai -m space &ndash;layout $(yabai -m query &ndash;spaces &ndash;space | jq -r &lsquo;if .type == &ldquo;bsp&rdquo; then &ldquo;stack&rdquo; else &ldquo;bsp&rdquo; end&rsquo;)</p>
+<h1 id="focus-monitor">Focus monitor</h1>
+<p>alt - tab : yabai -m display &ndash;focus recent
+alt - 1 : yabai -m display &ndash;focus 1
+alt - 2 : yabai -m display &ndash;focus 2</p>
+<h1 id="move-window-to-monitor">Move window to monitor</h1>
+<p>shift + alt - tab : yabai -m window &ndash;display recent; yabai -m display &ndash;focus recent
+shift + alt - 1 : yabai -m window &ndash;display 1; yabai -m display &ndash;focus 1
+shift + alt - 2 : yabai -m window &ndash;display 2; yabai -m display &ndash;focus 2</p>
+<h1 id="restart-yabai">Restart yabai</h1>
+<p>shift + alt - r : yabai &ndash;restart-service</p>
+<h1 id="floatunfloat-and-center-window">Float/unfloat and center window</h1>
+<p>alt - c : yabai -m window &ndash;toggle float; yabai -m window &ndash;grid 4:4:1:1:2:2</p>
+<h1 id="make-window-zoom-to-parent-node">Make window zoom to parent node</h1>
+<p>alt - z : yabai -m window &ndash;toggle zoom-parent</p>
+<h1 id="toggle-picture-in-picture">Toggle picture-in-picture</h1>
+<p>alt - p : yabai -m window &ndash;toggle pip</p>
+<h1 id="start-skhd">start skhd</h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>skhd <span style="color:#f92672">--</span>start<span style="color:#f92672">-</span>service
+</span></span></code></pre></div>
+</article>
+
+            </div>
+        </main>
+    </body></html>
