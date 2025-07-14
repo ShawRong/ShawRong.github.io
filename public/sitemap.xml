@@ -2,10 +2,19 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://example.org/posts/idea/</loc>
-    <lastmod>2025-07-14T02:08:08+00:00</lastmod>
+    <loc>https://example.org/posts/blackwell-note/</loc>
+    <lastmod>2025-07-14T11:05:28+00:00</lastmod>
   </url><url>
     <loc>https://example.org/posts/</loc>
+    <lastmod>2025-07-14T11:05:28+00:00</lastmod>
+  </url><url>
+    <loc>https://example.org/posts/black-well-note-claude-2/</loc>
+    <lastmod>2025-07-14T10:51:18+00:00</lastmod>
+  </url><url>
+    <loc>https://example.org/posts/nvidia-blackwell-umma-architecture-guide---part-one/</loc>
+    <lastmod>2025-07-14T07:15:24+00:00</lastmod>
+  </url><url>
+    <loc>https://example.org/posts/idea/</loc>
     <lastmod>2025-07-14T02:08:08+00:00</lastmod>
   </url><url>
     <loc>https://example.org/posts/yabai-short-key-setting/</loc>

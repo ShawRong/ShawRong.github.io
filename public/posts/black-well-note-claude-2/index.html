@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="NVIDIA Blackwell Mixed-Precision GEMM Notes
+Overview
+This note covers low-precision computation in NVIDIA Blackwell architecture, focusing on mixed-precision GEMM operations with sub-byte formats (FP8, FP6, FP4) and their implementation in CUTLASS.
+Key Concepts
+TMA (Tensor Memory Accelerator)
+
+Purpose: Hardware unit for efficient memory transfers between Global Memory (GMEM) and Shared Memory (SMEM)
+Key Features:
+
+Automated multi-dimensional tensor transfers (1D to 5D)
+Asynchronous operation (overlaps with computation)
+Data format transformations during transfer
+Layout conversions, precision conversions, sub-byte unpacking
+Scatter/gather operations, padding, boundary handling
+
+
+
+Mixed-Input UMMA
+
+Definition: UMMA operations where matrices A and B can have different data types
+Example: Matrix A (FP8) × Matrix B (FP6) → Matrix C (FP16)
+PTX Instruction: tcgen05.mma.mixed.m16n8k32.kind::f8f6f4
+
+Data Format Transformations
+Packed vs Unpacked Formats
+Packed Format (Storage in GMEM)
+FP4: [A1A2][B1B2] - 2 values per byte
+FP6: [A1A2A3][B1B2B3] - 4 values per 3 bytes  
+FP8: [A1][B1] - 1 value per byte
+Unpacked Format (Required by f8f6f4 UMMA)
+FP4: [A1--][A2--][B1--][B2--] - 1 value per byte (padded)
+FP6: [A1--][A2--][B1--][B2--] - 1 value per byte (padded)
+FP8: [A1][B1] - 1 value per byte (unchanged)
+TMA&rsquo;s Role in Unpacking
+
+Input: Packed data in GMEM
+Process: Automatic unpacking during transfer
+Output: Unpacked data in SMEM (UMMA-friendly format)
+Key Point: Data precision unchanged, only memory layout reorganized
+
+f8f6f4 UMMA Constraints
+Fixed Dimensions
+
+K extent: Always 32 elements
+Memory requirement: 32 elements × 1 byte = 32 bytes in SMEM
+Reason: Hardware constraint for mixed-precision operations
+
+TMA Alignment Requirements
+
+Base address: 32B aligned (vs usual 16B)
+Leading dimension: Multiple of 128 elements
+Swizzling: Only 128B patterns supported
+
+CUTLASS Stricter Alignment
+
+FP4 data: 64-byte aligned (128 elements × 0.5 bytes = 64 bytes)
+FP6 data: 96-byte aligned (128 elements × 0.75 bytes = 96 bytes)
+Purpose: Ensures every row&rsquo;s first element meets TMA alignment requirements
+
+Memory Source Limitations
+UMMA Operand Sources
+
+Allowed: A from TMEM, B from SMEM ✓
+Allowed: A from SMEM, B from SMEM ✓
+Not Allowed: A from TMEM, B from TMEM ❌
+Not Allowed: A from SMEM, B from TMEM ❌
+
+TMEM Requirements
+
+All sub-byte data must be padded to 1 byte per value
+Only operand A can source from TMEM
+Operand B restricted to SMEM only
+
+DeepSeek&rsquo;s Two-Level Accumulation
+The Problem
+
+FP8 Tensor Cores use ~14-bit precision accumulation (not full FP32)
+Causes training inaccuracies for large models
+
+DeepSeek&rsquo;s Solution
+
+Level 1: 4 consecutive WGMMA operations in Tensor Cores (FP8 accumulation)
+Level 2: Add partial result to FP32 accumulator using CUDA Cores
+Benefits: Speed of FP8 &#43; accuracy of FP32 accumulation
+
+Alternative Data Types
+mxf4 Type
+
+Supports: Packed SMEM format (2 FP4 values per byte)
+Usage: FP4-only operations (not mixed-precision)
+Advantage: Better memory efficiency
+TMA Type: CU_TENSOR_MAP_DATA_TYPE_16U4_ALIGN8B
+
+CuTe Integration
+Type Transformation in CUTLASS
+// User specifies
+using ElementA = cutlass::float_e2m3_t;  // Packed FP8
+
+// Builder transforms to
+using ElementAMma = cutlass::float_e2m3_unpacksmem_t;  // Unpacked FP8
+SMEM Layout Selection
+// Unified layout for all sub-byte types (after unpacking)
+using ElementAMma_SmemAllocType = 
+    cute::conditional_t&lt;cute::sizeof_bits_v&lt;ElementAMma&gt; &lt; 8, 
+                        uint8_t, ElementAMma&gt;;
+
+// Architecture-specific layout optimization
+using SmemLayoutAtomA = 
+    decltype(sm100_smem_selector&lt;...&gt;());  // SM 100 = Blackwell
+Architecture Evolution
+SM (Streaming Multiprocessor) Generations
+
+SM 70: Volta (V100)
+SM 80: Ampere (A100)
+SM 90: Hopper (H100)
+SM 100: Blackwell (B100, GB200)
+
+Blackwell-Specific Features
+
+Mixed-precision UMMA (f8f6f4)
+Tensor Memory (TMEM) support
+Enhanced TMA capabilities
+New swizzling patterns for optimal performance
+
+Key Takeaways
+
+Mixed-precision GEMM enables different data types for A and B matrices
+TMA automatically unpacks sub-byte data during GMEM→SMEM transfer
+f8f6f4 UMMA requires unpacked format (1 byte per value) in SMEM
+Strict alignment requirements ensure every row meets TMA constraints
+CUTLASS abstracts complexity through builder system and type transformations
+Architecture-specific optimizations maximize performance on each GPU generation
+
+Memory Efficiency Trade-offs
+
+  
+      
+          Format
+          Memory Usage
+          Access Speed
+          Use Case
+      
+  
+  
+      
+          Packed SMEM
+          High efficiency
+          Complex access
+          FP4-only operations
+      
+      
+          Unpacked SMEM
+          2x overhead (FP4)
+          Fast access
+          Mixed-precision operations
+      
+      
+          TMEM
+          1 byte/value
+          Fastest
+          Single operand optimization
+      
+  
+">  
+
+  <title>
+    
+      Black well note claude 2
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-07-14 10:51:18.523 &#43;0000 UTC">
+                            2025-07-14
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>Black well note claude 2</h1>
+
+    
+
+    <h1 id="nvidia-blackwell-mixed-precision-gemm-notes">NVIDIA Blackwell Mixed-Precision GEMM Notes</h1>
+<h2 id="overview">Overview</h2>
+<p>This note covers low-precision computation in NVIDIA Blackwell architecture, focusing on mixed-precision GEMM operations with sub-byte formats (FP8, FP6, FP4) and their implementation in CUTLASS.</p>
+<h2 id="key-concepts">Key Concepts</h2>
+<h3 id="tma-tensor-memory-accelerator">TMA (Tensor Memory Accelerator)</h3>
+<ul>
+<li><strong>Purpose</strong>: Hardware unit for efficient memory transfers between Global Memory (GMEM) and Shared Memory (SMEM)</li>
+<li><strong>Key Features</strong>:
+<ul>
+<li>Automated multi-dimensional tensor transfers (1D to 5D)</li>
+<li>Asynchronous operation (overlaps with computation)</li>
+<li>Data format transformations during transfer</li>
+<li>Layout conversions, precision conversions, sub-byte unpacking</li>
+<li>Scatter/gather operations, padding, boundary handling</li>
+</ul>
+</li>
+</ul>
+<h3 id="mixed-input-umma">Mixed-Input UMMA</h3>
+<ul>
+<li><strong>Definition</strong>: UMMA operations where matrices A and B can have different data types</li>
+<li><strong>Example</strong>: Matrix A (FP8) × Matrix B (FP6) → Matrix C (FP16)</li>
+<li><strong>PTX Instruction</strong>: <code>tcgen05.mma.mixed.m16n8k32.kind::f8f6f4</code></li>
+</ul>
+<h2 id="data-format-transformations">Data Format Transformations</h2>
+<h3 id="packed-vs-unpacked-formats">Packed vs Unpacked Formats</h3>
+<h4 id="packed-format-storage-in-gmem">Packed Format (Storage in GMEM)</h4>
+<pre tabindex="0"><code>FP4: [A1A2][B1B2] - 2 values per byte
+FP6: [A1A2A3][B1B2B3] - 4 values per 3 bytes  
+FP8: [A1][B1] - 1 value per byte
+</code></pre><h4 id="unpacked-format-required-by-f8f6f4-umma">Unpacked Format (Required by f8f6f4 UMMA)</h4>
+<pre tabindex="0"><code>FP4: [A1--][A2--][B1--][B2--] - 1 value per byte (padded)
+FP6: [A1--][A2--][B1--][B2--] - 1 value per byte (padded)
+FP8: [A1][B1] - 1 value per byte (unchanged)
+</code></pre><h3 id="tmas-role-in-unpacking">TMA&rsquo;s Role in Unpacking</h3>
+<ul>
+<li><strong>Input</strong>: Packed data in GMEM</li>
+<li><strong>Process</strong>: Automatic unpacking during transfer</li>
+<li><strong>Output</strong>: Unpacked data in SMEM (UMMA-friendly format)</li>
+<li><strong>Key Point</strong>: Data precision unchanged, only memory layout reorganized</li>
+</ul>
+<h2 id="f8f6f4-umma-constraints">f8f6f4 UMMA Constraints</h2>
+<h3 id="fixed-dimensions">Fixed Dimensions</h3>
+<ul>
+<li><strong>K extent</strong>: Always 32 elements</li>
+<li><strong>Memory requirement</strong>: 32 elements × 1 byte = 32 bytes in SMEM</li>
+<li><strong>Reason</strong>: Hardware constraint for mixed-precision operations</li>
+</ul>
+<h3 id="tma-alignment-requirements">TMA Alignment Requirements</h3>
+<ul>
+<li><strong>Base address</strong>: 32B aligned (vs usual 16B)</li>
+<li><strong>Leading dimension</strong>: Multiple of 128 elements</li>
+<li><strong>Swizzling</strong>: Only 128B patterns supported</li>
+</ul>
+<h3 id="cutlass-stricter-alignment">CUTLASS Stricter Alignment</h3>
+<ul>
+<li><strong>FP4 data</strong>: 64-byte aligned (128 elements × 0.5 bytes = 64 bytes)</li>
+<li><strong>FP6 data</strong>: 96-byte aligned (128 elements × 0.75 bytes = 96 bytes)</li>
+<li><strong>Purpose</strong>: Ensures every row&rsquo;s first element meets TMA alignment requirements</li>
+</ul>
+<h2 id="memory-source-limitations">Memory Source Limitations</h2>
+<h3 id="umma-operand-sources">UMMA Operand Sources</h3>
+<ul>
+<li><strong>Allowed</strong>: A from TMEM, B from SMEM ✓</li>
+<li><strong>Allowed</strong>: A from SMEM, B from SMEM ✓</li>
+<li><strong>Not Allowed</strong>: A from TMEM, B from TMEM ❌</li>
+<li><strong>Not Allowed</strong>: A from SMEM, B from TMEM ❌</li>
+</ul>
+<h3 id="tmem-requirements">TMEM Requirements</h3>
+<ul>
+<li>All sub-byte data must be padded to 1 byte per value</li>
+<li>Only operand A can source from TMEM</li>
+<li>Operand B restricted to SMEM only</li>
+</ul>
+<h2 id="deepseeks-two-level-accumulation">DeepSeek&rsquo;s Two-Level Accumulation</h2>
+<h3 id="the-problem">The Problem</h3>
+<ul>
+<li>FP8 Tensor Cores use ~14-bit precision accumulation (not full FP32)</li>
+<li>Causes training inaccuracies for large models</li>
+</ul>
+<h3 id="deepseeks-solution">DeepSeek&rsquo;s Solution</h3>
+<ol>
+<li><strong>Level 1</strong>: 4 consecutive WGMMA operations in Tensor Cores (FP8 accumulation)</li>
+<li><strong>Level 2</strong>: Add partial result to FP32 accumulator using CUDA Cores</li>
+<li><strong>Benefits</strong>: Speed of FP8 + accuracy of FP32 accumulation</li>
+</ol>
+<h2 id="alternative-data-types">Alternative Data Types</h2>
+<h3 id="mxf4-type">mxf4 Type</h3>
+<ul>
+<li><strong>Supports</strong>: Packed SMEM format (2 FP4 values per byte)</li>
+<li><strong>Usage</strong>: FP4-only operations (not mixed-precision)</li>
+<li><strong>Advantage</strong>: Better memory efficiency</li>
+<li><strong>TMA Type</strong>: <code>CU_TENSOR_MAP_DATA_TYPE_16U4_ALIGN8B</code></li>
+</ul>
+<h3 id="cute-integration">CuTe Integration</h3>
+<h4 id="type-transformation-in-cutlass">Type Transformation in CUTLASS</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">// User specifies
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">using</span> ElementA <span style="color:#f92672">=</span> cutlass<span style="color:#f92672">::</span>float_e2m3_t;  <span style="color:#75715e">// Packed FP8
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Builder transforms to
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">using</span> ElementAMma <span style="color:#f92672">=</span> cutlass<span style="color:#f92672">::</span>float_e2m3_unpacksmem_t;  <span style="color:#75715e">// Unpacked FP8
+</span></span></span></code></pre></div><h4 id="smem-layout-selection">SMEM Layout Selection</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">// Unified layout for all sub-byte types (after unpacking)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">using</span> ElementAMma_SmemAllocType <span style="color:#f92672">=</span> 
+</span></span><span style="display:flex;"><span>    cute<span style="color:#f92672">::</span>conditional_t<span style="color:#f92672">&lt;</span>cute<span style="color:#f92672">::</span>sizeof_bits_v<span style="color:#f92672">&lt;</span>ElementAMma<span style="color:#f92672">&gt;</span> <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">8</span>, 
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">uint8_t</span>, ElementAMma<span style="color:#f92672">&gt;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Architecture-specific layout optimization
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">using</span> SmemLayoutAtomA <span style="color:#f92672">=</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">decltype</span>(sm100_smem_selector<span style="color:#f92672">&lt;</span>...<span style="color:#f92672">&gt;</span>());  <span style="color:#75715e">// SM 100 = Blackwell
+</span></span></span></code></pre></div><h2 id="architecture-evolution">Architecture Evolution</h2>
+<h3 id="sm-streaming-multiprocessor-generations">SM (Streaming Multiprocessor) Generations</h3>
+<ul>
+<li><strong>SM 70</strong>: Volta (V100)</li>
+<li><strong>SM 80</strong>: Ampere (A100)</li>
+<li><strong>SM 90</strong>: Hopper (H100)</li>
+<li><strong>SM 100</strong>: Blackwell (B100, GB200)</li>
+</ul>
+<h3 id="blackwell-specific-features">Blackwell-Specific Features</h3>
+<ul>
+<li>Mixed-precision UMMA (f8f6f4)</li>
+<li>Tensor Memory (TMEM) support</li>
+<li>Enhanced TMA capabilities</li>
+<li>New swizzling patterns for optimal performance</li>
+</ul>
+<h2 id="key-takeaways">Key Takeaways</h2>
+<ol>
+<li><strong>Mixed-precision GEMM</strong> enables different data types for A and B matrices</li>
+<li><strong>TMA automatically unpacks</strong> sub-byte data during GMEM→SMEM transfer</li>
+<li><strong>f8f6f4 UMMA requires unpacked format</strong> (1 byte per value) in SMEM</li>
+<li><strong>Strict alignment requirements</strong> ensure every row meets TMA constraints</li>
+<li><strong>CUTLASS abstracts complexity</strong> through builder system and type transformations</li>
+<li><strong>Architecture-specific optimizations</strong> maximize performance on each GPU generation</li>
+</ol>
+<h2 id="memory-efficiency-trade-offs">Memory Efficiency Trade-offs</h2>
+<table>
+  <thead>
+      <tr>
+          <th>Format</th>
+          <th>Memory Usage</th>
+          <th>Access Speed</th>
+          <th>Use Case</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Packed SMEM</td>
+          <td>High efficiency</td>
+          <td>Complex access</td>
+          <td>FP4-only operations</td>
+      </tr>
+      <tr>
+          <td>Unpacked SMEM</td>
+          <td>2x overhead (FP4)</td>
+          <td>Fast access</td>
+          <td>Mixed-precision operations</td>
+      </tr>
+      <tr>
+          <td>TMEM</td>
+          <td>1 byte/value</td>
+          <td>Fastest</td>
+          <td>Single operand optimization</td>
+      </tr>
+  </tbody>
+</table>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

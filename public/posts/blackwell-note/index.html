@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="WGMMA and UMMA
+So first, this blog starts with comparing the old version of mma comes from hopper architecture. It&rsquo;s called wgmma, stands for warp grouped matrix multiply-accumulation.
+The feature of this wgmma, is the asynchronous instruction feature for matrix operation on Tensor core. It enables overlap of computation with other work, improve the efficiency.
+The new mma called umma, which stands for unified matrix multiply-accumulate. It&rsquo;s lib is called tcgen05, which stands for tensor core generation5. (blackwell is the 5th gen Tensor cores)">  
+
+  <title>
+    
+      Blackwell Note
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-07-14 11:05:28.879 &#43;0000 UTC">
+                            2025-07-14
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>Blackwell Note</h1>
+
+    
+
+    <h1 id="wgmma-and-umma">WGMMA and UMMA</h1>
+<p>So first, this blog starts with comparing the old version of mma comes from hopper architecture. It&rsquo;s called wgmma, stands for warp grouped matrix multiply-accumulation.</p>
+<p>The feature of this wgmma, is the asynchronous instruction feature for matrix operation on Tensor core. It enables overlap of computation with other work, improve the efficiency.</p>
+<p>The new mma called umma, which stands for unified matrix multiply-accumulate. It&rsquo;s lib is called tcgen05, which stands for tensor core generation5. (blackwell is the 5th gen Tensor cores)</p>
+<p>It comes with feature:</p>
+<ul>
+<li>single threaded(only one thread launches the operation) so you need if (tid == 0){} for usage of umma. This feature allows frees the workload of the other thread when launching mma.</li>
+</ul>
+<p>So in conlusion, the difference lies in:</p>
+<ul>
+<li>made data copying single-threaded and register-efficient. umma use a single thread to handle memory transfers instead of multiple threads.</li>
+<li>This single thread method avoids thread synchronization overhead and potential race conditions, and ensures predictable memory access patterns. It reduce context switching costs between threads.</li>
+<li>It uses tensor memory for fast storage of intermediate matrix computation result. It&rsquo;s a dedicated on-chip memory for UMMA accumulation</li>
+</ul>
+<h1 id="tensor-memory">Tensor memory</h1>
+<p>tensor memory is called tmem, too.
+tmem is not shared memory, it&rsquo;s dedicated tensor computation space.
+You can use tcgen05.alloc, tcgen05.ld to manage this.</p>
+<p>The tensor memory is consist of 128 lane(row), and 512 columns. each cell is 32-bit(4byte).</p>
+<p>each warp can only access to specific lanes:</p>
+<ul>
+<li>warp0: lane 0-31</li>
+<li>warp1: lane 32-63</li>
+<li>&hellip;</li>
+<li>warp3: lane 96-127
+obviously, tmem is not used for inter-warp data exchange.</li>
+</ul>
+<h1 id="umma-details-of-operation">UMMA details of operation</h1>
+<p>&hellip;</p>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

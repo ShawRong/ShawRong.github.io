@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="NVIDIA Blackwell UMMA Architecture Guide - Part One
+Overview
+This guide covers the fundamental concepts of NVIDIA&rsquo;s Blackwell GPU architecture, focusing on the transition from Hopper&rsquo;s WGMMA to Blackwell&rsquo;s UMMA (Unified Matrix Multiply-Accumulate) instruction and the introduction of Tensor Memory (TMEM).
+1. From Hopper WGMMA to Blackwell UMMA
+WGMMA (Hopper Architecture)
+
+Full Name: Warp Group Matrix Multiply-Accumulate
+Nature: Asynchronous instruction for matrix operations on Tensor Cores
+Launch Model: Multi-threaded (multiple threads coordinate to launch)
+Benefits of Async: Enables overlap of computation with other work, better resource utilization
+
+UMMA (Blackwell Architecture)
+
+Full Name: Unified Matrix Multiply-Accumulate (CUTLASS terminology for tcgen05.mma)
+Why tcgen05: Tensor Core Generation 5 (Blackwell = 5th gen Tensor Cores)
+Launch Model: Single-threaded (only one thread launches the operation)
+Operations Supported:
+
+D = A × B &#43; D (multiply-accumulate)
+D = A × B (multiply only)
+
+
+
+Key Evolution: TMA → UMMA Analogy
+
+TMA (Tensor Memory Accelerator): Made data copying single-threaded and register-efficient
+UMMA: Applies the same principles to matrix operations
+Both follow the pattern: offload complexity from software to dedicated hardware
+
+2. Tensor Memory (TMEM)
+What is TMEM?
+
+Definition: Dedicated on-chip memory for UMMA accumulation operations
+Purpose: Fast storage for intermediate matrix computation results
+Capacity: 128 rows (fixed) × variable columns
+
+TMEM Allocation
+// Allocation syntax
+tcgen05.alloc.b32 %tmem_descriptor, num_columns;
+
+// Requirements:
+// - Minimum 32 columns
+// - Must be power of 2 (32, 64, 128, 256, etc.)
+// - Allocation returns a descriptor/address
+// - Must explicitly deallocate with tcgen05.dealloc
+TMEM vs Other Memory Types
+TMEM ≠ Shared Memory
+├── TMEM: Dedicated tensor computation space
+└── Shared Memory: Stores TMEM descriptors/addresses for coordination
+Memory Access Restrictions
+
+Per-Warp Access: Each warp can only access specific lanes
+
+Warp 0: Lanes 0-31
+Warp 1: Lanes 32-63
+Warp 2: Lanes 64-95
+Warp 3: Lanes 96-127
+
+
+Implication: TMEM cannot be used for inter-warp data exchange
+
+3. UMMA Operation Details
+Matrix Operation Capabilities
+
+Supported Shapes:
+
+64 × N × 16 (N = multiple of 8, max 256)
+128 × N × 16 (N = multiple of 16, max 256)
+
+
+Largest Atom: 128 × 256 × 16 (twice the size of largest WGMMA)
+
+Performance Optimization
+
+Pipeline Efficiency: Largest UMMA uses only 50% of TMEM
+Benefit: Multiple UMMA operations can pipeline without performance loss
+Result: Continuous execution, maximum throughput
+
+Input Descriptors
+
+Matrix Descriptors: 64-bit values containing address, layout, and swizzling info
+Special Case: If matrix A comes from TMEM, descriptor is replaced by simple TMEM address
+Instruction Descriptor: 32-bit metadata containing:
+
+Data type and sparsity information
+Transpose/negate flags for A and B matrices
+Accumulation control (enable-input-d)
+
+
+
+4. Key Features and Capabilities
+Data Layout and Swizzling
+
+Swizzling: Data rearrangement to optimize hardware access patterns
+Purpose: Avoid memory bank conflicts, enable coalesced access
+Expected Layout: K-major format in shared memory
+Hardware Transpose: &ldquo;Free&rdquo; transpose during memory read (no computation cost)
+
+Advanced Features
+
+Sparsity Support: Hardware optimization for matrices with many zeros
+Transpose/Negate: Built-in matrix transformations during operation
+Accumulation Control:
+
+Zero out: D = A × B (fresh start)
+Accumulate: D = A × B &#43; D (add to existing)
+
+
+
+CTA Pairs and Multi-SM Coordination
+
+CTA Pair: Two adjacent CTAs within an SM cluster working together
+Launch Model: Even with CTA pairs, only one thread in one CTA launches UMMA
+Hardware Coordination: Automatic coordination between CTAs
+
+5. Memory Movement Operations
+TMEM Data Flow
+Data IN:  UMMA operations → TMEM
+Data OUT: tcgen05.ld → RMEM (registers)
+Manual:   tcgen05.cp (SMEM→TMEM), tcgen05.st (RMEM→TMEM)
+Memory Space Terminology
+
+GMEM: Global Memory
+SMEM: Shared Memory
+TMEM: Tensor Memory
+RMEM: Register Memory (registers)
+
+6. Epilogue Processing
+Definition
+Epilogue: Post-processing operations after main matrix multiplication">  
+
+  <title>
+    
+      Nvidia Blackwell UMMA Architecture Guide - Part One
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-07-14 07:15:24.147 &#43;0000 UTC">
+                            2025-07-14
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>Nvidia Blackwell UMMA Architecture Guide - Part One</h1>
+
+    
+
+    <h1 id="nvidia-blackwell-umma-architecture-guide---part-one">NVIDIA Blackwell UMMA Architecture Guide - Part One</h1>
+<h2 id="overview">Overview</h2>
+<p>This guide covers the fundamental concepts of NVIDIA&rsquo;s Blackwell GPU architecture, focusing on the transition from Hopper&rsquo;s WGMMA to Blackwell&rsquo;s UMMA (Unified Matrix Multiply-Accumulate) instruction and the introduction of Tensor Memory (TMEM).</p>
+<h2 id="1-from-hopper-wgmma-to-blackwell-umma">1. From Hopper WGMMA to Blackwell UMMA</h2>
+<h3 id="wgmma-hopper-architecture">WGMMA (Hopper Architecture)</h3>
+<ul>
+<li><strong>Full Name</strong>: Warp Group Matrix Multiply-Accumulate</li>
+<li><strong>Nature</strong>: Asynchronous instruction for matrix operations on Tensor Cores</li>
+<li><strong>Launch Model</strong>: Multi-threaded (multiple threads coordinate to launch)</li>
+<li><strong>Benefits of Async</strong>: Enables overlap of computation with other work, better resource utilization</li>
+</ul>
+<h3 id="umma-blackwell-architecture">UMMA (Blackwell Architecture)</h3>
+<ul>
+<li><strong>Full Name</strong>: Unified Matrix Multiply-Accumulate (CUTLASS terminology for <code>tcgen05.mma</code>)</li>
+<li><strong>Why tcgen05</strong>: Tensor Core Generation 5 (Blackwell = 5th gen Tensor Cores)</li>
+<li><strong>Launch Model</strong>: Single-threaded (only one thread launches the operation)</li>
+<li><strong>Operations Supported</strong>:
+<ul>
+<li><code>D = A × B + D</code> (multiply-accumulate)</li>
+<li><code>D = A × B</code> (multiply only)</li>
+</ul>
+</li>
+</ul>
+<h3 id="key-evolution-tma--umma-analogy">Key Evolution: TMA → UMMA Analogy</h3>
+<ul>
+<li><strong>TMA (Tensor Memory Accelerator)</strong>: Made data copying single-threaded and register-efficient</li>
+<li><strong>UMMA</strong>: Applies the same principles to matrix operations</li>
+<li>Both follow the pattern: <strong>offload complexity from software to dedicated hardware</strong></li>
+</ul>
+<h2 id="2-tensor-memory-tmem">2. Tensor Memory (TMEM)</h2>
+<h3 id="what-is-tmem">What is TMEM?</h3>
+<ul>
+<li><strong>Definition</strong>: Dedicated on-chip memory for UMMA accumulation operations</li>
+<li><strong>Purpose</strong>: Fast storage for intermediate matrix computation results</li>
+<li><strong>Capacity</strong>: 128 rows (fixed) × variable columns</li>
+</ul>
+<h3 id="tmem-allocation">TMEM Allocation</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">// Allocation syntax
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>tcgen05.alloc.b32 <span style="color:#f92672">%</span>tmem_descriptor, num_columns;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Requirements:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// - Minimum 32 columns
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// - Must be power of 2 (32, 64, 128, 256, etc.)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// - Allocation returns a descriptor/address
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// - Must explicitly deallocate with tcgen05.dealloc
+</span></span></span></code></pre></div><h3 id="tmem-vs-other-memory-types">TMEM vs Other Memory Types</h3>
+<pre tabindex="0"><code>TMEM ≠ Shared Memory
+├── TMEM: Dedicated tensor computation space
+└── Shared Memory: Stores TMEM descriptors/addresses for coordination
+</code></pre><h3 id="memory-access-restrictions">Memory Access Restrictions</h3>
+<ul>
+<li><strong>Per-Warp Access</strong>: Each warp can only access specific lanes
+<ul>
+<li>Warp 0: Lanes 0-31</li>
+<li>Warp 1: Lanes 32-63</li>
+<li>Warp 2: Lanes 64-95</li>
+<li>Warp 3: Lanes 96-127</li>
+</ul>
+</li>
+<li><strong>Implication</strong>: TMEM cannot be used for inter-warp data exchange</li>
+</ul>
+<h2 id="3-umma-operation-details">3. UMMA Operation Details</h2>
+<h3 id="matrix-operation-capabilities">Matrix Operation Capabilities</h3>
+<ul>
+<li><strong>Supported Shapes</strong>:
+<ul>
+<li>64 × N × 16 (N = multiple of 8, max 256)</li>
+<li>128 × N × 16 (N = multiple of 16, max 256)</li>
+</ul>
+</li>
+<li><strong>Largest Atom</strong>: 128 × 256 × 16 (twice the size of largest WGMMA)</li>
+</ul>
+<h3 id="performance-optimization">Performance Optimization</h3>
+<ul>
+<li><strong>Pipeline Efficiency</strong>: Largest UMMA uses only 50% of TMEM</li>
+<li><strong>Benefit</strong>: Multiple UMMA operations can pipeline without performance loss</li>
+<li><strong>Result</strong>: Continuous execution, maximum throughput</li>
+</ul>
+<h3 id="input-descriptors">Input Descriptors</h3>
+<ul>
+<li><strong>Matrix Descriptors</strong>: 64-bit values containing address, layout, and swizzling info</li>
+<li><strong>Special Case</strong>: If matrix A comes from TMEM, descriptor is replaced by simple TMEM address</li>
+<li><strong>Instruction Descriptor</strong>: 32-bit metadata containing:
+<ul>
+<li>Data type and sparsity information</li>
+<li>Transpose/negate flags for A and B matrices</li>
+<li>Accumulation control (<code>enable-input-d</code>)</li>
+</ul>
+</li>
+</ul>
+<h2 id="4-key-features-and-capabilities">4. Key Features and Capabilities</h2>
+<h3 id="data-layout-and-swizzling">Data Layout and Swizzling</h3>
+<ul>
+<li><strong>Swizzling</strong>: Data rearrangement to optimize hardware access patterns</li>
+<li><strong>Purpose</strong>: Avoid memory bank conflicts, enable coalesced access</li>
+<li><strong>Expected Layout</strong>: K-major format in shared memory</li>
+<li><strong>Hardware Transpose</strong>: &ldquo;Free&rdquo; transpose during memory read (no computation cost)</li>
+</ul>
+<h3 id="advanced-features">Advanced Features</h3>
+<ol>
+<li><strong>Sparsity Support</strong>: Hardware optimization for matrices with many zeros</li>
+<li><strong>Transpose/Negate</strong>: Built-in matrix transformations during operation</li>
+<li><strong>Accumulation Control</strong>:
+<ul>
+<li>Zero out: <code>D = A × B</code> (fresh start)</li>
+<li>Accumulate: <code>D = A × B + D</code> (add to existing)</li>
+</ul>
+</li>
+</ol>
+<h3 id="cta-pairs-and-multi-sm-coordination">CTA Pairs and Multi-SM Coordination</h3>
+<ul>
+<li><strong>CTA Pair</strong>: Two adjacent CTAs within an SM cluster working together</li>
+<li><strong>Launch Model</strong>: Even with CTA pairs, only one thread in one CTA launches UMMA</li>
+<li><strong>Hardware Coordination</strong>: Automatic coordination between CTAs</li>
+</ul>
+<h2 id="5-memory-movement-operations">5. Memory Movement Operations</h2>
+<h3 id="tmem-data-flow">TMEM Data Flow</h3>
+<pre tabindex="0"><code>Data IN:  UMMA operations → TMEM
+Data OUT: tcgen05.ld → RMEM (registers)
+Manual:   tcgen05.cp (SMEM→TMEM), tcgen05.st (RMEM→TMEM)
+</code></pre><h3 id="memory-space-terminology">Memory Space Terminology</h3>
+<ul>
+<li><strong>GMEM</strong>: Global Memory</li>
+<li><strong>SMEM</strong>: Shared Memory</li>
+<li><strong>TMEM</strong>: Tensor Memory</li>
+<li><strong>RMEM</strong>: Register Memory (registers)</li>
+</ul>
+<h2 id="6-epilogue-processing">6. Epilogue Processing</h2>
+<h3 id="definition">Definition</h3>
+<p><strong>Epilogue</strong>: Post-processing operations after main matrix multiplication</p>
+<ul>
+<li>Activation functions (ReLU, sigmoid)</li>
+<li>Bias addition, scaling</li>
+<li>Data type conversion</li>
+<li>Storage to global memory</li>
+</ul>
+<h3 id="warpgroup-requirement">Warpgroup Requirement</h3>
+<ul>
+<li><strong>Problem</strong>: Large UMMA results span entire TMEM (all 128 lanes)</li>
+<li><strong>Solution</strong>: Entire warpgroup (4 warps) needed for epilogue</li>
+<li><strong>Process</strong>:
+<ol>
+<li>Each warp reads its ¼ of TMEM (32 lanes)</li>
+<li>Each warp processes its portion independently</li>
+<li>Each warp stores results to global memory</li>
+</ol>
+</li>
+</ul>
+<h2 id="7-programming-model-simplification">7. Programming Model Simplification</h2>
+<h3 id="before-wgmma">Before (WGMMA)</h3>
+<ul>
+<li>Multi-threaded coordination required</li>
+<li>Complex register management across threads</li>
+<li>Higher software complexity</li>
+</ul>
+<h3 id="after-umma">After (UMMA)</h3>
+<ul>
+<li>Single-threaded launch</li>
+<li>Hardware manages complexity</li>
+<li>Simplified programming model</li>
+<li>Register-efficient design</li>
+</ul>
+<hr>
+<h2 id="next-part-two-preview">Next: Part Two Preview</h2>
+<p>The next part will cover:</p>
+<ul>
+<li>2-CTA UMMA operations</li>
+<li>Advanced CUTLASS utilities</li>
+<li>Detailed swizzling patterns</li>
+<li>Performance optimization strategies</li>
+</ul>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>
