@@ -1,6 +1,6 @@
 ---
 title: "Blackwell Note"
-date: 2025-07-14T11:05:28.879Z
+date: 2025-07-14T11:07:38.680Z
 draft: false
 tags: []
 ---
@@ -36,4 +36,4 @@ each warp can only access to specific lanes:
 obviously, tmem is not used for inter-warp data exchange. 
 
 # UMMA details of operation
-...
+to be continue.

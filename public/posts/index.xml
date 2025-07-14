@@ -6,12 +6,12 @@
     <description>Recent content in Posts on My New Hugo Site</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 14 Jul 2025 11:05:28 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 14 Jul 2025 11:07:38 +0000</lastBuildDate>
     <atom:link href="https://example.org/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Blackwell Note</title>
       <link>https://example.org/posts/blackwell-note/</link>
-      <pubDate>Mon, 14 Jul 2025 11:05:28 +0000</pubDate>
+      <pubDate>Mon, 14 Jul 2025 11:07:38 +0000</pubDate>
       <guid>https://example.org/posts/blackwell-note/</guid>
       <description>&lt;h1 id=&#34;wgmma-and-umma&#34;&gt;WGMMA and UMMA&lt;/h1&gt;&#xA;&lt;p&gt;So first, this blog starts with comparing the old version of mma comes from hopper architecture. It&amp;rsquo;s called wgmma, stands for warp grouped matrix multiply-accumulation.&lt;/p&gt;&#xA;&lt;p&gt;The feature of this wgmma, is the asynchronous instruction feature for matrix operation on Tensor core. It enables overlap of computation with other work, improve the efficiency.&lt;/p&gt;&#xA;&lt;p&gt;The new mma called umma, which stands for unified matrix multiply-accumulate. It&amp;rsquo;s lib is called tcgen05, which stands for tensor core generation5. (blackwell is the 5th gen Tensor cores)&lt;/p&gt;</description>
     </item>
