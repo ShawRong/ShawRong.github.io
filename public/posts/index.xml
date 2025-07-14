@@ -6,14 +6,14 @@
     <description>Recent content in Posts on My New Hugo Site</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 13 Jul 2025 10:19:07 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 14 Jul 2025 02:08:08 +0000</lastBuildDate>
     <atom:link href="https://example.org/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Idea</title>
       <link>https://example.org/posts/idea/</link>
-      <pubDate>Sun, 13 Jul 2025 10:19:07 +0000</pubDate>
+      <pubDate>Mon, 14 Jul 2025 02:08:08 +0000</pubDate>
       <guid>https://example.org/posts/idea/</guid>
-      <description>&lt;p&gt;name: unstructured mixture quantization.&lt;/p&gt;&#xA;&lt;p&gt;idea:&#xA;consider a tile(8x8) of matrix,&#xA;for each row(token level), we set a constant sparsity level, such as 4/8.&#xA;we keep 4 out of 8 to be fp16, the rest 4 to be fp8.&#xA;we get:&#xA;f16 stands for fp16, f8 stands for fp8.&#xA;[f16, f16, f16, f16,  f8, f8, f8, f8]&#xA;[f16, f8, f16, f16,   f16, f8, f8, f8]&#xA;[f16, f16, f16, f16,  f8, f8, f8, f8]&#xA;[f8, f16, f16, f8,   f16, f8, f16, f8]&#xA;&amp;hellip; (8 row in total)&lt;/p&gt;</description>
+      <description></description>
     </item>
     <item>
       <title>yabai short key setting</title>

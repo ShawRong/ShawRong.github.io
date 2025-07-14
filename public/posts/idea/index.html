@@ -3,18 +3,7 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-   <meta name="description" content="name: unstructured mixture quantization.
-idea:
-consider a tile(8x8) of matrix,
-for each row(token level), we set a constant sparsity level, such as 4/8.
-we keep 4 out of 8 to be fp16, the rest 4 to be fp8.
-we get:
-f16 stands for fp16, f8 stands for fp8.
-[f16, f16, f16, f16,  f8, f8, f8, f8]
-[f16, f8, f16, f16,   f16, f8, f8, f8]
-[f16, f16, f16, f16,  f8, f8, f8, f8]
-[f8, f16, f16, f8,   f16, f8, f16, f8]
-&hellip; (8 row in total)">  
+   <meta name="description" content="">  
 
   <title>
     
@@ -37,8 +26,8 @@ f16 stands for fp16, f8 stands for fp8.
                     <a href="/">..</a>
 
                     <p>
-                        <time datetime="2025-07-13 10:19:07.748 &#43;0000 UTC">
-                            2025-07-13
+                        <time datetime="2025-07-14 02:08:08.857 &#43;0000 UTC">
+                            2025-07-14
                         </time>
                     </p>
                 </div>
@@ -48,81 +37,7 @@ f16 stands for fp16, f8 stands for fp8.
 
     
 
-    <p>name: unstructured mixture quantization.</p>
-<p>idea:
-consider a tile(8x8) of matrix,
-for each row(token level), we set a constant sparsity level, such as 4/8.
-we keep 4 out of 8 to be fp16, the rest 4 to be fp8.
-we get:
-f16 stands for fp16, f8 stands for fp8.
-[f16, f16, f16, f16,  f8, f8, f8, f8]
-[f16, f8, f16, f16,   f16, f8, f8, f8]
-[f16, f16, f16, f16,  f8, f8, f8, f8]
-[f8, f16, f16, f8,   f16, f8, f16, f8]
-&hellip; (8 row in total)</p>
-<p>and we factorize fp16 into multiply result of fp8. and we get</p>
-<p>[2xf8, 2xf8, 2xf8, 2xf8,  f8, f8, f8, f8]
-[2xf8, f8, 2xf8, 2xf8,   2xf8, f8, f8, f8]
-[2xf8, 2xf8, 2xf8, 2xf8,  f8, f8, f8, f8]
-[f8, 2xf8, 2xf8, f8,   2xf8, f8, 2xf8, f8]
-&hellip;</p>
-<p>we get dimension from 4x8 -&gt; 4x12.
-byte for each row changes from fp16 * 8 -&gt; fp8 * 12 i.e. 16 byte -&gt; 12 byte.</p>
-<p>If we keep only one fp16, we get 16byte -&gt; 9byte</p>
-<p>and we need a bitmap, looks like:
-[1, 1, 1, 1, 0, 0, 0, 0]
-[1, 0, 1, 1, 1, 0, 0, 0]
-[1, 1, 1, 1, 0, 0, 0, 0]
-[0, 1, 1, 0, 1, 0, 1, 0]
-&hellip;</p>
-<p>or : [0, 1, 2, 3, 8, 10, 11, 12, 16, 17, 18, 19, &hellip;]</p>
-<p>It takes about 8byte for a tile using first way. or we need &hellip;</p>
-<p>we can generate a mask matrix from the first one, and we can do:</p>
-<p>Assume we get previous matrix note as M, and a vector x, we get:
-QK^T = X</p>
-<p>and we can separate K into two matrices such that K = K_1 + K_2</p>
-<p>so, we have:
-QK^T = Q(K_1 + K2)^T = QK_1^T + QK_2^T = X</p>
-<p>suppose we have matrix M, s.t.
-MK = K_1
-M&rsquo;K = K_2
-K_1 + K_2 = K
-(M + M&rsquo;) K = MK + M&rsquo;K = K_1 + K_2 = K
-M + M&rsquo; = I
-M&rsquo; = I - M</p>
-<p>we just need M for mask of fp16.</p>
-<p>when doing calculation, we use mask matrix M, suppose the matrix of mixture precision, is K.</p>
-<p>Q (MK)^T + Q ((I - M)K)^T</p>
-<p>of course, in the 1st term, we need to convert 2xfp8 into fp16 during calculation. this is trivial.</p>
-<p>It&rsquo;s like:</p>
-<p>[2xf8, 2xf8, 2xf8, 2xf8,  f8, f8, f8, f8]
-[2xf8, f8, 2xf8, 2xf8,   2xf8, f8, f8, f8]
-[2xf8, 2xf8, 2xf8, 2xf8,  f8, f8, f8, f8]
-[f8, 2xf8, 2xf8, f8,   2xf8, f8, 2xf8, f8]
-&hellip;</p>
-<p>after masking:</p>
-<p>[2xf8, 2xf8, 2xf8, 2xf8,  0, 0, 0, 0]
-[2xf8, 0, 2xf8, 2xf8,   2xf8, 0, 0, 0]
-[2xf8, 2xf8, 2xf8, 2xf8,  0, 0, 0, 0]
-[0, 2xf8, 2xf8, 0,   2xf8, 0, 2xf8, 0]
-&hellip;</p>
-<p>convert to fp16.</p>
-<p>[fp16, fp16, fp16, fp16,  0, 0, 0, 0]
-[fp16, 0, fp16, fp16,   fp16, 0, 0, 0]
-[fp16, fp16, fp16, fp16,  0, 0, 0, 0]
-[0, fp16, fp16, 0,   fp16, 0, fp16, 0]
-&hellip;</p>
-<p>multiply</p>
-<p>and we do mask to get fp8:</p>
-<p>[0, 0, 0, 0,  f8, f8, f8, f8]
-[0, f8, 0, 0,   0, f8, f8, f8]
-[0, 0, 0, 0,  f8, f8, f8, f8]
-[f8, 0, 0, f8,   0, f8, 0, f8]
-&hellip;</p>
-<p>do the calculation.</p>
-<p>after this, we add to get the correct anwser &hellip;</p>
-<p>then we can use this for mixture precision</p>
-
+    
 </article>
 
             </div>
