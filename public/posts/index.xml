@@ -6,8 +6,15 @@
     <description>Recent content in Posts on My New Hugo Site</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 14 Jul 2025 11:07:38 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 14 Jul 2025 11:10:19 +0000</lastBuildDate>
     <atom:link href="https://example.org/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ML Quantization &amp; Optimization Notes</title>
+      <link>https://example.org/posts/ml-quantization--optimization-notes/</link>
+      <pubDate>Mon, 14 Jul 2025 11:10:19 +0000</pubDate>
+      <guid>https://example.org/posts/ml-quantization--optimization-notes/</guid>
+      <description>&lt;h1 id=&#34;ml-quantization--optimization-notes&#34;&gt;ML Quantization &amp;amp; Optimization Notes&lt;/h1&gt;&#xA;&lt;h2 id=&#34;core-quantization-concepts&#34;&gt;Core Quantization Concepts&lt;/h2&gt;&#xA;&lt;h3 id=&#34;microscaling&#34;&gt;Microscaling&lt;/h3&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Definition&lt;/strong&gt;: Quantization technique applying different scaling factors to small groups of values (2-4 elements)&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Benefit&lt;/strong&gt;: More fine-grained precision control vs. tensor-wide scaling&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Use case&lt;/strong&gt;: Better handling of outliers while maintaining efficiency&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h3 id=&#34;fp4-vs-int4&#34;&gt;FP4 vs INT4&lt;/h3&gt;&#xA;&lt;p&gt;&lt;strong&gt;FP4 (4-bit Floating Point)&lt;/strong&gt;:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Structure: Sign + Exponent + Mantissa in 4 bits&lt;/li&gt;&#xA;&lt;li&gt;Common formats: [1|2|1] or [1|3|0] bits&lt;/li&gt;&#xA;&lt;li&gt;Non-uniform value spacing (denser near zero)&lt;/li&gt;&#xA;&lt;li&gt;Better dynamic range and outlier handling&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;&lt;strong&gt;INT4 (4-bit Integer)&lt;/strong&gt;:&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Blackwell Note</title>
       <link>https://example.org/posts/blackwell-note/</link>

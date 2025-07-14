@@ -2,10 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://example.org/posts/blackwell-note/</loc>
-    <lastmod>2025-07-14T11:07:38+00:00</lastmod>
+    <loc>https://example.org/posts/ml-quantization--optimization-notes/</loc>
+    <lastmod>2025-07-14T11:10:19+00:00</lastmod>
   </url><url>
     <loc>https://example.org/posts/</loc>
+    <lastmod>2025-07-14T11:10:19+00:00</lastmod>
+  </url><url>
+    <loc>https://example.org/posts/blackwell-note/</loc>
     <lastmod>2025-07-14T11:07:38+00:00</lastmod>
   </url><url>
     <loc>https://example.org/posts/black-well-note-claude-2/</loc>

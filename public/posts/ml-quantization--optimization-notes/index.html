@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="ML Quantization &amp; Optimization Notes
+Core Quantization Concepts
+Microscaling
+
+Definition: Quantization technique applying different scaling factors to small groups of values (2-4 elements)
+Benefit: More fine-grained precision control vs. tensor-wide scaling
+Use case: Better handling of outliers while maintaining efficiency
+
+FP4 vs INT4
+FP4 (4-bit Floating Point):
+
+Structure: Sign &#43; Exponent &#43; Mantissa in 4 bits
+Common formats: [1|2|1] or [1|3|0] bits
+Non-uniform value spacing (denser near zero)
+Better dynamic range and outlier handling
+
+INT4 (4-bit Integer):">  
+
+  <title>
+    
+      ML Quantization &amp; Optimization Notes
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-07-14 11:10:19.097 &#43;0000 UTC">
+                            2025-07-14
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>ML Quantization &amp; Optimization Notes</h1>
+
+    
+
+    <h1 id="ml-quantization--optimization-notes">ML Quantization &amp; Optimization Notes</h1>
+<h2 id="core-quantization-concepts">Core Quantization Concepts</h2>
+<h3 id="microscaling">Microscaling</h3>
+<ul>
+<li><strong>Definition</strong>: Quantization technique applying different scaling factors to small groups of values (2-4 elements)</li>
+<li><strong>Benefit</strong>: More fine-grained precision control vs. tensor-wide scaling</li>
+<li><strong>Use case</strong>: Better handling of outliers while maintaining efficiency</li>
+</ul>
+<h3 id="fp4-vs-int4">FP4 vs INT4</h3>
+<p><strong>FP4 (4-bit Floating Point)</strong>:</p>
+<ul>
+<li>Structure: Sign + Exponent + Mantissa in 4 bits</li>
+<li>Common formats: [1|2|1] or [1|3|0] bits</li>
+<li>Non-uniform value spacing (denser near zero)</li>
+<li>Better dynamic range and outlier handling</li>
+</ul>
+<p><strong>INT4 (4-bit Integer)</strong>:</p>
+<ul>
+<li>Fixed-point representation with uniform spacing</li>
+<li>Simpler computation but prone to saturation</li>
+<li>Limited dynamic range</li>
+</ul>
+<h3 id="fp4-with-microscaling-architecture">FP4 with Microscaling Architecture</h3>
+<pre tabindex="0"><code>Traditional: [S|EE|M] per value (4 bits each)
+Microscaled: [EE|EE] + [S|M|S|M|S|M|S|M]
+            ^shared    ^individual mantissas
+</code></pre><ul>
+<li><strong>Efficiency</strong>: ~2.5 bits/value for groups of 4</li>
+<li><strong>Implementation</strong>: Shared exponent decoder + multiple mantissa units</li>
+</ul>
+<h2 id="floating-point-fundamentals">Floating Point Fundamentals</h2>
+<h3 id="exponent-mantissa-structure">Exponent-Mantissa Structure</h3>
+<pre tabindex="0"><code>Value = (-1)^sign × (1 + mantissa) × 2^(exponent - bias)
+</code></pre><ul>
+<li><strong>Exponent</strong>: Provides dynamic range (wide magnitude coverage)</li>
+<li><strong>Mantissa</strong>: Provides precision (significant digits)</li>
+<li><strong>Benefit</strong>: Consistent relative precision across magnitudes</li>
+</ul>
+<h3 id="clipping">Clipping</h3>
+<ul>
+<li><strong>Definition</strong>: Constraining values to [min, max] range</li>
+<li><strong>Applications</strong>: Gradient clipping, activation clipping, quantization clipping</li>
+<li><strong>Purpose</strong>: Prevent overflow/saturation issues</li>
+</ul>
+<h2 id="fisher-information--uncertainty">Fisher Information &amp; Uncertainty</h2>
+<h3 id="fisher-information-matrix">Fisher Information Matrix</h3>
+<p><strong>Full Matrix</strong>:</p>
+<pre tabindex="0"><code>F_ij = E[(∂log p(x|θ)/∂θᵢ)(∂log p(x|θ)/∂θⱼ)]
+</code></pre><ul>
+<li>Measures parameter sensitivity and information content</li>
+<li>Off-diagonal terms capture parameter interactions</li>
+<li>O(n²) computation complexity</li>
+</ul>
+<p><strong>Diagonal Approximation</strong>:</p>
+<pre tabindex="0"><code>F_ii = E[(∂log p(x|θ)/∂θᵢ)²]
+</code></pre><ul>
+<li>Assumes parameter independence</li>
+<li>O(n) computation - much more tractable</li>
+<li>Estimated by averaging squared gradients over calibration data</li>
+</ul>
+<h3 id="why-squared-gradients-work">Why Squared Gradients Work</h3>
+<pre tabindex="0"><code>F_ii ≈ (1/N) Σₙ (∇log p(xₙ|θ)/∂θᵢ)²
+</code></pre><ul>
+<li>Empirical approximation of expectation over data distribution</li>
+<li>Higher values indicate more sensitive/informative parameters</li>
+<li>Used to guide quantization precision allocation</li>
+</ul>
+<h3 id="uncertainty-quantification">Uncertainty Quantification</h3>
+<ul>
+<li><strong>Purpose</strong>: Measure confidence in model predictions</li>
+<li><strong>Method</strong>: Parameter uncertainty → prediction uncertainty</li>
+<li><strong>Relationship</strong>: <code>Var(θᵢ) ≈ (F⁻¹)ᵢᵢ</code></li>
+</ul>
+<h2 id="calibration-set-selection">Calibration Set Selection</h2>
+<h3 id="purpose">Purpose</h3>
+<ul>
+<li>Determine optimal quantization parameters (scales, zero-points, clipping thresholds)</li>
+<li>Representative subset for post-training quantization</li>
+</ul>
+<h3 id="selection-criteria">Selection Criteria</h3>
+<ul>
+<li><strong>Size</strong>: 100-1000 samples (accuracy vs efficiency balance)</li>
+<li><strong>Representativeness</strong>: Must capture deployment data distribution</li>
+<li><strong>Diversity</strong>: Cover different modes, edge cases, typical examples</li>
+<li><strong>Stratification</strong>: Ensure all classes/categories represented</li>
+</ul>
+<h3 id="selection-strategies">Selection Strategies</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Random sampling</span>
+</span></span><span style="display:flex;"><span>calib_set <span style="color:#f92672">=</span> random<span style="color:#f92672">.</span>sample(train_set, <span style="color:#ae81ff">1000</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Stratified sampling</span>
+</span></span><span style="display:flex;"><span>samples_per_class <span style="color:#f92672">=</span> total_samples <span style="color:#f92672">//</span> num_classes
+</span></span><span style="display:flex;"><span>calib_set <span style="color:#f92672">=</span> [random<span style="color:#f92672">.</span>sample(class_data, samples_per_class) 
+</span></span><span style="display:flex;"><span>             <span style="color:#66d9ef">for</span> class_data <span style="color:#f92672">in</span> grouped_by_class]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Clustering-based</span>
+</span></span><span style="display:flex;"><span>features <span style="color:#f92672">=</span> extract_features(train_set)
+</span></span><span style="display:flex;"><span>clusters <span style="color:#f92672">=</span> kmeans(features, n_clusters<span style="color:#f92672">=</span><span style="color:#ae81ff">100</span>)
+</span></span><span style="display:flex;"><span>calib_set <span style="color:#f92672">=</span> [select_representative(cluster) <span style="color:#66d9ef">for</span> cluster <span style="color:#f92672">in</span> clusters]
+</span></span></code></pre></div><h3 id="best-practices">Best Practices</h3>
+<ul>
+<li>Use validation set (avoid test set leakage)</li>
+<li>Monitor activation statistics during selection</li>
+<li>Include domain-specific variations (lighting, vocabulary, etc.)</li>
+<li>Sometimes create separate &ldquo;calibration split&rdquo; during data prep</li>
+</ul>
+<h2 id="key-mathematical-notation">Key Mathematical Notation</h2>
+<ul>
+<li><strong>E_v[]</strong>: Expectation with respect to distribution v</li>
+<li><strong>∇log p(x|θ)</strong>: Gradient of log-likelihood (computed via backpropagation)</li>
+<li><strong>F_ij</strong>: Fisher information between parameters i and j</li>
+<li><strong>θ</strong>: Model parameters</li>
+</ul>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>
