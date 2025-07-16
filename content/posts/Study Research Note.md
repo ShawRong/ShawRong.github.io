@@ -1,6 +1,6 @@
 ---
 title: "Study Research Note"
-date: 2025-07-16T02:59:02.443Z
+date: 2025-07-16T02:59:48.949Z
 draft: false
 tags: []
 ---

@@ -6,12 +6,12 @@
     <description>Recent content in Posts on My New Hugo Site</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 16 Jul 2025 02:59:02 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 16 Jul 2025 02:59:48 +0000</lastBuildDate>
     <atom:link href="https://example.org/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Study Research Note</title>
       <link>https://example.org/posts/study-research-note/</link>
-      <pubDate>Wed, 16 Jul 2025 02:59:02 +0000</pubDate>
+      <pubDate>Wed, 16 Jul 2025 02:59:48 +0000</pubDate>
       <guid>https://example.org/posts/study-research-note/</guid>
       <description>&lt;h1 id=&#34;good-reading&#34;&gt;good reading&lt;/h1&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;llm quantization world -&lt;a href=&#34;https://zhuanlan.zhihu.com/p/686232369&#34;&gt;zhihu&lt;/a&gt;&#xA;it include:&#xA;&lt;ul&gt;&#xA;&lt;li&gt;introduction to fix point quantization&lt;/li&gt;&#xA;&lt;li&gt;current study focus on per-channel, token, group fix point quantization&lt;/li&gt;&#xA;&lt;li&gt;per-group refer to we do quantization on a series of continuous element&lt;/li&gt;&#xA;&lt;li&gt;&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h1 id=&#34;mixture-quantization-paper&#34;&gt;mixture quantization paper&lt;/h1&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;AWQ and SqueezeLLM&lt;br&gt;&#xA;-&lt;a href=&#34;https://zhuanlan.zhihu.com/p/697992170&#34;&gt;zhihu&lt;/a&gt;&#xA;AWQ use linear scale (pretty good)&#xA;Squeeze use dynamic un-uniform scale quantization (not that good)&#xA;key observation: there are salient weight, we can perform quantization according to these salient weight&lt;/li&gt;&#xA;&lt;li&gt;QBS(Qptimal Brain Surgeon), classic, need to read&lt;/li&gt;&#xA;&lt;li&gt;GPTQ and OBQ&lt;/li&gt;&#xA;&lt;li&gt;&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h1 id=&#34;todo-list&#34;&gt;TODO list&lt;/h1&gt;&#xA;&lt;p&gt;-&lt;a href=&#34;https://shawrong.github.io/posts/read-todo/&#34;&gt;TODO list&lt;/a&gt;&#xA;obsidian: [[Read TODO]]&lt;/p&gt;</description>
     </item>
