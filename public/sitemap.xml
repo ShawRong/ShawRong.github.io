@@ -3,7 +3,10 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://example.org/posts/</loc>
-    <lastmod>2025-07-16T02:57:14+00:00</lastmod>
+    <lastmod>2025-07-16T02:59:02+00:00</lastmod>
+  </url><url>
+    <loc>https://example.org/posts/study-research-note/</loc>
+    <lastmod>2025-07-16T02:59:02+00:00</lastmod>
   </url><url>
     <loc>https://example.org/posts/read-todo/</loc>
     <lastmod>2025-07-16T02:57:14+00:00</lastmod>

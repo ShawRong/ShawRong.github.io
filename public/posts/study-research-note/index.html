@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="good reading
+
+llm quantization world -zhihu
+it include:
+
+introduction to fix point quantization
+current study focus on per-channel, token, group fix point quantization
+per-group refer to we do quantization on a series of continuous element
+
+
+
+
+mixture quantization paper
+
+AWQ and SqueezeLLM
+-zhihu
+AWQ use linear scale (pretty good)
+Squeeze use dynamic un-uniform scale quantization (not that good)
+key observation: there are salient weight, we can perform quantization according to these salient weight
+QBS(Qptimal Brain Surgeon), classic, need to read
+GPTQ and OBQ
+
+
+TODO list
+-TODO list
+obsidian: [[Read TODO]]">  
+
+  <title>
+    
+      Study Research Note
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-07-16 02:59:02.443 &#43;0000 UTC">
+                            2025-07-16
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>Study Research Note</h1>
+
+    
+
+    <h1 id="good-reading">good reading</h1>
+<ul>
+<li>llm quantization world -<a href="https://zhuanlan.zhihu.com/p/686232369">zhihu</a>
+it include:
+<ul>
+<li>introduction to fix point quantization</li>
+<li>current study focus on per-channel, token, group fix point quantization</li>
+<li>per-group refer to we do quantization on a series of continuous element</li>
+<li></li>
+</ul>
+</li>
+</ul>
+<h1 id="mixture-quantization-paper">mixture quantization paper</h1>
+<ul>
+<li>AWQ and SqueezeLLM<br>
+-<a href="https://zhuanlan.zhihu.com/p/697992170">zhihu</a>
+AWQ use linear scale (pretty good)
+Squeeze use dynamic un-uniform scale quantization (not that good)
+key observation: there are salient weight, we can perform quantization according to these salient weight</li>
+<li>QBS(Qptimal Brain Surgeon), classic, need to read</li>
+<li>GPTQ and OBQ</li>
+<li></li>
+</ul>
+<h1 id="todo-list">TODO list</h1>
+<p>-<a href="https://shawrong.github.io/posts/read-todo/">TODO list</a>
+obsidian: [[Read TODO]]</p>
+<h1 id="questions">Questions:</h1>
+<ul>
+<li>what&rsquo;s group lasso, which one is better compared with weight decay? why it&rsquo;s suggested weight decay is not suitable for sparsity? can weight decay therefore be used for mixture precision.</li>
+<li>does optimal brain damage really works? we need to try or research. there are several modern method:
+<ul>
+<li>Magnitude-based pruning (simpler, often similarly effective)</li>
+<li>Gradual pruning during training</li>
+<li>Lottery ticket hypothesis approaches</li>
+<li>More sophisticated second-order methods like Fisher Information</li>
+</ul>
+</li>
+<li>what&rsquo;s fisher information?</li>
+<li>In the assumption of OBD, it says: &ldquo;delta E caused by deleting several parameters is the sum of the delta E&rsquo;s caused by deleting each parameter individually.&rdquo; Does this assumption really work?</li>
+</ul>
+<h1 id="key-findings-now">Key findings (now):</h1>
+<ul>
+<li>use weight decay, non-proportionate for sparsity or mixture precision</li>
+<li>It omit the cross term, lacking ability of find redundant pattern, and not simpler than magnitude way.</li>
+</ul>
+<h1 id="links">Links</h1>
+<p>-<a href="https://shawrong.github.io/posts/obd-note-not-work/">OBD note</a>
+obsidian: [[OBD Note (not work)]]</p>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>
