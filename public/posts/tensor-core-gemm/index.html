@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="This is a simple tensor core gemm of int8
+#include &#34;cublasLt.h&#34;
+#include &#34;device_launch_parameters.h&#34;
+#include &lt;cstdint&gt;
+#include &lt;cuda_runtime.h&gt;
+#include &lt;iostream&gt;
+#include &lt;mma.h&gt;
+#include &lt;vector&gt;
+
+using namespace nvcuda;
+
+// m, n, k, k is the inner dimmension
+// C is in shape m x n
+// we use setting 16x16x16 to do mma
+// we know a warp will result in a 16x16 in C.
+// reformating the C into [(m &#43; 15) / 16, (n &#43; 15) / 16]
+// so we can get c_row and c_col for which warp to deal with
+__global__ void int8_gemm_tensor_core_kernel(const int8_t *A, const int8_t *B,
+                                             int32_t *C, int M, int N, int K,
+                                             int lda, int ldb, int ldc,
+                                             int32_t alpha, int32_t beta) {
+  int warp_id = (blockIdx.x * blockDim.x &#43; threadIdx.x) /
+                32; // suppose we do not have y dim.
+  // we need to know which row to deal with A.
+  int how_many_col_in_tiles = (N &#43; 15) / 16; // can be optimized
+  int c_row =
+      (warp_id / how_many_col_in_tiles) * 16; // warp num / reformated index
+  int c_col = (warp_id % how_many_col_in_tiles) * 16;
+
+  if (c_row * 16 &gt;= M || c_col * 16 &gt;= N)
+    return;
+
+  wmma::fragment&lt;wmma::matrix_a, 16, 16, 16, int8_t, wmma::row_major&gt; a_frag;
+  wmma::fragment&lt;wmma::matrix_b, 16, 16, 16, int8_t, wmma::col_major&gt; b_frag;
+  wmma::fragment&lt;wmma::accumulator, 16, 16, 16, int32_t&gt; c_frag;
+  wmma::fill_fragment(c_frag, 0);
+
+  for (int k = 0; k &lt; K; k &#43;= 16) {
+    const int8_t *a_ptr = A &#43; c_row * lda &#43; k; // row by c_row, k by k
+    const int8_t *b_ptr = B &#43; k * ldb &#43; c_col;
+
+    wmma::load_matrix_sync(a_frag, a_ptr, lda);
+    wmma::load_matrix_sync(b_frag, b_ptr, ldb);
+    wmma::mma_sync(c_frag, a_frag, b_frag, c_frag);
+  }
+
+  // c_ptr refer the the start of c matrix fragment
+  int32_t *c_ptr = C &#43; c_row * ldc &#43; c_col;
+
+  // load original C fragment
+  wmma::fragment&lt;wmma::accumulator, 16, 16, 16, int32_t&gt; c_original_frag;
+  wmma::load_matrix_sync(c_original_frag, c_ptr, ldc, wmma::mem_row_major);
+
+  // incorporate alpha, beta
+  for (int i = 0; i &lt; c_frag.num_elements; i&#43;&#43;) {
+    c_frag.x[i] = alpha * c_frag.x[i] &#43; beta * c_original_frag.x[i];
+  }
+
+  wmma::store_matrix_sync(c_ptr, c_frag, ldc, wmma::mem_row_major);
+}
+">  
+
+  <title>
+    
+      Tensor Core GEMM
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-07-22 11:05:42.205 &#43;0000 UTC">
+                            2025-07-22
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>Tensor Core GEMM</h1>
+
+    
+
+    <p>This is a simple tensor core gemm of int8</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;cublasLt.h&#34;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;device_launch_parameters.h&#34;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cstdint&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cuda_runtime.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;iostream&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;mma.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;vector&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">using</span> <span style="color:#66d9ef">namespace</span> nvcuda;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// m, n, k, k is the inner dimmension
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// C is in shape m x n
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// we use setting 16x16x16 to do mma
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// we know a warp will result in a 16x16 in C.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// reformating the C into [(m + 15) / 16, (n + 15) / 16]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// so we can get c_row and c_col for which warp to deal with
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">int8_gemm_tensor_core_kernel</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int8_t</span> <span style="color:#f92672">*</span>A, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int8_t</span> <span style="color:#f92672">*</span>B,
+</span></span><span style="display:flex;"><span>                                             <span style="color:#66d9ef">int32_t</span> <span style="color:#f92672">*</span>C, <span style="color:#66d9ef">int</span> M, <span style="color:#66d9ef">int</span> N, <span style="color:#66d9ef">int</span> K,
+</span></span><span style="display:flex;"><span>                                             <span style="color:#66d9ef">int</span> lda, <span style="color:#66d9ef">int</span> ldb, <span style="color:#66d9ef">int</span> ldc,
+</span></span><span style="display:flex;"><span>                                             <span style="color:#66d9ef">int32_t</span> alpha, <span style="color:#66d9ef">int32_t</span> beta) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> warp_id <span style="color:#f92672">=</span> (blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x) <span style="color:#f92672">/</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#ae81ff">32</span>; <span style="color:#75715e">// suppose we do not have y dim.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// we need to know which row to deal with A.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> how_many_col_in_tiles <span style="color:#f92672">=</span> (N <span style="color:#f92672">+</span> <span style="color:#ae81ff">15</span>) <span style="color:#f92672">/</span> <span style="color:#ae81ff">16</span>; <span style="color:#75715e">// can be optimized
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> c_row <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span>      (warp_id <span style="color:#f92672">/</span> how_many_col_in_tiles) <span style="color:#f92672">*</span> <span style="color:#ae81ff">16</span>; <span style="color:#75715e">// warp num / reformated index
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> c_col <span style="color:#f92672">=</span> (warp_id <span style="color:#f92672">%</span> how_many_col_in_tiles) <span style="color:#f92672">*</span> <span style="color:#ae81ff">16</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (c_row <span style="color:#f92672">*</span> <span style="color:#ae81ff">16</span> <span style="color:#f92672">&gt;=</span> M <span style="color:#f92672">||</span> c_col <span style="color:#f92672">*</span> <span style="color:#ae81ff">16</span> <span style="color:#f92672">&gt;=</span> N)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  wmma<span style="color:#f92672">::</span>fragment<span style="color:#f92672">&lt;</span>wmma<span style="color:#f92672">::</span>matrix_a, <span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">16</span>, <span style="color:#66d9ef">int8_t</span>, wmma<span style="color:#f92672">::</span>row_major<span style="color:#f92672">&gt;</span> a_frag;
+</span></span><span style="display:flex;"><span>  wmma<span style="color:#f92672">::</span>fragment<span style="color:#f92672">&lt;</span>wmma<span style="color:#f92672">::</span>matrix_b, <span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">16</span>, <span style="color:#66d9ef">int8_t</span>, wmma<span style="color:#f92672">::</span>col_major<span style="color:#f92672">&gt;</span> b_frag;
+</span></span><span style="display:flex;"><span>  wmma<span style="color:#f92672">::</span>fragment<span style="color:#f92672">&lt;</span>wmma<span style="color:#f92672">::</span>accumulator, <span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">16</span>, <span style="color:#66d9ef">int32_t</span><span style="color:#f92672">&gt;</span> c_frag;
+</span></span><span style="display:flex;"><span>  wmma<span style="color:#f92672">::</span>fill_fragment(c_frag, <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> k <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; k <span style="color:#f92672">&lt;</span> K; k <span style="color:#f92672">+=</span> <span style="color:#ae81ff">16</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int8_t</span> <span style="color:#f92672">*</span>a_ptr <span style="color:#f92672">=</span> A <span style="color:#f92672">+</span> c_row <span style="color:#f92672">*</span> lda <span style="color:#f92672">+</span> k; <span style="color:#75715e">// row by c_row, k by k
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int8_t</span> <span style="color:#f92672">*</span>b_ptr <span style="color:#f92672">=</span> B <span style="color:#f92672">+</span> k <span style="color:#f92672">*</span> ldb <span style="color:#f92672">+</span> c_col;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    wmma<span style="color:#f92672">::</span>load_matrix_sync(a_frag, a_ptr, lda);
+</span></span><span style="display:flex;"><span>    wmma<span style="color:#f92672">::</span>load_matrix_sync(b_frag, b_ptr, ldb);
+</span></span><span style="display:flex;"><span>    wmma<span style="color:#f92672">::</span>mma_sync(c_frag, a_frag, b_frag, c_frag);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// c_ptr refer the the start of c matrix fragment
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int32_t</span> <span style="color:#f92672">*</span>c_ptr <span style="color:#f92672">=</span> C <span style="color:#f92672">+</span> c_row <span style="color:#f92672">*</span> ldc <span style="color:#f92672">+</span> c_col;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// load original C fragment
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  wmma<span style="color:#f92672">::</span>fragment<span style="color:#f92672">&lt;</span>wmma<span style="color:#f92672">::</span>accumulator, <span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">16</span>, <span style="color:#66d9ef">int32_t</span><span style="color:#f92672">&gt;</span> c_original_frag;
+</span></span><span style="display:flex;"><span>  wmma<span style="color:#f92672">::</span>load_matrix_sync(c_original_frag, c_ptr, ldc, wmma<span style="color:#f92672">::</span>mem_row_major);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// incorporate alpha, beta
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> c_frag.num_elements; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>    c_frag.x[i] <span style="color:#f92672">=</span> alpha <span style="color:#f92672">*</span> c_frag.x[i] <span style="color:#f92672">+</span> beta <span style="color:#f92672">*</span> c_original_frag.x[i];
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  wmma<span style="color:#f92672">::</span>store_matrix_sync(c_ptr, c_frag, ldc, wmma<span style="color:#f92672">::</span>mem_row_major);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div>
+</article>
+
+            </div>
+        </main>
+    </body></html>
