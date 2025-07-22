@@ -4,12 +4,13 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
    <meta name="description" content="This is a simple tensor core gemm of int8
-#include &#34;cublasLt.h&#34;
 #include &#34;device_launch_parameters.h&#34;
 #include &lt;cstdint&gt;
 #include &lt;cuda_runtime.h&gt;
 #include &lt;iostream&gt;
 #include &lt;mma.h&gt;
+#include &lt;numeric&gt;
+#include &lt;random&gt;
 #include &lt;vector&gt;
 
 using namespace nvcuda;
@@ -32,7 +33,7 @@ __global__ void int8_gemm_tensor_core_kernel(const int8_t *A, const int8_t *B,
       (warp_id / how_many_col_in_tiles) * 16; // warp num / reformated index
   int c_col = (warp_id % how_many_col_in_tiles) * 16;
 
-  if (c_row * 16 &gt;= M || c_col * 16 &gt;= N)
+  if (c_row &gt;= M || c_col &gt;= N)
     return;
 
   wmma::fragment&lt;wmma::matrix_a, 16, 16, 16, int8_t, wmma::row_major&gt; a_frag;
@@ -42,7 +43,7 @@ __global__ void int8_gemm_tensor_core_kernel(const int8_t *A, const int8_t *B,
 
   for (int k = 0; k &lt; K; k &#43;= 16) {
     const int8_t *a_ptr = A &#43; c_row * lda &#43; k; // row by c_row, k by k
-    const int8_t *b_ptr = B &#43; k * ldb &#43; c_col;
+    const int8_t *b_ptr = B &#43; c_col * ldb &#43; k;
 
     wmma::load_matrix_sync(a_frag, a_ptr, lda);
     wmma::load_matrix_sync(b_frag, b_ptr, ldb);
@@ -62,6 +63,165 @@ __global__ void int8_gemm_tensor_core_kernel(const int8_t *A, const int8_t *B,
   }
 
   wmma::store_matrix_sync(c_ptr, c_frag, ldc, wmma::mem_row_major);
+}
+
+// -- CPU reference GEMM Function --
+void cpu_gemm(const int8_t *A, const int8_t *B, int32_t *C, int M, int N, int K,
+              int lda, int ldb, int ldc, int32_t alpha, int32_t beta) {
+  std::vector&lt;int32_t&gt; C_temp(M * N);
+
+  for (int i = 0; i &lt; M; i&#43;&#43;) {
+    for (int j = 0; j &lt; N; j&#43;&#43;) {
+      int32_t sum = 0;
+      for (int k = 0; k &lt; K; k&#43;&#43;) {
+        sum &#43;= static_cast&lt;int32_t&gt;(A[i * lda &#43; k]) *
+               static_cast&lt;int32_t&gt;(B[j * ldb &#43; k]);
+      }
+      C_temp[i * N &#43; j] = sum;
+    }
+  }
+
+  for (int i = 0; i &lt; M; i&#43;&#43;) {
+    for (int j = 0; j &lt; N; j&#43;&#43;) {
+      int32_t original_c_val = C[i * ldc &#43; j];
+      C[i * ldc &#43; j] = alpha * C_temp[i * N &#43; j] &#43; beta * original_c_val;
+    }
+  }
+}
+
+#define CHECK_CUDA(call)                                                       \
+  do {                                                                         \
+    cudaError_t err = call;                                                    \
+    if (err != cudaSuccess) {                                                  \
+      fprintf(stderr, &#34;CUDA Error at %s:%d - %s\n&#34;, __FILE__, __LINE__,        \
+              cudaGetErrorString(err));                                        \
+      exit(EXIT_FAILURE);                                                      \
+    }                                                                          \
+  } while (0)
+
+// Main function
+int main() {
+  // --- Matrix Dimensions (adjust as needed, K should be multiple of 16 for
+  // this kernel) ---
+  const int M = 256; // Rows of A, Rows of C
+  const int N = 512; // Cols of B, Cols of C
+  const int K =
+      128; // Cols of A, Rows of B (inner dimension, must be multiple of 16)
+
+  // Leading dimensions (assume M, N, K are actual dimensions)
+  const int lda = K; // A is M x K (row-major)
+  const int ldb = K; // B is K x N (column-major)
+  const int ldc = N; // C is M x N (row-major)
+
+  // Alpha and Beta values
+  const int32_t alpha = 1; // Example: simple matrix multiplication
+  const int32_t beta = 0;  // Example: C is initialized to 0, or overwritten
+
+  // --- Host Memory Allocation ---
+  std::vector&lt;int8_t&gt; h_A(M * K);
+  std::vector&lt;int8_t&gt; h_B(K * N);
+  std::vector&lt;int32_t&gt; h_C(M * N);     // For GPU result
+  std::vector&lt;int32_t&gt; h_C_ref(M * N); // For CPU reference
+
+  // --- Data Initialization ---
+  // Seed random number generator
+  std::mt19937 gen(0); // Use a fixed seed for reproducibility
+  std::uniform_int_distribution&lt;&gt; distrib(-128, 127); // int8_t range
+
+  for (int i = 0; i &lt; M * K; &#43;&#43;i) {
+    h_A[i] = static_cast&lt;int8_t&gt;(distrib(gen));
+  }
+  for (int i = 0; i &lt; K * N; &#43;&#43;i) {
+    h_B[i] = static_cast&lt;int8_t&gt;(distrib(gen));
+  }
+  // Initialize C to some non-zero values for beta test, or zeros
+  for (int i = 0; i &lt; M * N; &#43;&#43;i) {
+    h_C[i] = static_cast&lt;int32_t&gt;(distrib(gen));
+    h_C_ref[i] = h_C[i]; // Copy initial C for reference
+  }
+
+  // --- Device Memory Allocation ---
+  int8_t *d_A, *d_B;
+  int32_t *d_C;
+
+  CHECK_CUDA(cudaMalloc((void **)&amp;d_A, M * K * sizeof(int8_t)));
+  CHECK_CUDA(cudaMalloc((void **)&amp;d_B, K * N * sizeof(int8_t)));
+  CHECK_CUDA(cudaMalloc((void **)&amp;d_C, M * N * sizeof(int32_t)));
+
+  // --- Data Transfer (Host to Device) ---
+  CHECK_CUDA(cudaMemcpy(d_A, h_A.data(), M * K * sizeof(int8_t),
+                        cudaMemcpyHostToDevice));
+  CHECK_CUDA(cudaMemcpy(d_B, h_B.data(), K * N * sizeof(int8_t),
+                        cudaMemcpyHostToDevice));
+  CHECK_CUDA(cudaMemcpy(d_C, h_C.data(), M * N * sizeof(int32_t),
+                        cudaMemcpyHostToDevice)); // Copy initial C
+
+  // --- Kernel Launch Configuration ---
+  // A warp processes a 16x16 tile of C.
+  // Total number of 16x16 tiles in C: (M/16) * (N/16) (assuming M, N are
+  // multiples of 16) For general M, N: ceil(M/16) * ceil(N/16)
+  int num_tiles_m = (M &#43; 15) / 16;
+  int num_tiles_n = (N &#43; 15) / 16;
+  int total_warps = num_tiles_m * num_tiles_n;
+
+  // We&#39;ll use 8 warps per block (256 threads) for good occupancy.
+  const int WARPS_PER_BLOCK = 8;
+  dim3 blockDim(WARPS_PER_BLOCK * 32); // 256 threads per block
+
+  // Calculate grid dimension based on total_warps
+  dim3 gridDim((total_warps &#43; WARPS_PER_BLOCK - 1) / WARPS_PER_BLOCK);
+
+  std::cout &lt;&lt; &#34;Launching kernel with:&#34; &lt;&lt; std::endl;
+  std::cout &lt;&lt; &#34;  Grid Dim: (&#34; &lt;&lt; gridDim.x &lt;&lt; &#34;, &#34; &lt;&lt; gridDim.y &lt;&lt; &#34;, &#34;
+            &lt;&lt; gridDim.z &lt;&lt; &#34;)&#34; &lt;&lt; std::endl;
+  std::cout &lt;&lt; &#34;  Block Dim: (&#34; &lt;&lt; blockDim.x &lt;&lt; &#34;, &#34; &lt;&lt; blockDim.y &lt;&lt; &#34;, &#34;
+            &lt;&lt; blockDim.z &lt;&lt; &#34;)&#34; &lt;&lt; std::endl;
+  std::cout &lt;&lt; &#34;  Total Warps: &#34; &lt;&lt; total_warps &lt;&lt; std::endl;
+
+  // --- Kernel Execution ---
+  int8_gemm_tensor_core_kernel&lt;&lt;&lt;gridDim, blockDim&gt;&gt;&gt;(
+      d_A, d_B, d_C, M, N, K, lda, ldb, ldc, alpha, beta);
+
+  CHECK_CUDA(cudaGetLastError());      // Check for errors during kernel launch
+  CHECK_CUDA(cudaDeviceSynchronize()); // Wait for kernel to complete
+
+  std::cout &lt;&lt; &#34;Kernel execution complete.&#34; &lt;&lt; std::endl;
+
+  // --- Data Transfer (Device to Host) ---
+  CHECK_CUDA(cudaMemcpy(h_C.data(), d_C, M * N * sizeof(int32_t),
+                        cudaMemcpyDeviceToHost));
+
+  // --- CPU Reference Computation ---
+  cpu_gemm(h_A.data(), h_B.data(), h_C_ref.data(), M, N, K, lda, ldb, ldc,
+           alpha, beta);
+
+  // --- Verification ---
+  bool success = true;
+  for (int i = 0; i &lt; M * N; &#43;&#43;i) {
+    if (h_C[i] != h_C_ref[i]) {
+      std::cerr &lt;&lt; &#34;Mismatch at C[&#34; &lt;&lt; i / N &lt;&lt; &#34;][&#34; &lt;&lt; i % N
+                &lt;&lt; &#34;]: GPU=&#34; &lt;&lt; h_C[i] &lt;&lt; &#34;, CPU=&#34; &lt;&lt; h_C_ref[i] &lt;&lt; std::endl;
+      success = false;
+      // Print a few mismatches, then break
+      if (&#43;&#43;i % 10 == 0)
+        break; // Limit error output
+    }
+  }
+
+  if (success) {
+    std::cout &lt;&lt; &#34;Verification PASSED! 🎉&#34; &lt;&lt; std::endl;
+  } else {
+    std::cerr &lt;&lt; &#34;Verification FAILED! 💔&#34; &lt;&lt; std::endl;
+  }
+
+  // --- Memory Deallocation ---
+  CHECK_CUDA(cudaFree(d_A));
+  CHECK_CUDA(cudaFree(d_B));
+  CHECK_CUDA(cudaFree(d_C));
+
+  std::cout &lt;&lt; &#34;Memory freed. Exiting.&#34; &lt;&lt; std::endl;
+
+  return 0;
 }
 ">  
 
@@ -86,7 +246,7 @@ __global__ void int8_gemm_tensor_core_kernel(const int8_t *A, const int8_t *B,
                     <a href="/">..</a>
 
                     <p>
-                        <time datetime="2025-07-22 11:05:42.205 &#43;0000 UTC">
+                        <time datetime="2025-07-22 12:20:54.008 &#43;0000 UTC">
                             2025-07-22
                         </time>
                     </p>
@@ -98,12 +258,13 @@ __global__ void int8_gemm_tensor_core_kernel(const int8_t *A, const int8_t *B,
     
 
     <p>This is a simple tensor core gemm of int8</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;cublasLt.h&#34;</span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;device_launch_parameters.h&#34;</span><span style="color:#75715e">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;device_launch_parameters.h&#34;</span><span style="color:#75715e">
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cstdint&gt;</span><span style="color:#75715e">
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cuda_runtime.h&gt;</span><span style="color:#75715e">
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;iostream&gt;</span><span style="color:#75715e">
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;mma.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;numeric&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;random&gt;</span><span style="color:#75715e">
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;vector&gt;</span><span style="color:#75715e">
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">using</span> <span style="color:#66d9ef">namespace</span> nvcuda;
@@ -126,7 +287,7 @@ __global__ void int8_gemm_tensor_core_kernel(const int8_t *A, const int8_t *B,
 </span></span><span style="display:flex;"><span>      (warp_id <span style="color:#f92672">/</span> how_many_col_in_tiles) <span style="color:#f92672">*</span> <span style="color:#ae81ff">16</span>; <span style="color:#75715e">// warp num / reformated index
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> c_col <span style="color:#f92672">=</span> (warp_id <span style="color:#f92672">%</span> how_many_col_in_tiles) <span style="color:#f92672">*</span> <span style="color:#ae81ff">16</span>;
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (c_row <span style="color:#f92672">*</span> <span style="color:#ae81ff">16</span> <span style="color:#f92672">&gt;=</span> M <span style="color:#f92672">||</span> c_col <span style="color:#f92672">*</span> <span style="color:#ae81ff">16</span> <span style="color:#f92672">&gt;=</span> N)
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (c_row <span style="color:#f92672">&gt;=</span> M <span style="color:#f92672">||</span> c_col <span style="color:#f92672">&gt;=</span> N)
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span>;
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>  wmma<span style="color:#f92672">::</span>fragment<span style="color:#f92672">&lt;</span>wmma<span style="color:#f92672">::</span>matrix_a, <span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">16</span>, <span style="color:#66d9ef">int8_t</span>, wmma<span style="color:#f92672">::</span>row_major<span style="color:#f92672">&gt;</span> a_frag;
@@ -136,7 +297,7 @@ __global__ void int8_gemm_tensor_core_kernel(const int8_t *A, const int8_t *B,
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> k <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; k <span style="color:#f92672">&lt;</span> K; k <span style="color:#f92672">+=</span> <span style="color:#ae81ff">16</span>) {
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int8_t</span> <span style="color:#f92672">*</span>a_ptr <span style="color:#f92672">=</span> A <span style="color:#f92672">+</span> c_row <span style="color:#f92672">*</span> lda <span style="color:#f92672">+</span> k; <span style="color:#75715e">// row by c_row, k by k
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int8_t</span> <span style="color:#f92672">*</span>b_ptr <span style="color:#f92672">=</span> B <span style="color:#f92672">+</span> k <span style="color:#f92672">*</span> ldb <span style="color:#f92672">+</span> c_col;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int8_t</span> <span style="color:#f92672">*</span>b_ptr <span style="color:#f92672">=</span> B <span style="color:#f92672">+</span> c_col <span style="color:#f92672">*</span> ldb <span style="color:#f92672">+</span> k;
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    wmma<span style="color:#f92672">::</span>load_matrix_sync(a_frag, a_ptr, lda);
 </span></span><span style="display:flex;"><span>    wmma<span style="color:#f92672">::</span>load_matrix_sync(b_frag, b_ptr, ldb);
@@ -156,6 +317,165 @@ __global__ void int8_gemm_tensor_core_kernel(const int8_t *A, const int8_t *B,
 </span></span><span style="display:flex;"><span>  }
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>  wmma<span style="color:#f92672">::</span>store_matrix_sync(c_ptr, c_frag, ldc, wmma<span style="color:#f92672">::</span>mem_row_major);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// -- CPU reference GEMM Function --
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">cpu_gemm</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int8_t</span> <span style="color:#f92672">*</span>A, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int8_t</span> <span style="color:#f92672">*</span>B, <span style="color:#66d9ef">int32_t</span> <span style="color:#f92672">*</span>C, <span style="color:#66d9ef">int</span> M, <span style="color:#66d9ef">int</span> N, <span style="color:#66d9ef">int</span> K,
+</span></span><span style="display:flex;"><span>              <span style="color:#66d9ef">int</span> lda, <span style="color:#66d9ef">int</span> ldb, <span style="color:#66d9ef">int</span> ldc, <span style="color:#66d9ef">int32_t</span> alpha, <span style="color:#66d9ef">int32_t</span> beta) {
+</span></span><span style="display:flex;"><span>  std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int32_t</span><span style="color:#f92672">&gt;</span> C_temp(M <span style="color:#f92672">*</span> N);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> M; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> j <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; j <span style="color:#f92672">&lt;</span> N; j<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">int32_t</span> sum <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> k <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; k <span style="color:#f92672">&lt;</span> K; k<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>        sum <span style="color:#f92672">+=</span> <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int32_t</span><span style="color:#f92672">&gt;</span>(A[i <span style="color:#f92672">*</span> lda <span style="color:#f92672">+</span> k]) <span style="color:#f92672">*</span>
+</span></span><span style="display:flex;"><span>               <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int32_t</span><span style="color:#f92672">&gt;</span>(B[j <span style="color:#f92672">*</span> ldb <span style="color:#f92672">+</span> k]);
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>      C_temp[i <span style="color:#f92672">*</span> N <span style="color:#f92672">+</span> j] <span style="color:#f92672">=</span> sum;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> M; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> j <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; j <span style="color:#f92672">&lt;</span> N; j<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">int32_t</span> original_c_val <span style="color:#f92672">=</span> C[i <span style="color:#f92672">*</span> ldc <span style="color:#f92672">+</span> j];
+</span></span><span style="display:flex;"><span>      C[i <span style="color:#f92672">*</span> ldc <span style="color:#f92672">+</span> j] <span style="color:#f92672">=</span> alpha <span style="color:#f92672">*</span> C_temp[i <span style="color:#f92672">*</span> N <span style="color:#f92672">+</span> j] <span style="color:#f92672">+</span> beta <span style="color:#f92672">*</span> original_c_val;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#define CHECK_CUDA(call)                                                       \
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">  do {                                                                         \
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">    cudaError_t err = call;                                                    \
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">    if (err != cudaSuccess) {                                                  \
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">      fprintf(stderr, &#34;CUDA Error at %s:%d - %s\n&#34;, __FILE__, __LINE__,        \
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">              cudaGetErrorString(err));                                        \
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">      exit(EXIT_FAILURE);                                                      \
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">    }                                                                          \
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">  } while (0)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Main function
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// --- Matrix Dimensions (adjust as needed, K should be multiple of 16 for
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// this kernel) ---
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span> M <span style="color:#f92672">=</span> <span style="color:#ae81ff">256</span>; <span style="color:#75715e">// Rows of A, Rows of C
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span> N <span style="color:#f92672">=</span> <span style="color:#ae81ff">512</span>; <span style="color:#75715e">// Cols of B, Cols of C
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span> K <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">128</span>; <span style="color:#75715e">// Cols of A, Rows of B (inner dimension, must be multiple of 16)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Leading dimensions (assume M, N, K are actual dimensions)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span> lda <span style="color:#f92672">=</span> K; <span style="color:#75715e">// A is M x K (row-major)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span> ldb <span style="color:#f92672">=</span> K; <span style="color:#75715e">// B is K x N (column-major)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span> ldc <span style="color:#f92672">=</span> N; <span style="color:#75715e">// C is M x N (row-major)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Alpha and Beta values
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int32_t</span> alpha <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; <span style="color:#75715e">// Example: simple matrix multiplication
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int32_t</span> beta <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;  <span style="color:#75715e">// Example: C is initialized to 0, or overwritten
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// --- Host Memory Allocation ---
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int8_t</span><span style="color:#f92672">&gt;</span> h_A(M <span style="color:#f92672">*</span> K);
+</span></span><span style="display:flex;"><span>  std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int8_t</span><span style="color:#f92672">&gt;</span> h_B(K <span style="color:#f92672">*</span> N);
+</span></span><span style="display:flex;"><span>  std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int32_t</span><span style="color:#f92672">&gt;</span> h_C(M <span style="color:#f92672">*</span> N);     <span style="color:#75715e">// For GPU result
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int32_t</span><span style="color:#f92672">&gt;</span> h_C_ref(M <span style="color:#f92672">*</span> N); <span style="color:#75715e">// For CPU reference
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// --- Data Initialization ---
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// Seed random number generator
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  std<span style="color:#f92672">::</span>mt19937 gen(<span style="color:#ae81ff">0</span>); <span style="color:#75715e">// Use a fixed seed for reproducibility
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  std<span style="color:#f92672">::</span>uniform_int_distribution<span style="color:#f92672">&lt;&gt;</span> distrib(<span style="color:#f92672">-</span><span style="color:#ae81ff">128</span>, <span style="color:#ae81ff">127</span>); <span style="color:#75715e">// int8_t range
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> M <span style="color:#f92672">*</span> K; <span style="color:#f92672">++</span>i) {
+</span></span><span style="display:flex;"><span>    h_A[i] <span style="color:#f92672">=</span> <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int8_t</span><span style="color:#f92672">&gt;</span>(distrib(gen));
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> K <span style="color:#f92672">*</span> N; <span style="color:#f92672">++</span>i) {
+</span></span><span style="display:flex;"><span>    h_B[i] <span style="color:#f92672">=</span> <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int8_t</span><span style="color:#f92672">&gt;</span>(distrib(gen));
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Initialize C to some non-zero values for beta test, or zeros
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> M <span style="color:#f92672">*</span> N; <span style="color:#f92672">++</span>i) {
+</span></span><span style="display:flex;"><span>    h_C[i] <span style="color:#f92672">=</span> <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int32_t</span><span style="color:#f92672">&gt;</span>(distrib(gen));
+</span></span><span style="display:flex;"><span>    h_C_ref[i] <span style="color:#f92672">=</span> h_C[i]; <span style="color:#75715e">// Copy initial C for reference
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// --- Device Memory Allocation ---
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int8_t</span> <span style="color:#f92672">*</span>d_A, <span style="color:#f92672">*</span>d_B;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int32_t</span> <span style="color:#f92672">*</span>d_C;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  CHECK_CUDA(cudaMalloc((<span style="color:#66d9ef">void</span> <span style="color:#f92672">**</span>)<span style="color:#f92672">&amp;</span>d_A, M <span style="color:#f92672">*</span> K <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">int8_t</span>)));
+</span></span><span style="display:flex;"><span>  CHECK_CUDA(cudaMalloc((<span style="color:#66d9ef">void</span> <span style="color:#f92672">**</span>)<span style="color:#f92672">&amp;</span>d_B, K <span style="color:#f92672">*</span> N <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">int8_t</span>)));
+</span></span><span style="display:flex;"><span>  CHECK_CUDA(cudaMalloc((<span style="color:#66d9ef">void</span> <span style="color:#f92672">**</span>)<span style="color:#f92672">&amp;</span>d_C, M <span style="color:#f92672">*</span> N <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">int32_t</span>)));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// --- Data Transfer (Host to Device) ---
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  CHECK_CUDA(cudaMemcpy(d_A, h_A.data(), M <span style="color:#f92672">*</span> K <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">int8_t</span>),
+</span></span><span style="display:flex;"><span>                        cudaMemcpyHostToDevice));
+</span></span><span style="display:flex;"><span>  CHECK_CUDA(cudaMemcpy(d_B, h_B.data(), K <span style="color:#f92672">*</span> N <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">int8_t</span>),
+</span></span><span style="display:flex;"><span>                        cudaMemcpyHostToDevice));
+</span></span><span style="display:flex;"><span>  CHECK_CUDA(cudaMemcpy(d_C, h_C.data(), M <span style="color:#f92672">*</span> N <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">int32_t</span>),
+</span></span><span style="display:flex;"><span>                        cudaMemcpyHostToDevice)); <span style="color:#75715e">// Copy initial C
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// --- Kernel Launch Configuration ---
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// A warp processes a 16x16 tile of C.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// Total number of 16x16 tiles in C: (M/16) * (N/16) (assuming M, N are
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// multiples of 16) For general M, N: ceil(M/16) * ceil(N/16)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> num_tiles_m <span style="color:#f92672">=</span> (M <span style="color:#f92672">+</span> <span style="color:#ae81ff">15</span>) <span style="color:#f92672">/</span> <span style="color:#ae81ff">16</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> num_tiles_n <span style="color:#f92672">=</span> (N <span style="color:#f92672">+</span> <span style="color:#ae81ff">15</span>) <span style="color:#f92672">/</span> <span style="color:#ae81ff">16</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> total_warps <span style="color:#f92672">=</span> num_tiles_m <span style="color:#f92672">*</span> num_tiles_n;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// We&#39;ll use 8 warps per block (256 threads) for good occupancy.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span> WARPS_PER_BLOCK <span style="color:#f92672">=</span> <span style="color:#ae81ff">8</span>;
+</span></span><span style="display:flex;"><span>  dim3 blockDim(WARPS_PER_BLOCK <span style="color:#f92672">*</span> <span style="color:#ae81ff">32</span>); <span style="color:#75715e">// 256 threads per block
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Calculate grid dimension based on total_warps
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  dim3 gridDim((total_warps <span style="color:#f92672">+</span> WARPS_PER_BLOCK <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> WARPS_PER_BLOCK);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Launching kernel with:&#34;</span> <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>  std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;  Grid Dim: (&#34;</span> <span style="color:#f92672">&lt;&lt;</span> gridDim.x <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;, &#34;</span> <span style="color:#f92672">&lt;&lt;</span> gridDim.y <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;, &#34;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;&lt;</span> gridDim.z <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;)&#34;</span> <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>  std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;  Block Dim: (&#34;</span> <span style="color:#f92672">&lt;&lt;</span> blockDim.x <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;, &#34;</span> <span style="color:#f92672">&lt;&lt;</span> blockDim.y <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;, &#34;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;&lt;</span> blockDim.z <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;)&#34;</span> <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>  std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;  Total Warps: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> total_warps <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// --- Kernel Execution ---
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  int8_gemm_tensor_core_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>gridDim, blockDim<span style="color:#f92672">&gt;&gt;&gt;</span>(
+</span></span><span style="display:flex;"><span>      d_A, d_B, d_C, M, N, K, lda, ldb, ldc, alpha, beta);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  CHECK_CUDA(cudaGetLastError());      <span style="color:#75715e">// Check for errors during kernel launch
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  CHECK_CUDA(cudaDeviceSynchronize()); <span style="color:#75715e">// Wait for kernel to complete
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>  std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Kernel execution complete.&#34;</span> <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// --- Data Transfer (Device to Host) ---
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  CHECK_CUDA(cudaMemcpy(h_C.data(), d_C, M <span style="color:#f92672">*</span> N <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">int32_t</span>),
+</span></span><span style="display:flex;"><span>                        cudaMemcpyDeviceToHost));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// --- CPU Reference Computation ---
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  cpu_gemm(h_A.data(), h_B.data(), h_C_ref.data(), M, N, K, lda, ldb, ldc,
+</span></span><span style="display:flex;"><span>           alpha, beta);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// --- Verification ---
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">bool</span> success <span style="color:#f92672">=</span> true;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> M <span style="color:#f92672">*</span> N; <span style="color:#f92672">++</span>i) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (h_C[i] <span style="color:#f92672">!=</span> h_C_ref[i]) {
+</span></span><span style="display:flex;"><span>      std<span style="color:#f92672">::</span>cerr <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Mismatch at C[&#34;</span> <span style="color:#f92672">&lt;&lt;</span> i <span style="color:#f92672">/</span> N <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;][&#34;</span> <span style="color:#f92672">&lt;&lt;</span> i <span style="color:#f92672">%</span> N
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;]: GPU=&#34;</span> <span style="color:#f92672">&lt;&lt;</span> h_C[i] <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;, CPU=&#34;</span> <span style="color:#f92672">&lt;&lt;</span> h_C_ref[i] <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>      success <span style="color:#f92672">=</span> false;
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Print a few mismatches, then break
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#66d9ef">if</span> (<span style="color:#f92672">++</span>i <span style="color:#f92672">%</span> <span style="color:#ae81ff">10</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">break</span>; <span style="color:#75715e">// Limit error output
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    }
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (success) {
+</span></span><span style="display:flex;"><span>    std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Verification PASSED! 🎉&#34;</span> <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>  } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>    std<span style="color:#f92672">::</span>cerr <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Verification FAILED! 💔&#34;</span> <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// --- Memory Deallocation ---
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  CHECK_CUDA(cudaFree(d_A));
+</span></span><span style="display:flex;"><span>  CHECK_CUDA(cudaFree(d_B));
+</span></span><span style="display:flex;"><span>  CHECK_CUDA(cudaFree(d_C));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Memory freed. Exiting.&#34;</span> <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div>
 </article>
