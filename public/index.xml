@@ -6,8 +6,15 @@
     <description>Recent content on My New Hugo Site</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 22 Jul 2025 12:20:54 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 23 Jul 2025 02:26:08 +0000</lastBuildDate>
     <atom:link href="https://example.org/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Quantization Calculation</title>
+      <link>https://example.org/posts/quantization-calculation/</link>
+      <pubDate>Wed, 23 Jul 2025 02:26:08 +0000</pubDate>
+      <guid>https://example.org/posts/quantization-calculation/</guid>
+      <description>&lt;h1 id=&#34;symmetric-quantization&#34;&gt;Symmetric Quantization&lt;/h1&gt;&#xA;&lt;p&gt;suppose we get data in range [r_min, r_max].&lt;/p&gt;&#xA;&lt;p&gt;and suppose we get &amp;lsquo;b&amp;rsquo; bits to quant.&lt;/p&gt;&#xA;&lt;p&gt;we can get scale by using r_max, only&lt;/p&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;b &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;#suppose int4&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;quant &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; (&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;^&lt;/span&gt;(b&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)) &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;# how many positive number in int4&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;scale &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; r_max &lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt; quant&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;x&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39; = round(x / scale)&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;$$&#xA;\Delta = \frac {\text{max}}{2^{b - 1} - 1}&#xA;$$&#xA;$$&#xA;x&amp;rsquo; = \text{round}(\frac{x}{\Delta})&#xA;$$&#xA;$$&#xA;x = x&amp;rsquo;\Delta&#xA;$$&lt;/p&gt;&#xA;&lt;h1 id=&#34;asymmetric-quantization&#34;&gt;Asymmetric Quantization&lt;/h1&gt;&#xA;&lt;p&gt;we need r_min and r_max to calculate the scale, and we need to shift zero point to the middle to make:&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Tensor Core GEMM</title>
       <link>https://example.org/posts/tensor-core-gemm/</link>
