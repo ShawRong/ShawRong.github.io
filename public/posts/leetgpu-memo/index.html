@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="reduce kernel
+#include &lt;cuda_runtime.h&gt;
+
+  
+
+#define T 256
+
+// we need a static number when declaring shared memory
+
+__global__ void reduction_kernel(const float* input, float* output, int N) {
+	__shared__ float shared[T];
+
+	int tid = threadIdx.x;
+	int idx = blockDim.x * blockIdx.x &#43; threadIdx.x;
+	  
+	// init the shared memory of each block
+	shared[tid] = (idx &lt; N) ? input[idx] : 0.0f;
+	__syncthreads();
+	
+	// reduction
+	for (int s = blockDim.x / 2; s &gt; 0; s &gt;&gt;= 1) {
+		if (tid &lt; s) {
+			shared[tid] &#43;= shared[tid &#43; s];
+		}
+		__syncthreads();
+	}
+	// inverse way
+//	for (int s = 1; s &lt; blockDim.x; s &lt;&lt;= 1) {
+//		if (tid % (2 * s) == 0) {
+//			shared[tid] &#43;= shared[tid &#43; s];
+//		}
+//		__syncthreads();
+//	}
+	
+	if (tid == 0) {
+		atomicAdd(output, shared[0]);
+	}
+}
+// input, output are device pointers
+
+extern &#34;C&#34; void solve(const float* input, float* output, int N) {
+	int threadsPerBlock = T;
+	int blocksPerGrid = (N &#43; threadsPerBlock - 1) / threadsPerBlock;
+	reduction_kernel&lt;&lt;&lt;blocksPerGrid, threadsPerBlock&gt;&gt;&gt;(input, output, N);
+	cudaDeviceSynchronize();
+}
+">  
+
+  <title>
+    
+      LeetGPU Memo
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-07-25 11:05:06.709 &#43;0000 UTC">
+                            2025-07-25
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>LeetGPU Memo</h1>
+
+    
+
+    <p>reduce kernel</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cuda_runtime.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#define T 256
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// we need a static number when declaring shared memory
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">reduction_kernel</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output, <span style="color:#66d9ef">int</span> N) {
+</span></span><span style="display:flex;"><span>	__shared__ <span style="color:#66d9ef">float</span> shared[T];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> tid <span style="color:#f92672">=</span> threadIdx.x;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> idx <span style="color:#f92672">=</span> blockDim.x <span style="color:#f92672">*</span> blockIdx.x <span style="color:#f92672">+</span> threadIdx.x;
+</span></span><span style="display:flex;"><span>	  
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// init the shared memory of each block
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	shared[tid] <span style="color:#f92672">=</span> (idx <span style="color:#f92672">&lt;</span> N) <span style="color:#f92672">?</span> input[idx] <span style="color:#f92672">:</span> <span style="color:#ae81ff">0.0f</span>;
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">__syncthreads</span>();
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// reduction
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> s <span style="color:#f92672">=</span> blockDim.x <span style="color:#f92672">/</span> <span style="color:#ae81ff">2</span>; s <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>; s <span style="color:#f92672">&gt;&gt;=</span> <span style="color:#ae81ff">1</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> (tid <span style="color:#f92672">&lt;</span> s) {
+</span></span><span style="display:flex;"><span>			shared[tid] <span style="color:#f92672">+=</span> shared[tid <span style="color:#f92672">+</span> s];
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">__syncthreads</span>();
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// inverse way
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">//	for (int s = 1; s &lt; blockDim.x; s &lt;&lt;= 1) {
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">//		if (tid % (2 * s) == 0) {
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">//			shared[tid] += shared[tid + s];
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">//		}
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">//		__syncthreads();
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">//	}
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> (tid <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">atomicAdd</span>(output, shared[<span style="color:#ae81ff">0</span>]);
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// input, output are device pointers
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">solve</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output, <span style="color:#66d9ef">int</span> N) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> threadsPerBlock <span style="color:#f92672">=</span> T;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> blocksPerGrid <span style="color:#f92672">=</span> (N <span style="color:#f92672">+</span> threadsPerBlock <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> threadsPerBlock;
+</span></span><span style="display:flex;"><span>	reduction_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>blocksPerGrid, threadsPerBlock<span style="color:#f92672">&gt;&gt;&gt;</span>(input, output, N);
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">cudaDeviceSynchronize</span>();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div>
+</article>
+
+            </div>
+        </main>
+    </body></html>

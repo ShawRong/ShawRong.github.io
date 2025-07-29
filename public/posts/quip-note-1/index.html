@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="QuIP (Quantization with Incoherence Processing) - Study Notes
+Core Problem
+
+LLMs are huge (billions of parameters, 16-bit weights)
+Need compression for deployment
+Extreme quantization (≤4 bits) usually destroys model performance
+QuIP achieves 2-bit quantization while maintaining performance
+
+Key Insight: Incoherence
+Coherent matrices (bad for quantization):
+
+Have outliers (some weights much larger)
+Important directions aligned with coordinate axes
+Like a stretched ellipse
+
+Incoherent matrices (good for quantization):
+
+Uniform magnitudes
+No preferred directions
+Like a sphere
+
+The QuIP Method
+Two-Step Process
+
+Incoherence Processing: W → UWVᵀ (transform weights)
+Adaptive Rounding: Use LDLQ algorithm to quantize
+Inverse Transform: Ŵ&rsquo; → Uᵀ Ŵ&rsquo;V (transform back)
+
+Why It Works
+Original: Y = XW
+After QuIP: Y = (XVᵀ)(VŴUᵀ)(U) = XŴ
+Perfect reconstruction because orthogonal matrices: UUᵀ = VVᵀ = I">  
+
+  <title>
+    
+      QuIP Note 1
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-07-29 12:33:07.251 &#43;0000 UTC">
+                            2025-07-29
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>QuIP Note 1</h1>
+
+    
+
+    <h1 id="quip-quantization-with-incoherence-processing---study-notes">QuIP (Quantization with Incoherence Processing) - Study Notes</h1>
+<h2 id="core-problem">Core Problem</h2>
+<ul>
+<li>LLMs are huge (billions of parameters, 16-bit weights)</li>
+<li>Need compression for deployment</li>
+<li>Extreme quantization (≤4 bits) usually destroys model performance</li>
+<li>QuIP achieves 2-bit quantization while maintaining performance</li>
+</ul>
+<h2 id="key-insight-incoherence">Key Insight: Incoherence</h2>
+<p><strong>Coherent matrices</strong> (bad for quantization):</p>
+<ul>
+<li>Have outliers (some weights much larger)</li>
+<li>Important directions aligned with coordinate axes</li>
+<li>Like a stretched ellipse</li>
+</ul>
+<p><strong>Incoherent matrices</strong> (good for quantization):</p>
+<ul>
+<li>Uniform magnitudes</li>
+<li>No preferred directions</li>
+<li>Like a sphere</li>
+</ul>
+<h2 id="the-quip-method">The QuIP Method</h2>
+<h3 id="two-step-process">Two-Step Process</h3>
+<ol>
+<li><strong>Incoherence Processing</strong>: W → UWVᵀ (transform weights)</li>
+<li><strong>Adaptive Rounding</strong>: Use LDLQ algorithm to quantize</li>
+<li><strong>Inverse Transform</strong>: Ŵ&rsquo; → Uᵀ Ŵ&rsquo;V (transform back)</li>
+</ol>
+<h3 id="why-it-works">Why It Works</h3>
+<pre tabindex="0"><code>Original: Y = XW
+After QuIP: Y = (XVᵀ)(VŴUᵀ)(U) = XŴ
+</code></pre><p>Perfect reconstruction because orthogonal matrices: UUᵀ = VVᵀ = I</p>
+<h2 id="mathematical-framework">Mathematical Framework</h2>
+<h3 id="objective-function">Objective Function</h3>
+<p>Minimize: ||W - Ŵ||²_H = (W - Ŵ)ᵀH(W - Ŵ)</p>
+<p>Where:</p>
+<ul>
+<li>H = E[XXᵀ] (second moment of inputs, not true Hessian)</li>
+<li>This equals E[||Xᵀ(W - Ŵ)||²] = expected output error!</li>
+</ul>
+<h3 id="why-h-matters">Why H Matters</h3>
+<ul>
+<li>H captures input statistics</li>
+<li>Large values in H = common input directions</li>
+<li>Weighting by H = focusing on errors that matter for actual outputs</li>
+</ul>
+<h2 id="why-random-orthogonal-matrices">Why Random Orthogonal Matrices?</h2>
+<h3 id="properties-needed">Properties Needed</h3>
+<ol>
+<li><strong>Preserve computation</strong>: Can perfectly undo transformation</li>
+<li><strong>Break structure</strong>: Make weights incoherent</li>
+<li><strong>Predictable</strong>: Work reliably in high dimensions</li>
+</ol>
+<h3 id="high-dimensional-magic">High-Dimensional Magic</h3>
+<p><strong>Johnson-Lindenstrauss</strong>: Random projections preserve distances <strong>Concentration of Measure</strong>: In high-D, random becomes predictable</p>
+<ul>
+<li>Example: On 1000-D sphere, all points near equator</li>
+<li>Random rotations reliably make distributions &ldquo;spherical&rdquo;</li>
+</ul>
+<h3 id="what-happens-to-outliers">What Happens to Outliers</h3>
+<pre tabindex="0"><code>Before: W = [100, 1, 1, ..., 1] (outlier)
+After:  W&#39; ≈ [3.2, 3.1, 3.3, ..., 3.1] (spread evenly)
+</code></pre><h2 id="practical-impact">Practical Impact</h2>
+<ul>
+<li><strong>8× compression</strong>: 16-bit → 2-bit</li>
+<li><strong>First viable 2-bit LLMs</strong></li>
+<li><strong>Theoretical guarantees</strong></li>
+<li><strong>Works better on larger models</strong></li>
+</ul>
+<h2 id="key-technical-terms">Key Technical Terms</h2>
+<ul>
+<li><strong>LDLQ</strong>: The adaptive rounding algorithm (paper doesn&rsquo;t expand acronym)</li>
+<li><strong>Proxy Hessian</strong>: H = E[XXᵀ], not true Hessian but captures what matters</li>
+<li><strong>Incoherence Processing</strong>: The U,V transformations before/after quantization</li>
+<li><strong>Orthogonal Matrix</strong>: U⁻¹ = Uᵀ, preserves distances and angles</li>
+</ul>
+<h2 id="visual-summary">Visual Summary</h2>
+<pre tabindex="0"><code>[Original Weights] → [Random Rotation] → [Uniform Cloud] → [Quantize] 
+                                               ↓
+[Compressed Model] ← [Rotate Back] ← [Quantized Cloud]
+</code></pre><h2 id="why-this-is-brilliant">Why This Is Brilliant</h2>
+<ol>
+<li><strong>Simple idea</strong>: Rotate → Quantize → Rotate back</li>
+<li><strong>Deep math</strong>: Leverages high-dimensional phenomena</li>
+<li><strong>Practical</strong>: Actually works for real LLMs</li>
+<li><strong>Theoretical</strong>: Comes with guarantees</li>
+</ol>
+<h2 id="related-work">Related Work</h2>
+<ul>
+<li><strong>OPTQ</strong>: Earlier method, QuIP proves it&rsquo;s equivalent to LDLQ</li>
+<li><strong>QuIP#</strong>: Improves QuIP with Hadamard transforms (faster) and vector quantization</li>
+</ul>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>
