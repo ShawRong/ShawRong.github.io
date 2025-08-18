@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Adaptive Rounding
+Basically, it&rsquo;s a new method based on the motivation that nearest rounding might not be the best approach for quantization rounding.
+Motivation: Round to Nearest is Not that Good.
+If me perturb the weights of a pre-trained model, it&rsquo;s easy to find the expectation of the loss difference shows like this:
+$$
+\mathbb{E}[\mathcal{L}(\mathbf{x}, \mathbf{y}, \mathbf{w} &#43; \Delta \mathbf{w}) - \mathcal{L}(\mathbf{x}, \mathbf{y}, \mathbf{w})] \approx \frac{1}{2} \Delta \mathbf{w}^T \mathbf{H}^{(\mathbf{w})} \Delta \mathbf{w}
+$$
+Here, we use Taylor expansion, and omit the gradient part due to we assume network is trained to convergence leading to ignoring gradient term.
+$$
+\Delta \mathbf{w}^T \mathbf{g}^{(w)} = 0
+$$
+Here, authors give us an example to explain why round to nearest is sub-optimal.">  
+
+  <title>
+    
+      Using Spin to handle Outlier
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-08-06 06:24:19.137 &#43;0000 UTC">
+                            2025-08-06
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>Using Spin to handle Outlier</h1>
+
+    
+
+    <h1 id="adaptive-rounding">Adaptive Rounding</h1>
+<p>Basically, it&rsquo;s a new method based on the motivation that nearest rounding might not be the best approach for quantization rounding.</p>
+<h2 id="motivation-round-to-nearest-is-not-that-good">Motivation: Round to Nearest is Not that Good.</h2>
+<p>If me perturb the weights of a pre-trained model, it&rsquo;s easy to find the expectation of the loss difference shows like this:
+$$
+\mathbb{E}[\mathcal{L}(\mathbf{x}, \mathbf{y}, \mathbf{w} + \Delta \mathbf{w}) - \mathcal{L}(\mathbf{x}, \mathbf{y}, \mathbf{w})] \approx \frac{1}{2} \Delta \mathbf{w}^T \mathbf{H}^{(\mathbf{w})} \Delta \mathbf{w}
+$$
+Here, we use Taylor expansion, and omit the gradient part due to we assume network is trained to convergence leading to ignoring gradient term.
+$$
+\Delta \mathbf{w}^T \mathbf{g}^{(w)} = 0
+$$
+Here, authors give us an example to explain why round to nearest is sub-optimal.</p>
+<p><strong>Example 1.</strong>: Assume $$\Delta \mathbf{w}^T = [\Delta w_1, \Delta w_2]$$ and
+$$
+\mathbf{H}^{(w)} = \begin{bmatrix} 1 &amp;0.5 \ 0.5 &amp; 1\end{bmatrix}
+$$
+apparently, here
+$$
+\Delta \mathbf{w}^T \mathbf{H}^{(\mathbf{w})} \Delta \mathbf{w} = \Delta w_1^2 + \Delta w_2^2 + \Delta w_1 \Delta w_2
+$$
+For the diagonal entries, i.e. $\Delta w_1^2$ or w_2, we know it&rsquo;s smaller when we use round to nearest. But for the off-diagonal entries, we  opposite signs of the two perturbations improve the loss. <strong>To minimize the overall impact of quantization on the task loss, we need trade-off between the contribution of the diagonal terms and the off-diagonal terms</strong></p>
+<blockquote>
+<p><strong>Experiment</strong>: the authors made a experiment to prove the sub-optimal of round-to-nearest. They generate 100 stochastic rounding and apply it to the 1st layer of ResNet18, and found 48 stochastically sampled rounding choices lead to a better performance than rounding-to-nearest. And they also see that rounding all values <strong>up, or all down</strong>, has an <strong>catastrophic</strong> effect.</p></blockquote>
+<h2 id="task-loss--rounding">Task Loss &amp; Rounding</h2>
+<p><strong>per-layer optimization</strong>
+Obviously, the weight after quantization get only two choice. one is ceil and one is floor (choosing different rounding method).
+So it&rsquo;s a binary optimization problem, following this target:
+$$
+\text{arg} \min_{\Delta \mathbf{w}} \mathbb{E}[\mathcal{L}(\mathbf{x}, \mathbf{y}, \mathbf{w} + \Delta \mathbf{w}) - \mathcal{L}(\mathbf{x}, \mathbf{y}, \mathbf{w})]
+$$
+If we want to cost, we need a forward pass, for every $\Delta \mathbf{w}$ setup.
+So here, the author (or most researcher), utilize the second order <strong>Taylor series approximation</strong>, and ignore the interactions among weights belonging to different <strong>layers</strong>.</p>
+<blockquote>
+<p><strong>Quoting:</strong> Additionally, we ignore the interactions among weights belonging to different layers.
+This, in turn, implies that we assume a <strong>block</strong> diagonal $\mathbf{H}^{(\mathbf{w})}$(here, it&rsquo;s like a diagonal-block-like matrix), where <strong>each non-zero</strong> block corresponds to one layer.</p></blockquote>
+<p>the <strong>per-layer</strong> optimization problem looks like:
+$$
+\text{arg} \min_{\Delta \mathbf{w}^{(l)}} \mathbb{E}[\mathbf{g}^{(\mathbf{w}^{(l)})} \Delta \mathbf{w}^{(l)} + \frac{1}{2}\Delta \mathbf{w}^{(l)^T}\mathbf{H}^{(\mathbf{w}^{(l)})^T}\Delta \mathbf{w}^{(l)}]
+$$
+we can ignore the gradient term, and we can see the optimization problem becomes:
+$$
+\text{arg} \min_{\Delta \mathbf{w}^{(l)}} \mathbb{E}[\Delta \mathbf{w}^{(l)^T}\mathbf{H}^{(\mathbf{w}^{(l)})^T}\Delta \mathbf{w}^{(l)}] \quad (e)
+$$
+the difference is the Hessian matrix is for the <strong>layer-wise</strong> weight compare with previous approximation.</p>
+<blockquote>
+<p><strong>Experiment</strong>: The authors plot a picture to show the relationship between accuracy and proxy(the quadratic hessian term).</p></blockquote>
+<p>Here the author suggest two problem about solving this <strong>proxy for optimization</strong>.</p>
+<ol>
+<li>H is hard to compute(computational and memory complexity).</li>
+<li>Solving this optimization problem is NP-hard.</li>
+</ol>
+<hr>
+<p><strong>1. The complexity associated with $H^{(\mathbf{w}^{(l)})}$</strong>
+This is from article &lsquo;Practical Gauss-Newton Optimization for Deep Learning&rsquo;.</p>
+<p><strong>sample parameter hessian</strong>, <em>H</em> which we discuss earlier, has element likes:</p>
+<p>$$
+[H]_{ij} = \frac {\partial^2}{\partial \theta_i \partial \theta_j} E(\theta)
+$$
+Here, E stand for the loss.
+The expected parameter Hessian is similarly given by the expectation of this equation.</p>
+<p><strong>Comment:</strong></p>
+<blockquote>
+<p><strong>parameter hessian vs. sample hessian</strong>: parameter hessian is the second derivatives of the objective function. sample hessian is the second derivatives with respect to individual training samples or datapoint. one is partial to weight w, and one is partial to data point feature x.
+what&rsquo;s really about the gradient and hessian? When we compute gradients, we are asking &ldquo;how does the loss change with respect to parameters for this specific data point/batch?&rdquo; Different data points will generally produce different answers to this question. So as to Hessian. When we compute the Hessian of a loss function, we are asking &ldquo;How does the curvature of the loss surface change with respect to parameters for this specific data point/batch?&rdquo;
+So basically, different data points create different hessians. Some inputs might create steep, narrow valleys in the loss landscape, while others create gentle, broad curves. A data point where the model makes a large error might contribute high curvature, while a point where the model performs well might contribute relatively flat curvature.</p></blockquote>
+<p>the partial derivative of loss with respect to the weights of layer lambda is given by:</p>
+<p><em>Note: a, b here stand for a index of the weight.</em>
+$$
+\frac{\partial E}{\partial W_{a, b}^{\lambda}} = \sum_{i} \frac{\partial h_i^{\lambda}}{\partial W_{a, b}^{\lambda}} \frac{\partial E}{\partial h_i^{\lambda}} = a_b^{\lambda - 1} \frac{\partial E}{\partial h_a^{\lambda}} \quad (1)
+$$
+where:
+$$
+h_a^{\lambda} = \sum_{b} W_{a, b}^{\lambda} \cdot a_b^{\lambda - 1} \quad (2)
+$$
+<strong>According to (2), for i eq a, we get</strong>:
+$$
+\frac {\partial h_a^{\lambda}}{\partial W_{a,b}^{\lambda}} = a_b^{\lambda - 1}
+$$
+<strong>and for i neq a, we get 0.</strong>
+$$
+\frac {\partial h_i^{\lambda}}{\partial W_{a,b}^{\lambda}} = 0
+$$
+so, the equation (1) holds.</p>
+<p>so for the hessian of layer lambda, we have:
+$$
+[H_{\lambda}]<em>{(a, b), (c, d)} = \frac{\partial^2 E}{\partial W</em>{a,b}^{\lambda}\partial W_{c,d}^{\lambda}}
+$$
+$$
+\frac{\partial}{\partial W_{c,d}^{\lambda}}(a_b^{\lambda - 1} \frac{\partial E}{\partial h_a^{\lambda}}) = a_b^{\lambda - 1} \sum_i \frac{h_i^{\lambda}}{\partial W_{c,d}^{\lambda}} \frac{\partial}{h_i^{\lambda}}(\frac{\partial E}{\partial h_a^{\lambda}})
+$$</p>
+<p>$$
+\frac {\partial h_c^{\lambda}}{\partial W_{c,d}^{\lambda}} = a_d^{\lambda - 1}
+$$
+and for i neq c, we get 0.
+$$
+\frac{\partial}{\partial W_{c,d}^{\lambda}}(a_b^{\lambda - 1} \frac{\partial E}{\partial h_a^{\lambda}}) = a_b^{\lambda - 1} \sum_i \frac{h_i^{\lambda}}{\partial W_{c,d}^{\lambda}} \frac{\partial}{h_i^{\lambda}}(\frac{\partial E}{\partial h_a^{\lambda}}) = a_b^{\lambda - 1} a_d^{\lambda - 1} \frac{\partial^2 E}{\partial h_a^{\lambda} \partial h_b^{\lambda}} =  a_b^{\lambda - 1} a_d^{\lambda - 1} [\mathcal{H}<em>{\lambda}]</em>{a,c}
+$$</p>
+<p><strong>In conclusion,</strong>
+$$
+[H_{\lambda}]<em>{(a, b), (c, d)} = a_b^{\lambda - 1} a_d^{\lambda - 1} [\mathcal{H}</em>{\lambda}]<em>{a,c}
+$$
+$$
+[\mathcal{H}]</em>{a,c} = \frac{\partial^2 E}{\partial h_a^{\lambda} \partial h_b^{\lambda}}
+$$
+<strong>Note</strong>: here we use curlycue H stand for the so called <em>pre-activation Hessian</em>. and the normal H stand　for sample Hessian.</p>
+<p>$$
+H_{\lambda} = \frac{\partial^2 E}{\partial \text{vec} (W_{\lambda}) \partial \text{vec} (W_{\lambda})} = (a_{\lambda - 1} a_{\lambda - 1}^T) \otimes \mathcal{H}_{\lambda}
+$$
+where otimes stands for Kronecker product.</p>
+<p><strong>Back to where we begin from the paper Ada Rounding.</strong>
+Indeed, it&rsquo;s quite hard to compute the $\mathcal{H}_{\lambda}$, which is the hessian of loss with respect to activation of layer lambda.</p>
+<p>To tackle this, we make <strong>assumption</strong> that the Hessian of the task loss w.r.t the pre-activations, i.e. $\mathcal{H}_{\lambda}$ is a <strong>diagonal</strong> matrix.</p>
+<p>In the article, it looks like:
+$$
+\mathbf{H}^{\mathbf{w}^{(l)}} = \mathbb{E}[\mathbf{x}^{(l-1)}\mathbf{x}^{(l-1)^T} \otimes \text{diag}(\nabla_{\mathbf{z}^{(l)}}^2 \mathcal{L}_{i,i})]
+$$
+Considering the previous optimization problem, it becomes, (considering every single w_k).</p>
+<p>Kronecker factorization property:
+$$
+(\mathbf{A}\otimes\mathbf{B})\text{vec}(\mathbf{X}) = \text{vec}(\mathbf{B}\mathbf{X}\mathbf{A}^T)
+$$
+$$
+\text{vec}(\mathbf{X})^T (\mathbf{A} \otimes \mathbf{B}) \text{vec}(\mathbf{X}) = \text{tr}(\mathbf{X}^T \mathbf{B}\mathbf{X}\mathbf{A}^T)
+$$
+&lsquo;vec&rsquo; here is vectorize the matrix column by column.
+here,
+$$
+\Delta \mathbf{w}<em>k^{(l)} = \text{vec}(\Delta \mathbf{W}</em>{k,:}^{(l)})
+$$
+so, to optimization problem becomes:
+$$
+\text{arg} \min_{\Delta \mathbf{W}<em>{k,:}^{(l)}} \mathbb{E}[\nabla</em>{\mathbf{z^{(l)}}} \mathcal{L}<em>{k,k} \cdot \Delta \mathbf{W}</em>{k:}^{(l)}\mathbf{x}^{(l-1)}\mathbf{x}^{(l-1)^T} \Delta \mathbf{W}_k^{(l)^T}]
+$$</p>
+<blockquote>
+<p><strong>Quoting:</strong> The problem is a per-layer problem, now.</p></blockquote>
+<p>There authors made an <strong>assumption</strong>, that the gradient of Loss is a <strong>constant independent of the input data samples.</strong>
+The optimization problem becomes:
+$$
+\text{arg} \min_{\Delta \mathbf{W}<em>{k,:}^{(l)}} \mathbb{E} [(\Delta \mathbf{W}</em>{k,:}^{(l)}\mathbf{x}^{(l-1)})^2] \quad (1)
+$$
+or</p>
+<p>$$
+\text{arg} \min_{\Delta \mathbf{W}<em>{k,:}^{(l)}} \Delta \mathbf{W}</em>{k,:}^{(l)}\mathbb{E} [\mathbf{x}^{(l-1)}\mathbf{x}^{(l-1)^T}]\Delta \mathbf{W}_{k,:}^{(l)^T} \quad (2)
+$$</p>
+<blockquote>
+<p><strong>Quoting:</strong> This optimization requires no knowledge of the subsequent layers and the task loss. We are just simply minimizing the Mean Squared Error(MSE) introduced in the pre-activations z due to quantization.
+<strong>Comment</strong>: Here x is the activation of this layer. i.e. h^(l) = W^(l) x^(l-1)</p></blockquote>
+<blockquote>
+<p><strong>Quoting</strong>: The optimization problem in (1) can be tackled by either precomputing the second moment, as in (2), and then perform the optimization over perturbation of weight. Or by performing a single layer forward pass for each potential perturbation of weight, during the optimization procedure.</p></blockquote>
+<blockquote>
+<p><strong>Comment:</strong> here author said, &lsquo;In section 5, we empirically verify that the constant constant diagonal approximation of (the gradient^2 of loss) term does not negatively influence the performance&rsquo;. they did experiment using equation (e) and equation (2) to check the performance. And authors claim it&rsquo;s ok to make these assumption, since it seems works pretty well.</p></blockquote>
+<p><em>We skip the Ada round part to start with QuIP.</em></p>
+<h1 id="quip">QuIP</h1>
+<h2 id="short-introduction">Short Introduction</h2>
+<p>The authors in this paper introduce previous work including <strong>Adaptive rounding</strong> and <strong>GPTQ</strong>.</p>
+<p><strong>Adaptive Rounding</strong>: The authors uses the sota <strong>proxy objective</strong>, a optimization problem described earlier in this passage.
+<strong>GPTQ</strong>: this is a novel rounding method that can work on largest language model(OPT and BLOOM at that time).</p>
+<p>About the proxy objective of the quantization, we have this:
+$$
+\mathcal{l}(\hat{W}) = \mathbf{E}_x [|(\hat{W} - W)x|^2] = \text{tr}((\hat{W} - W)H(\hat{W} - W)^T).
+$$
+We can easily see the crucial part of this objective is the so-called proxy hessian(i.e. second moment matrix), which should be calculated while backward propagating or pre-calculated.</p>
+<blockquote>
+<p><strong>Quoting:</strong> Crucially, this formulation lets the quantization be run in parallel across neurons, which is tractable for large language models.</p></blockquote>
+<h2 id="derivation-of-the-optimal-adaptive-rounding-method">Derivation of the &lsquo;Optimal&rsquo; Adaptive Rounding Method</h2>
+<p>The author define sequences of adaptive rounding methods with respect for optimizing this objective.</p>
+<p>the feature of the methods is <strong>column</strong> by column based on the basis that this proxy objective is a <strong>per-layer</strong> proxy objective.</p>
+<blockquote>
+<p><strong>Quoting:</strong> This scheme rounds columns one at a time; at each step, it adds a &lsquo;correction&rsquo; term that is a linear function of the residual from the rounding we have done so far(previous column).</p></blockquote>
+<p>The formula of each quantized weight matrix is:
+$$
+\hat{W_k} = \mathcal{Q}(W_k + (W_{1:(k-1)} - {\hat{W}_{1:(k-1)}})a_k)
+$$
+here, W_k with hat stands for k-th column of quantized weight matrix(a <strong>vector</strong>). Q stands for quantization of each elements of vector. W with index like 1:(k-1), is selected weight matrix with selected columns (not selected as zero, to keep shape uniform). And a_k here stand for the linear function of the residue.</p>
+<p>And finally, the final quantized matrix <strong>satisfies</strong>:
+$$
+\hat{W} = \mathcal{Q}(W + (W - \hat{W})U) \quad (1)
+$$
+here, U is a upper-triangular matrix, consisting of the vector a.</p>
+<p>This is a definition of a family of <strong>adaptive rounding</strong> based on features including &ldquo;column by column&rdquo;.</p>
+<p>here the authors denote quantization error of the <strong>Adaptive rounding</strong> (not simple Q(W) - W, since here we are adaptive rounding):
+$$
+\eta = \mathcal{Q}(W + (W - \hat{W})U) - (W + (W - \hat{W})U)
+$$
+replace the Q term with equation (1)
+$$
+\eta = (\hat{W} - W) + (\hat{W} - W)U
+$$
+$$
+\eta = (\hat{W} - W)(I + U)
+$$
+Therefore, we have the previous proxy objective becomes:
+$$
+\text{tr}((\hat{W} - W) H (\hat{W} - W)^T) = \text{tr}(\eta(U+I)^{-1} H (U + I)^{-T}\eta^T)
+$$
+And If we choose decomposition of H to becomes:
+$$
+H = (U&rsquo; + I)D(U&rsquo; + I)^T \quad (2)
+$$
+And we assign U (a linear function of residual) to be U&rsquo;, we will achieve:
+$$
+\text{tr}(\eta H \eta^T)
+$$</p>
+<blockquote>
+<p><strong>Quoting</strong>: We denote as LDLQ (LDL decomposition) the rounding procedure in Eq.(1) with U to be U&rsquo; as the LDL assignment from Eq.(2). We <strong>will now see</strong> that the LDL assignment of U is fact optimal.</p></blockquote>
+<h2 id="deriving-the-optimality-of-the-ldlq"><strong>Deriving the Optimality of the LDLQ</strong></h2>
+<p>It defines a worst and average loss of each quantization methods, and show the Loss of LDLQ satisfies the following:
+$$
+\frac{m}{4} \text{tr}(D) = \mathcal{L}<em>{\text{worst}}(\text{LDLQ}, H) \leq \mathcal{L}</em>{\text{worst}}(\mathcal{A}, H)
+$$
+$$
+\frac{m}{c} \text{tr}(D) = \mathcal{L}<em>{\text{avg}}(LDLQ, H) \leq \mathcal{L}</em>\text{avg} (\mathcal{A}, H)
+$$
+here m stands for the number of rows being quantized.
+mathcal A stands for any quantization method following Eq.(1).</p>
+<p>The authors states:</p>
+<blockquote>
+<p><strong>Quoting</strong>: LDLQ achieves strictly lower worst and average-case proxy loss because $$\text{tr}(D) &lt; \text{tr}(\tilde{H})$$tilde H stands for non-diagonal H.</p></blockquote>
+<p>And somehow:
+$$
+\mathcal{L}<em>{\text{worst}}(\text{LDLQ}, \tilde{H}) &lt; \mathcal{L}</em>{\text{worst}} (Stoch, \tilde{H})
+$$
+and
+$$
+\mathcal{L}<em>{\text{worst}}(\text{LDLQ}, \tilde{H}) &lt; \mathcal{L}</em>{\text{worst}} (Stoch Or Nearest, \tilde{H})
+$$
+The authors use 2 lemma and 1 definition to prove this.</p>
+<p>first the author define what&rsquo;s \mu incoherence. (\mu stands for the level of incoherence).
+And derive an inequality of tr(D) and tr(H^{1/2})^2</p>
+<blockquote>
+<p><strong>Quoting:</strong> To the best of our knowledge, this is a novel result using incoherence to obtain a bound on tr(D) that depends only on the spectrum of H.</p></blockquote>
+<p>And author use this to show these two inequality holds for the LDLQ.</p>
+<blockquote>
+<p><strong>Quoting:</strong> This shows that for sufficiently low-rank H, LDLQ is asymptotically better than plain nearest and stochastic rounding by a factor $\mu^2k/n$</p></blockquote>
+<h2 id="the-need-for-incoherence">The need for Incoherence</h2>
+<p>The authors were able to show LDLQ gets <strong>asymptotially</strong> better bound in terms of just the spectrum of H.
+<strong>Was the incoherence assumption necessary to get this result</strong>?
+<strong>Yes.</strong>
+<strong>Without incoherence: no improvement with a spectral bound</strong>.</p>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

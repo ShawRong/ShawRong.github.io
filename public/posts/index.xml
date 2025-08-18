@@ -6,8 +6,22 @@
     <description>Recent content in Posts on My New Hugo Site</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 31 Jul 2025 14:46:05 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 18 Aug 2025 03:24:56 +0000</lastBuildDate>
     <atom:link href="https://example.org/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Markdown Ref-book</title>
+      <link>https://example.org/posts/markdown-ref-book/</link>
+      <pubDate>Mon, 18 Aug 2025 03:24:56 +0000</pubDate>
+      <guid>https://example.org/posts/markdown-ref-book/</guid>
+      <description>&lt;h1 id=&#34;the-complete-markdown-reference-book&#34;&gt;The Complete Markdown Reference Book&lt;/h1&gt;&#xA;&lt;p&gt;&lt;em&gt;A comprehensive guide to mastering Markdown syntax and features&lt;/em&gt;&lt;/p&gt;&#xA;&lt;hr&gt;&#xA;&lt;h2 id=&#34;table-of-contents&#34;&gt;Table of Contents&lt;/h2&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;&lt;a href=&#34;https://claude.ai/chat/5ed567fe-28e7-45f4-941c-e86716d88a18#introduction&#34;&gt;Introduction&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;&lt;a href=&#34;https://claude.ai/chat/5ed567fe-28e7-45f4-941c-e86716d88a18#basic-syntax&#34;&gt;Basic Syntax&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;&lt;a href=&#34;https://claude.ai/chat/5ed567fe-28e7-45f4-941c-e86716d88a18#extended-syntax&#34;&gt;Extended Syntax&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;&lt;a href=&#34;https://claude.ai/chat/5ed567fe-28e7-45f4-941c-e86716d88a18#advanced-features&#34;&gt;Advanced Features&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;&lt;a href=&#34;https://claude.ai/chat/5ed567fe-28e7-45f4-941c-e86716d88a18#best-practices&#34;&gt;Best Practices&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;&lt;a href=&#34;https://claude.ai/chat/5ed567fe-28e7-45f4-941c-e86716d88a18#common-use-cases&#34;&gt;Common Use Cases&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;&lt;a href=&#34;https://claude.ai/chat/5ed567fe-28e7-45f4-941c-e86716d88a18#troubleshooting&#34;&gt;Troubleshooting&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;&lt;a href=&#34;https://claude.ai/chat/5ed567fe-28e7-45f4-941c-e86716d88a18#quick-reference&#34;&gt;Quick Reference&lt;/a&gt;&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;hr&gt;&#xA;&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;&#xA;&lt;p&gt;Markdown is a lightweight markup language created by John Gruber in 2004. It allows you to format text using simple, readable syntax that converts to HTML. Markdown has become the standard for documentation, README files, and content creation across platforms like GitHub, Reddit, and many blogging systems.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Using Spin to handle Outlier</title>
+      <link>https://example.org/posts/using-spin-to-handle-outlier/</link>
+      <pubDate>Wed, 06 Aug 2025 06:24:19 +0000</pubDate>
+      <guid>https://example.org/posts/using-spin-to-handle-outlier/</guid>
+      <description>&lt;h1 id=&#34;adaptive-rounding&#34;&gt;Adaptive Rounding&lt;/h1&gt;&#xA;&lt;p&gt;Basically, it&amp;rsquo;s a new method based on the motivation that nearest rounding might not be the best approach for quantization rounding.&lt;/p&gt;&#xA;&lt;h2 id=&#34;motivation-round-to-nearest-is-not-that-good&#34;&gt;Motivation: Round to Nearest is Not that Good.&lt;/h2&gt;&#xA;&lt;p&gt;If me perturb the weights of a pre-trained model, it&amp;rsquo;s easy to find the expectation of the loss difference shows like this:&#xA;$$&#xA;\mathbb{E}[\mathcal{L}(\mathbf{x}, \mathbf{y}, \mathbf{w} + \Delta \mathbf{w}) - \mathcal{L}(\mathbf{x}, \mathbf{y}, \mathbf{w})] \approx \frac{1}{2} \Delta \mathbf{w}^T \mathbf{H}^{(\mathbf{w})} \Delta \mathbf{w}&#xA;$$&#xA;Here, we use Taylor expansion, and omit the gradient part due to we assume network is trained to convergence leading to ignoring gradient term.&#xA;$$&#xA;\Delta \mathbf{w}^T \mathbf{g}^{(w)} = 0&#xA;$$&#xA;Here, authors give us an example to explain why round to nearest is sub-optimal.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Think Of Working method for brain</title>
       <link>https://example.org/posts/think-of-working-method-for-brain/</link>
