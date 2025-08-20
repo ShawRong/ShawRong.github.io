@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="#lossless #compression  #mlsystem #float #gpu #LLM #llm
+Title: 70% Size, 100% Accuracy: Lossless LLM Compression for Efficient GPU Inference via Dynamic-Length Float
+Draft Note
+This is a draft of notation of important ideas
+Abstract
+note:
+
+Low entropy in the b-float16 weight representation of LLMs, which reveals significant inefficiency in existing storage format.
+main idea of the code design: by applying entropy coding, this system assigns dynamic-length encodings to weights based on frequency. (without any loss of precision).
+to facilitate the efficient inference based on this design with this encoding, 3 designs are facilitated:
+
+decomposition of LUTs into compact LUTs, which fit in GPU SRAM.
+two-phase kernel for coordinating thread read/write positions using lightweight auxiliary variables
+transformer-block-level decompression to minimize latency.
+
+
+d float16 achieves 1.9-38.8 higher throughput, enables 5.3-13.17 longer context lengths.
+70%size, lossless compression
+
+questions:">  
+
+  <title>
+    
+      DFloat16
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-08-20 11:36:03.072 &#43;0000 UTC">
+                            2025-08-20
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>DFloat16</h1>
+
+    
+
+    <p>#lossless #compression  #mlsystem #float #gpu #LLM #llm
+<strong>Title</strong>: 70% Size, 100% Accuracy: Lossless LLM Compression for Efficient GPU Inference via Dynamic-Length Float</p>
+<h1 id="draft-note">Draft Note</h1>
+<p>This is a draft of notation of important ideas</p>
+<h2 id="abstract">Abstract</h2>
+<p>note:</p>
+<ul>
+<li>Low entropy in the b-float16 weight representation of LLMs, which reveals significant inefficiency in existing storage format.</li>
+<li>main idea of the code design: by applying entropy coding, this system assigns dynamic-length encodings to weights based on frequency. (without any loss of precision).</li>
+<li>to facilitate the efficient inference based on this design with this encoding, 3 designs are facilitated:
+<ul>
+<li>decomposition of LUTs into compact LUTs, which fit in GPU SRAM.</li>
+<li>two-phase kernel for coordinating thread read/write positions using lightweight auxiliary variables</li>
+<li>transformer-block-level decompression to minimize latency.</li>
+</ul>
+</li>
+<li>d float16 achieves 1.9-38.8 higher throughput, enables 5.3-13.17 longer context lengths.</li>
+<li>70%size, lossless compression</li>
+</ul>
+<p>questions:</p>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> what&rsquo;s entropy coding?
+<ul>
+<li>It says according to the paper Deep Compression by Han Song(2015), b float16 exponents carry less information than their allocated bit width.</li>
+<li>We know fro brain float16, 1bit for sign, 8 bits for the exponent, 7 bits for the mantissa</li>
+<li>with an entropy of approximately 2.6 bits compared to the assigned 8 bits. (This is from the old paper published in 2015.)</li>
+<li>The entropy coding here, is Huffman coding. Huffman coding is a lossless data compression algorithm that use less bits for frequent symbols .</li>
+<li>The compression itself needs kernel to facilitate the gpu inference</li>
+</ul>
+</li>
+<li><input checked="" disabled="" type="checkbox"> what&rsquo;s the dynamic-length encoding, what&rsquo;s dynamic, what&rsquo;s get coded. what&rsquo;s the length referring to.
+<ul>
+<li>This encoding is a data format called Dynamic-Length Float. It&rsquo;s a data format, which comes directly from Huffman encoding.</li>
+<li>Why it&rsquo;s dynamic, cause the length of code for exponent are changing according to Huffman code</li>
+<li>The exponent component 8bits are get coded. The distribution of the raw data representation of the exponent is distributed around 100-150, which means most of the data are in a range around 1e-5 to 1e5.</li>
+<li>The length refers to the bits usage for a single float point.</li>
+</ul>
+</li>
+<li><input checked="" disabled="" type="checkbox"> Are they all got coded or open exponent part?
+<ul>
+<li>According to previous study and statistics about the LLM weights, the authors found the entropy of the exponent part are low compared with the assigned full 8 bits. The other 2 component named sign and mantissa are uniform, representing high entropy.</li>
+<li>So the main work focus on minimize the bits allocated to the exponent part, which leads to 30% improvement in memory perspective.</li>
+</ul>
+</li>
+<li><input checked="" disabled="" type="checkbox"> what&rsquo;s the meaning of saying &lsquo;when L = 32, a direct lookup table would require 2^32 billion entries&rsquo;? why we need that much entries, that&rsquo;s too much thinking of my previous thought.
+<ul>
+<li>we need to be aware of the previous statement &lsquo;Each entry in LUT maps an L-bit sequence to the decoded symbol whose Huffman code.&rsquo;</li>
+<li>So actually, it takes a 32bit long sequence, and map it to the corresponding symbol without erase the duplicate sequence with prefix.</li>
+<li>It&rsquo;s a dumb shit, I think.</li>
+</ul>
+</li>
+<li><input checked="" disabled="" type="checkbox"> It&rsquo;s weight get encoded or what?
+<ul>
+<li>only weight are encoded.</li>
+</ul>
+</li>
+<li><input checked="" disabled="" type="checkbox"> They are using LUTs for decoding, what&rsquo;s stored in LUTs? They said LUTs are &lsquo;decomposed&rsquo;? What&rsquo;s the method to do decomposition? Tree or block?
+<ul>
+<li>It&rsquo;s symbol, i.e. the corresponding exponents stored in LUTs, and the entries are sequences of Huffman code. It demands a 32 bit long sequence to identify the corresponding symbol using the LUT. But 32 bit sequence leads to 2^32 entries, which is too large to fit in the SRAM. It&rsquo;s divided into 4 different LUTs, using 1 byte to map to the symbol, and the the failure of the current byte look up will leads to the next LUT look up using the next byte. The whole LUT is decomposed into 4 different one.</li>
+</ul>
+</li>
+<li><input checked="" disabled="" type="checkbox"> It mentions read and write operations, It&rsquo;s easy to think of read weight while inferencing. Can writing towards weight happen while inference?
+<ul>
+<li>It needs write because of the stage of decompressing. We need to recover our original weight matrix, which demands to reserve some memory to write things.</li>
+</ul>
+</li>
+<li><input checked="" disabled="" type="checkbox"> It says identification for w/r positions in encoded/decoded weight. what&rsquo;s the meaning of decoded weight? what&rsquo;s the positions? Why it&rsquo;s necessary?
+<ul>
+<li>You can check the answer of the previous question</li>
+</ul>
+</li>
+<li><input checked="" disabled="" type="checkbox"> It says &rsquo;encoded weights are tightly packed, and it&rsquo;s hard to read/write&rsquo;. Are they stored in a compact way, like a continuous bit stream without any gap?
+<ul>
+<li>Yes, the entries for LUTs are stored in a compact way like a bit stream. The system handles 32bits every operation.</li>
+</ul>
+</li>
+<li><input checked="" disabled="" type="checkbox"> It involves write while decoding, write decoded weights to where?
+<ul>
+<li>To the SRAM.</li>
+</ul>
+</li>
+<li><input checked="" disabled="" type="checkbox"> It says decompress small scaled weights are trivial, so we need to decompress a transformer-block level matrix. what&rsquo;s the weight matrix decompressed?
+<ul>
+<li>It make the matrix to decompress a batch, to make full use of the block of GPU.</li>
+</ul>
+</li>
+<li><input checked="" disabled="" type="checkbox"> how does these 3 design facilitate the efficient inference?
+<ul>
+<li>It facilitate LUT look up.</li>
+<li>It is compensation instead of improvement. It&rsquo;s the necessary cost of adaption of entropy code.</li>
+</ul>
+</li>
+<li><input checked="" disabled="" type="checkbox"> what&rsquo;s LUTs(lookup tables), why it&rsquo;s needed? how is it being compressed? decomposition? how? can we make a better design?
+<ul>
+<li>It&rsquo;s needed because we want to make use of Huffman code instead of the sparse, low entropy original exponent.</li>
+<li>It&rsquo;s compressed as a entires of the Huffman tree to store in the memory instead of the full exponent. We need to transfer it from entries to the full exponent by looking up the LUTs</li>
+<li>As a result, the compression is basically make up LUTs, and store entires along with the signal bit and mantissa bits.</li>
+<li>The decompression is just look up, and recover the original B Float16 format.</li>
+</ul>
+</li>
+<li><input checked="" disabled="" type="checkbox"> This is a question related to the Two-Phase Kernel. What does it do?
+<ul>
+<li>We don&rsquo;t know to starting position for each thread to begin decoding</li>
+<li>Each thread are not clear about the real index of the elements being decoded, leading to incapability of figuring out the correct output/write location for storing the result</li>
+<li>Authors designate a array called Gaps to store the valid offset of the assigned starting byte of each thread, to tell the starting position for each thread under the context that every thread is assigned starting point identified by a byte.</li>
+<li>A naive approach to handle the 2nd issue is assign an array to different thread to write thing, which is impractical due to storage overhead. The authors designed a pretty dummy algorithm to perform 2 phase kernel which I would like to call it Ekko inspired by the LOL character Ekko who can reverse the time (🎵反方向的钟). It read the sequence, and count how many elements it&rsquo;s going to decode. And after that, It read the sequence again(Ekko hit R), writing the decoded result to memory this time.</li>
+</ul>
+</li>
+<li><input checked="" disabled="" type="checkbox"> why we need it to be fit in GPU SRAM? what&rsquo;s SRAM? is it shared memory? How can we avoid the latency of loading composition of LUTs
+<ul>
+<li>It&rsquo;s shared memory. We fit it into a small size to load into SRAM to facilitate the look up, without the need of loading many times.</li>
+</ul>
+</li>
+<li><input checked="" disabled="" type="checkbox"> what&rsquo;s two-phase kernel for coordinating thread read/write? what are these specifically phases?
+<ul>
+<li>First, we know it&rsquo;s a kernel, we perform these element-wise function simultaneously.</li>
+<li>at phase1, we do position appointment. And after the position to be w/r are determined, we perform phase2, which do the operation w/r.</li>
+<li>Benefits: Massive Parallelism, Memory coalescing: Threads can be arranged to access memory efficiently, Avoiding Racing Condition</li>
+</ul>
+</li>
+<li><input checked="" disabled="" type="checkbox"> why we need transformer-block-level decompression?
+<ul>
+<li>because we want to pack many matrix up, to form a large data to decompression to improve the throughput.</li>
+</ul>
+</li>
+<li><input checked="" disabled="" type="checkbox"> did they stored the so-called gap offsets and block-level output positions on the gpu?
+<ul>
+<li>Yes, they form them once, and store them in the memory for future usage.</li>
+</ul>
+</li>
+<li><input checked="" disabled="" type="checkbox"> In the experiment part, the figure 3 illustrate a comparison between throughout and latency tested on original model running with GPU and CPU offloading and lossless and compressed model with running on pure GPU. Is it reasonable?
+<ul>
+<li>Slight reasonable, if we constrain the context to a limited memory senario.</li>
+</ul>
+</li>
+</ul>
+<p>summary:</p>
+<ul>
+<li>Entropy coding is a core technique in lossless data compression that leverages statistical redundancy to reduce data size. It includes Huffman coding, arithmetic coding and Asymmetric Numeral Systems. A wide-known feature of Huffman code is that no code is a prefix of any other.  The entropy coding here is Huffman coding, which is lossless.</li>
+<li>About the entropy coding, the cited paper claims are too old to validate. The claim &lsquo;bits of the exponent with an entropy 2.6 bits compared to 8 bits&rsquo; may not holds.</li>
+<li>bit by bit traversal of a Huffman tree is not suitable for GPU parallel architecture.</li>
+<li>so we need kernels to handle it. (it&rsquo;s a problem pretty old)</li>
+<li>It&rsquo;s observed that the distribution of exponent value isn&rsquo;t uniform, representing low entropy. The sign and mantissa component are right about the distribution.</li>
+<li>LUT maps sequence to a decoded symbol(exponent) according to the prefix of the sequence.</li>
+<li>It uses a Huffman tree in depth of maximum 32. It&rsquo;s processed that is larger than 32.</li>
+<li>We retrieve L bits from the bit stream, figuring out the corresponding symbol according to the codebook. And after this, for the reason we have no idea about the length of prefix, just knowing the symbol, we read another structure called &lsquo;Code Lengths&rsquo; to lookup the length of this prefix, which is a lookup table who maps each symbol to its corresponding prefix length.</li>
+<li>The designed LUTs maps 32bit sequence to the symbol without diminish duplicate ones, leading to 2^32 entries, which is skeptical. By the way, the author realize their inability of handling such a big LUTs, and divide it into 4 LUTs with 2^8 entries each, according to the fact that there are 4 bytes with the constraint of 32bits. All together, the entires occupy about 1280 bytes totally. The search procedure are in a one by one way looking up, querying the 1st table the the next. If it hits a valid result, this symbol, i.e. Huffman code, will be returned, otherwise the search will not end, switching to the next table. It&rsquo;s factual that 1280 bytes fits in GPU SRAM and enables fast access.</li>
+<li>There is problem that the look up without prefix bytes which had been used in the previous search procedure can lead to conflict and ambiguity. For example, we get two 32 bits sequence to look up, sharing same lower 2 bytes yet distinct higher 2 bytes leading to invalid result causing further look up using lower bytes, can lead to wrong decoded symbol. It&rsquo;s avoidable by performing frequencies adjustment.</li>
+<li>We don&rsquo;t know the starting position for each thread to begin decoding. And each thread is not clear about the real index of the elements being decoded, leading to incapability of figuring out the correct writing location for storing the result. Authors designate a array called Gaps to store the valid offset of the assigned starting byte of each thread, to tell the starting position for each thread under the context that every thread is assigned starting point identified by a byte.  A naive approach to handle the writing issue is assign an array to different thread to write things, which is impractical due to storage overhead. The authors designed a pretty dummy algorithm to perform 2 phase kernel which I would like to call it Ekko inspired by the LOL character Ekko who can reverse the time (🎵反方向的钟). It read the sequences, and count how many symbols it&rsquo;s going to decode. And after that, It read the sequence again(Ekko hit R), writing the decoded result to memory this time.</li>
+<li>They stored the gap offsets and block-level output position as auxiliary data to help read and write.</li>
+<li>The compressed weights are decoded while inference and decoded matrix is discarded after usage.</li>
+<li>Apparently, it&rsquo;s possible to improve the throughput by enlarging the size of data being decoded. And The authors decide to decode a block of transformer before executing the computation in a transformer block. So before executing any computation in a transformer block, they first decompress all its associated weights.</li>
+<li>In the experiment part, it shows compression ratio about 70% compared wth the original model, The perplexity and accuracy seems achieve an absolutely no loss result.</li>
+<li>In the appendix, it shows a figure with comparison between original model running on 2 GPU and their model running on a single gpu. It shows a significant pretty bad performance with regard to the throughput and latency, considering the fact that A8000 gets no nvlink.</li>
+<li>Figure 5 shows a comparison to show that the additional latency due to decompression get to be less important as the token batch being processed increases, which does not make any sense, of course. If I can spent a day 60 hours, the time I used to sleep is less significant compared with the time I spent to do other things, too.</li>
+<li>Basically, it sacrifices to achieve a 30% smaller model size.</li>
+</ul>
+<p>idea:</p>
+<p>TODO:</p>
+<ul>
+<li><input disabled="" type="checkbox"> Deep compression: Compressing deep neural networks with pruning, trained quantization and Huffman coding.  We still need to read the old paper &ldquo;deep compression&rdquo; by Han Song.</li>
+<li><input disabled="" type="checkbox"> There are pretty much entropy coding-based compression methods. they are paper about CNNs, Deep Compression by Han Song, and three papers named &ldquo;Neuzip&rdquo;, &ldquo;Zipnn&rdquo; and &ldquo;Huff-llm&rdquo;.  Need to read later on. I want to know is it benefit for vector quantization?</li>
+<li><input disabled="" type="checkbox"> Can we use the difference to do this lossless compression. You can see the details from url: [GridFour](I think the main element get encoded are weights.)</li>
+</ul>
+<p>checkpoint:</p>
+<ul>
+<li>Read <a href="https://gwlucastrig.github.io/GridfourDocs/notes/LosslessCompressionForFloatingPointData.html">https://gwlucastrig.github.io/GridfourDocs/notes/LosslessCompressionForFloatingPointData.html</a></li>
+<li>read 70%size from 3.2 However, when L = 32&hellip;</li>
+</ul>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

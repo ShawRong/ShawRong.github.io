@@ -6,8 +6,15 @@
     <description>Recent content in Posts on My New Hugo Site</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 18 Aug 2025 03:24:56 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 20 Aug 2025 11:36:03 +0000</lastBuildDate>
     <atom:link href="https://example.org/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>DFloat16</title>
+      <link>https://example.org/posts/dfloat16/</link>
+      <pubDate>Wed, 20 Aug 2025 11:36:03 +0000</pubDate>
+      <guid>https://example.org/posts/dfloat16/</guid>
+      <description>&lt;p&gt;#lossless #compression  #mlsystem #float #gpu #LLM #llm&#xA;&lt;strong&gt;Title&lt;/strong&gt;: 70% Size, 100% Accuracy: Lossless LLM Compression for Efficient GPU Inference via Dynamic-Length Float&lt;/p&gt;&#xA;&lt;h1 id=&#34;draft-note&#34;&gt;Draft Note&lt;/h1&gt;&#xA;&lt;p&gt;This is a draft of notation of important ideas&lt;/p&gt;&#xA;&lt;h2 id=&#34;abstract&#34;&gt;Abstract&lt;/h2&gt;&#xA;&lt;p&gt;note:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Low entropy in the b-float16 weight representation of LLMs, which reveals significant inefficiency in existing storage format.&lt;/li&gt;&#xA;&lt;li&gt;main idea of the code design: by applying entropy coding, this system assigns dynamic-length encodings to weights based on frequency. (without any loss of precision).&lt;/li&gt;&#xA;&lt;li&gt;to facilitate the efficient inference based on this design with this encoding, 3 designs are facilitated:&#xA;&lt;ul&gt;&#xA;&lt;li&gt;decomposition of LUTs into compact LUTs, which fit in GPU SRAM.&lt;/li&gt;&#xA;&lt;li&gt;two-phase kernel for coordinating thread read/write positions using lightweight auxiliary variables&lt;/li&gt;&#xA;&lt;li&gt;transformer-block-level decompression to minimize latency.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;d float16 achieves 1.9-38.8 higher throughput, enables 5.3-13.17 longer context lengths.&lt;/li&gt;&#xA;&lt;li&gt;70%size, lossless compression&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;questions:&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Markdown Ref-book</title>
       <link>https://example.org/posts/markdown-ref-book/</link>
