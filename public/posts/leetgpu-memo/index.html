@@ -49,6 +49,25 @@ extern &#34;C&#34; void solve(const float* input, float* output, int N) {
 	reduction_kernel&lt;&lt;&lt;blocksPerGrid, threadsPerBlock&gt;&gt;&gt;(input, output, N);
 	cudaDeviceSynchronize();
 }
+Count array element
+#include &lt;cuda_runtime.h&gt;
+
+__global__ void count_equal_kernel(const int* input, int* output, int N, int K) {
+	int thread_id = blockDim.x * blockIdx.x &#43; threadIdx.x;
+	if (thread_id &lt; N) {
+		if(input[thread_id] == K) {
+			atomicAdd(output, 1);
+		}
+	}
+}
+
+
+extern &#34;C&#34; void solve(const float* input, float* output, int N) {
+	int threadsPerBlock = 256;
+	int blocksPerGrid = (N &#43; threadsPerBlock - 1) / threadsPerBlock;
+	reduction_kernel&lt;&lt;&lt;blocksPerGrid, threadsPerBlock&gt;&gt;&gt;(input, output, N);
+	cudaDeviceSynchronize();
+}
 ">  
 
   <title>
@@ -72,8 +91,8 @@ extern &#34;C&#34; void solve(const float* input, float* output, int N) {
                     <a href="/">..</a>
 
                     <p>
-                        <time datetime="2025-07-31 14:46:01.571 &#43;0000 UTC">
-                            2025-07-31
+                        <time datetime="2025-08-21 09:38:51.826 &#43;0000 UTC">
+                            2025-08-21
                         </time>
                     </p>
                 </div>
@@ -128,6 +147,25 @@ extern &#34;C&#34; void solve(const float* input, float* output, int N) {
 </span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> blocksPerGrid <span style="color:#f92672">=</span> (N <span style="color:#f92672">+</span> threadsPerBlock <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> threadsPerBlock;
 </span></span><span style="display:flex;"><span>	reduction_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>blocksPerGrid, threadsPerBlock<span style="color:#f92672">&gt;&gt;&gt;</span>(input, output, N);
 </span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">cudaDeviceSynchronize</span>();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="count-array-element">Count array element</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cuda_runtime.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">count_equal_kernel</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">int</span><span style="color:#f92672">*</span> output, <span style="color:#66d9ef">int</span> N, <span style="color:#66d9ef">int</span> K) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> thread_id <span style="color:#f92672">=</span> blockDim.x <span style="color:#f92672">*</span> blockIdx.x <span style="color:#f92672">+</span> threadIdx.x;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> (thread_id <span style="color:#f92672">&lt;</span> N) {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span>(input[thread_id] <span style="color:#f92672">==</span> K) {
+</span></span><span style="display:flex;"><span>			atomicAdd(output, <span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> <span style="color:#66d9ef">void</span> solve(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output, <span style="color:#66d9ef">int</span> N) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> threadsPerBlock <span style="color:#f92672">=</span> <span style="color:#ae81ff">256</span>;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> blocksPerGrid <span style="color:#f92672">=</span> (N <span style="color:#f92672">+</span> threadsPerBlock <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> threadsPerBlock;
+</span></span><span style="display:flex;"><span>	reduction_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>blocksPerGrid, threadsPerBlock<span style="color:#f92672">&gt;&gt;&gt;</span>(input, output, N);
+</span></span><span style="display:flex;"><span>	cudaDeviceSynchronize();
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div>
 </article>

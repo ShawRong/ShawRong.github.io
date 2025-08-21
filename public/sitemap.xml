@@ -2,10 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://example.org/posts/group-theory-note/</loc>
-    <lastmod>2025-08-21T08:42:27+00:00</lastmod>
+    <loc>https://example.org/posts/leetgpu-memo/</loc>
+    <lastmod>2025-08-21T09:38:51+00:00</lastmod>
   </url><url>
     <loc>https://example.org/posts/</loc>
+    <lastmod>2025-08-21T09:38:51+00:00</lastmod>
+  </url><url>
+    <loc>https://example.org/posts/group-theory-note/</loc>
     <lastmod>2025-08-21T08:42:27+00:00</lastmod>
   </url><url>
     <loc>https://example.org/posts/dfloat16/</loc>
@@ -19,9 +22,6 @@
   </url><url>
     <loc>https://example.org/posts/think-of-working-method-for-brain/</loc>
     <lastmod>2025-07-31T14:46:05+00:00</lastmod>
-  </url><url>
-    <loc>https://example.org/posts/leetgpu-memo/</loc>
-    <lastmod>2025-07-31T14:46:01+00:00</lastmod>
   </url><url>
     <loc>https://example.org/posts/quip-note-1/</loc>
     <lastmod>2025-07-29T12:33:07+00:00</lastmod>

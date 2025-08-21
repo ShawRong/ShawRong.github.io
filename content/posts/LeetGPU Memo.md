@@ -1,6 +1,6 @@
 ---
 title: "LeetGPU Memo"
-date: 2025-07-31T14:46:01.571Z
+date: 2025-08-21T09:38:51.826Z
 draft: false
 tags: []
 ---
@@ -48,6 +48,29 @@ __global__ void reduction_kernel(const float* input, float* output, int N) {
 
 extern "C" void solve(const float* input, float* output, int N) {
 	int threadsPerBlock = T;
+	int blocksPerGrid = (N + threadsPerBlock - 1) / threadsPerBlock;
+	reduction_kernel<<<blocksPerGrid, threadsPerBlock>>>(input, output, N);
+	cudaDeviceSynchronize();
+}
+```
+
+Count array element
+------------
+```cpp
+#include <cuda_runtime.h>
+
+__global__ void count_equal_kernel(const int* input, int* output, int N, int K) {
+	int thread_id = blockDim.x * blockIdx.x + threadIdx.x;
+	if (thread_id < N) {
+		if(input[thread_id] == K) {
+			atomicAdd(output, 1);
+		}
+	}
+}
+
+
+extern "C" void solve(const float* input, float* output, int N) {
+	int threadsPerBlock = 256;
 	int blocksPerGrid = (N + threadsPerBlock - 1) / threadsPerBlock;
 	reduction_kernel<<<blocksPerGrid, threadsPerBlock>>>(input, output, N);
 	cudaDeviceSynchronize();
