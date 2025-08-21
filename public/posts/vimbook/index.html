@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Your Personal Neovim Reference Book
+A comprehensive guide to your LazyVim-based Neovim configuration
+
+Table of Contents
+
+Configuration Overview
+Quick Start Guide
+Core Keybindings
+Plugin Reference
+Language Support
+Custom Features
+Performance Optimizations
+Troubleshooting
+Customization Guide
+
+
+Configuration Overview
+Your Neovim setup is built on LazyVim, a modern, performance-focused Neovim configuration framework. It&rsquo;s highly optimized for speed while maintaining essential development features.
+Key Characteristics
+
+Performance-First: Heavily optimized startup time (~50ms)
+Formatting Control: Advanced mechanisms to prevent unwanted formatting
+Language-Focused: Specialized support for C/C&#43;&#43;, Rust, and web technologies
+AI-Ready: Infrastructure for AI assistance (currently disabled for performance)
+Minimal UI: Clean, distraction-free interface
+
+Directory Structure
+~/.config/nvim/
+├── init.lua                    # Main entry point
+├── lazyvim.json               # LazyVim configuration
+├── lazy-lock.json             # Plugin versions
+└── lua/
+    ├── config/
+    │   ├── lazy.lua           # Plugin manager setup
+    │   ├── options.lua        # Performance options
+    │   ├── keymaps.lua        # Custom keymaps
+    │   ├── ai.lua            # AI integration (disabled)
+    │   ├── no-wrap.lua       # Disable line wrapping
+    │   ├── toggle-format.lua  # Format toggling
+    │   └── override-save.lua  # Save without formatting
+    └── plugins/
+        ├── disabled.lua       # Disabled heavy plugins
+        ├── colorscheme.lua   # Minimal colorscheme
+        ├── cuda.lua          # CUDA support
+        └── luasnip.lua       # Snippet configuration
+
+Quick Start Guide
+Essential First Steps
+
+Open Files: &lt;leader&gt;&lt;space&gt; (space &#43; space for file picker)
+Navigate Code: gd (go to definition), gr (find references)
+Save File: &lt;C-s&gt; (Ctrl&#43;S, no formatting) or :w (with formatting)
+Search Text: &lt;leader&gt;/ (search in project)
+Switch Buffers: &lt;S-h&gt; / &lt;S-l&gt; (Shift&#43;H/L)
+
+Your Leader Key: &lt;space&gt;
+Your leader key is set to space. When you press space, wait a moment to see available options in the which-key popup.">  
+
+  <title>
+    
+      vimbook
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-08-21 09:46:37.64 &#43;0000 UTC">
+                            2025-08-21
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>vimbook</h1>
+
+    
+
+    <h1 id="your-personal-neovim-reference-book">Your Personal Neovim Reference Book</h1>
+<p><em>A comprehensive guide to your LazyVim-based Neovim configuration</em></p>
+<hr>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#configuration-overview">Configuration Overview</a></li>
+<li><a href="#quick-start-guide">Quick Start Guide</a></li>
+<li><a href="#core-keybindings">Core Keybindings</a></li>
+<li><a href="#plugin-reference">Plugin Reference</a></li>
+<li><a href="#language-support">Language Support</a></li>
+<li><a href="#custom-features">Custom Features</a></li>
+<li><a href="#performance-optimizations">Performance Optimizations</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#customization-guide">Customization Guide</a></li>
+</ol>
+<hr>
+<h2 id="configuration-overview">Configuration Overview</h2>
+<p>Your Neovim setup is built on <strong>LazyVim</strong>, a modern, performance-focused Neovim configuration framework. It&rsquo;s highly optimized for speed while maintaining essential development features.</p>
+<h3 id="key-characteristics">Key Characteristics</h3>
+<ul>
+<li><strong>Performance-First</strong>: Heavily optimized startup time (~50ms)</li>
+<li><strong>Formatting Control</strong>: Advanced mechanisms to prevent unwanted formatting</li>
+<li><strong>Language-Focused</strong>: Specialized support for C/C++, Rust, and web technologies</li>
+<li><strong>AI-Ready</strong>: Infrastructure for AI assistance (currently disabled for performance)</li>
+<li><strong>Minimal UI</strong>: Clean, distraction-free interface</li>
+</ul>
+<h3 id="directory-structure">Directory Structure</h3>
+<pre tabindex="0"><code>~/.config/nvim/
+├── init.lua                    # Main entry point
+├── lazyvim.json               # LazyVim configuration
+├── lazy-lock.json             # Plugin versions
+└── lua/
+    ├── config/
+    │   ├── lazy.lua           # Plugin manager setup
+    │   ├── options.lua        # Performance options
+    │   ├── keymaps.lua        # Custom keymaps
+    │   ├── ai.lua            # AI integration (disabled)
+    │   ├── no-wrap.lua       # Disable line wrapping
+    │   ├── toggle-format.lua  # Format toggling
+    │   └── override-save.lua  # Save without formatting
+    └── plugins/
+        ├── disabled.lua       # Disabled heavy plugins
+        ├── colorscheme.lua   # Minimal colorscheme
+        ├── cuda.lua          # CUDA support
+        └── luasnip.lua       # Snippet configuration
+</code></pre><hr>
+<h2 id="quick-start-guide">Quick Start Guide</h2>
+<h3 id="essential-first-steps">Essential First Steps</h3>
+<ol>
+<li><strong>Open Files</strong>: <code>&lt;leader&gt;&lt;space&gt;</code> (space + space for file picker)</li>
+<li><strong>Navigate Code</strong>: <code>gd</code> (go to definition), <code>gr</code> (find references)</li>
+<li><strong>Save File</strong>: <code>&lt;C-s&gt;</code> (Ctrl+S, no formatting) or <code>:w</code> (with formatting)</li>
+<li><strong>Search Text</strong>: <code>&lt;leader&gt;/</code> (search in project)</li>
+<li><strong>Switch Buffers</strong>: <code>&lt;S-h&gt;</code> / <code>&lt;S-l&gt;</code> (Shift+H/L)</li>
+</ol>
+<h3 id="your-leader-key-space">Your Leader Key: <code>&lt;space&gt;</code></h3>
+<p>Your leader key is set to space. When you press space, wait a moment to see available options in the which-key popup.</p>
+<h3 id="essential-commands">Essential Commands</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-vim" data-lang="vim"><span style="display:flex;"><span>:<span style="color:#a6e22e">Mason</span>           <span style="color:#75715e">&#34; Manage language servers</span>
+</span></span><span style="display:flex;"><span>:<span style="color:#a6e22e">Lazy</span>            <span style="color:#75715e">&#34; Manage plugins</span>
+</span></span><span style="display:flex;"><span>:<span style="color:#a6e22e">ToggleFormat</span>    <span style="color:#75715e">&#34; Toggle auto-formatting</span>
+</span></span><span style="display:flex;"><span>:<span style="color:#a6e22e">NoWrap</span>          <span style="color:#75715e">&#34; Disable line wrapping for current buffer</span>
+</span></span><span style="display:flex;"><span>:<span style="color:#a6e22e">WriteNoFormat</span>   <span style="color:#75715e">&#34; Save without any formatting</span>
+</span></span></code></pre></div><hr>
+<h2 id="core-keybindings">Core Keybindings</h2>
+<h3 id="file-operations">File Operations</h3>
+<table>
+  <thead>
+      <tr>
+          <th>Key</th>
+          <th>Mode</th>
+          <th>Action</th>
+          <th>Description</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>&lt;leader&gt;&lt;space&gt;</code></td>
+          <td>Normal</td>
+          <td>Find files</td>
+          <td>Quick file picker (root dir)</td>
+      </tr>
+      <tr>
+          <td><code>&lt;leader&gt;ff</code></td>
+          <td>Normal</td>
+          <td>Find files</td>
+          <td>File picker with preview</td>
+      </tr>
+      <tr>
+          <td><code>&lt;leader&gt;fr</code></td>
+          <td>Normal</td>
+          <td>Recent files</td>
+          <td>Recently opened files</td>
+      </tr>
+      <tr>
+          <td><code>&lt;leader&gt;fg</code></td>
+          <td>Normal</td>
+          <td>Git files</td>
+          <td>Files tracked by git</td>
+      </tr>
+      <tr>
+          <td><code>&lt;leader&gt;/</code></td>
+          <td>Normal</td>
+          <td>Grep search</td>
+          <td>Search text in project</td>
+      </tr>
+      <tr>
+          <td><code>&lt;leader&gt;,</code></td>
+          <td>Normal</td>
+          <td>Switch buffer</td>
+          <td>Quick buffer switcher</td>
+      </tr>
+  </tbody>
+</table>
+<h3 id="window--buffer-management">Window &amp; Buffer Management</h3>
+<table>
+  <thead>
+      <tr>
+          <th>Key</th>
+          <th>Mode</th>
+          <th>Action</th>
+          <th>Description</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>&lt;C-h/j/k/l&gt;</code></td>
+          <td>Normal</td>
+          <td>Navigate windows</td>
+          <td>Move between splits</td>
+      </tr>
+      <tr>
+          <td><code>&lt;S-h&gt;</code> / <code>&lt;S-l&gt;</code></td>
+          <td>Normal</td>
+          <td>Buffer navigation</td>
+          <td>Previous/Next buffer</td>
+      </tr>
+      <tr>
+          <td><code>&lt;leader&gt;bd</code></td>
+          <td>Normal</td>
+          <td>Delete buffer</td>
+          <td>Close current buffer</td>
+      </tr>
+      <tr>
+          <td><code>&lt;leader&gt;bo</code></td>
+          <td>Normal</td>
+          <td>Delete others</td>
+          <td>Close all other buffers</td>
+      </tr>
+      <tr>
+          <td><code>&lt;leader&gt;-</code></td>
+          <td>Normal</td>
+          <td>Split below</td>
+          <td>Horizontal split</td>
+      </tr>
+      <tr>
+          <td><code>&lt;leader&gt;|</code></td>
+          <td>Normal</td>
+          <td>Split right</td>
+          <td>Vertical split</td>
+      </tr>
+  </tbody>
+</table>
+<h3 id="code-navigation--intelligence">Code Navigation &amp; Intelligence</h3>
+<table>
+  <thead>
+      <tr>
+          <th>Key</th>
+          <th>Mode</th>
+          <th>Action</th>
+          <th>Description</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>gd</code></td>
+          <td>Normal</td>
+          <td>Go to definition</td>
+          <td>Jump to function/variable definition</td>
+      </tr>
+      <tr>
+          <td><code>gr</code></td>
+          <td>Normal</td>
+          <td>References</td>
+          <td>Show all references</td>
+      </tr>
+      <tr>
+          <td><code>gD</code></td>
+          <td>Normal</td>
+          <td>Go to declaration</td>
+          <td>Jump to declaration</td>
+      </tr>
+      <tr>
+          <td><code>gI</code></td>
+          <td>Normal</td>
+          <td>Go to implementation</td>
+          <td>Jump to implementation</td>
+      </tr>
+      <tr>
+          <td><code>K</code></td>
+          <td>Normal</td>
+          <td>Hover info</td>
+          <td>Show documentation</td>
+      </tr>
+      <tr>
+          <td><code>&lt;leader&gt;ca</code></td>
+          <td>Normal</td>
+          <td>Code actions</td>
+          <td>Available code fixes</td>
+      </tr>
+      <tr>
+          <td><code>&lt;leader&gt;cr</code></td>
+          <td>Normal</td>
+          <td>Rename symbol</td>
+          <td>Rename variable/function</td>
+      </tr>
+      <tr>
+          <td><code>&lt;leader&gt;cf</code></td>
+          <td>Normal</td>
+          <td>Format code</td>
+          <td>Format current buffer</td>
+      </tr>
+  </tbody>
+</table>
+<h3 id="search--replace">Search &amp; Replace</h3>
+<table>
+  <thead>
+      <tr>
+          <th>Key</th>
+          <th>Mode</th>
+          <th>Action</th>
+          <th>Description</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>&lt;leader&gt;sw</code></td>
+          <td>Normal</td>
+          <td>Search word</td>
+          <td>Search current word</td>
+      </tr>
+      <tr>
+          <td><code>&lt;leader&gt;sg</code></td>
+          <td>Normal</td>
+          <td>Grep project</td>
+          <td>Search text in all files</td>
+      </tr>
+      <tr>
+          <td><code>&lt;leader&gt;ss</code></td>
+          <td>Normal</td>
+          <td>Document symbols</td>
+          <td>Navigate to functions/classes</td>
+      </tr>
+      <tr>
+          <td><code>&lt;leader&gt;sS</code></td>
+          <td>Normal</td>
+          <td>Workspace symbols</td>
+          <td>Search symbols across project</td>
+      </tr>
+  </tbody>
+</table>
+<h3 id="git-operations">Git Operations</h3>
+<table>
+  <thead>
+      <tr>
+          <th>Key</th>
+          <th>Mode</th>
+          <th>Action</th>
+          <th>Description</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>&lt;leader&gt;gg</code></td>
+          <td>Normal</td>
+          <td>LazyGit</td>
+          <td>Full git interface</td>
+      </tr>
+      <tr>
+          <td><code>&lt;leader&gt;hs</code></td>
+          <td>Normal</td>
+          <td>Stage hunk</td>
+          <td>Stage current change</td>
+      </tr>
+      <tr>
+          <td><code>&lt;leader&gt;hr</code></td>
+          <td>Normal</td>
+          <td>Reset hunk</td>
+          <td>Undo current change</td>
+      </tr>
+      <tr>
+          <td><code>&lt;leader&gt;hp</code></td>
+          <td>Normal</td>
+          <td>Preview hunk</td>
+          <td>Show change details</td>
+      </tr>
+      <tr>
+          <td><code>]h</code> / <code>[h</code></td>
+          <td>Normal</td>
+          <td>Next/Prev hunk</td>
+          <td>Navigate changes</td>
+      </tr>
+  </tbody>
+</table>
+<h3 id="your-custom-keybindings">Your Custom Keybindings</h3>
+<table>
+  <thead>
+      <tr>
+          <th>Key</th>
+          <th>Mode</th>
+          <th>Action</th>
+          <th>Description</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>&lt;C-s&gt;</code></td>
+          <td>Normal/Insert</td>
+          <td>Save no-format</td>
+          <td>Save without formatting</td>
+      </tr>
+      <tr>
+          <td><code>&lt;leader&gt;tf</code></td>
+          <td>Normal</td>
+          <td>Toggle format</td>
+          <td>Enable/disable auto-formatting</td>
+      </tr>
+      <tr>
+          <td><code>&lt;leader&gt;tw</code></td>
+          <td>Normal</td>
+          <td>Toggle wrap</td>
+          <td>Disable line wrapping</td>
+      </tr>
+  </tbody>
+</table>
+<hr>
+<h2 id="plugin-reference">Plugin Reference</h2>
+<h3 id="core-framework">Core Framework</h3>
+<h4 id="lazyvim">LazyVim</h4>
+<ul>
+<li><strong>Purpose</strong>: Main configuration framework</li>
+<li><strong>Usage</strong>: Provides sensible defaults and plugin management</li>
+<li><strong>Commands</strong>: <code>:LazyVim</code> for configuration info</li>
+</ul>
+<h4 id="lazynvim">lazy.nvim</h4>
+<ul>
+<li><strong>Purpose</strong>: Plugin manager</li>
+<li><strong>Usage</strong>: Lazy loads plugins for better performance</li>
+<li><strong>Commands</strong>: <code>:Lazy</code> to manage plugins</li>
+<li><strong>Key Features</strong>:
+<ul>
+<li>All plugins lazy-loaded by default</li>
+<li>Automatic plugin updates</li>
+<li>Performance profiling with <code>:Lazy profile</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="language-support">Language Support</h3>
+<h4 id="lsp-configuration-nvim-lspconfig">LSP Configuration (nvim-lspconfig)</h4>
+<ul>
+<li><strong>Purpose</strong>: Language server integration</li>
+<li><strong>Supported Languages</strong>: C/C++ (clangd), Rust, JSON, TOML, Lua</li>
+<li><strong>Usage</strong>: Automatic setup through LazyVim</li>
+<li><strong>Key Features</strong>:
+<ul>
+<li>Auto-completion</li>
+<li>Error checking</li>
+<li>Go to definition</li>
+<li>Refactoring support</li>
+</ul>
+</li>
+</ul>
+<h4 id="masonnvim">Mason.nvim</h4>
+<ul>
+<li><strong>Purpose</strong>: Language server installer</li>
+<li><strong>Usage</strong>: <code>:Mason</code> to install/manage servers</li>
+<li><strong>Commands</strong>:
+<ul>
+<li><code>:Mason</code> - Open installer</li>
+<li><code>:MasonInstall &lt;server&gt;</code> - Install specific server</li>
+<li><code>:MasonUpdate</code> - Update all servers</li>
+</ul>
+</li>
+</ul>
+<h4 id="treesitter-nvim-treesitter">Treesitter (nvim-treesitter)</h4>
+<ul>
+<li><strong>Purpose</strong>: Advanced syntax highlighting and parsing</li>
+<li><strong>Configuration</strong>: Optimized for performance in your setup</li>
+<li><strong>Features</strong>:
+<ul>
+<li>Better syntax highlighting</li>
+<li>Code folding</li>
+<li>Text objects</li>
+</ul>
+</li>
+<li><strong>Note</strong>: Heavy features disabled for better performance</li>
+</ul>
+<h3 id="completion--snippets">Completion &amp; Snippets</h3>
+<h4 id="nvim-cmp">nvim-cmp</h4>
+<ul>
+<li><strong>Purpose</strong>: Completion engine</li>
+<li><strong>Triggers</strong>: Automatic while typing</li>
+<li><strong>Sources</strong>: LSP, buffer text, file paths, snippets</li>
+<li><strong>Navigation</strong>: <code>&lt;Tab&gt;</code> / <code>&lt;S-Tab&gt;</code> to navigate completions</li>
+</ul>
+<h4 id="luasnip">LuaSnip</h4>
+<ul>
+<li><strong>Purpose</strong>: Snippet engine</li>
+<li><strong>Usage</strong>: Expands code templates</li>
+<li><strong>Configuration</strong>: Lazy-loaded in your setup</li>
+<li><strong>Custom Snippets</strong>: Can be added in <code>snippets/</code> directory</li>
+</ul>
+<h3 id="file-management--search">File Management &amp; Search</h3>
+<h4 id="telescopefzf-lua">Telescope/fzf-lua</h4>
+<ul>
+<li><strong>Purpose</strong>: Fuzzy finder for files, symbols, and text</li>
+<li><strong>Key Bindings</strong>:
+<ul>
+<li><code>&lt;leader&gt;&lt;space&gt;</code> - Quick file picker</li>
+<li><code>&lt;leader&gt;/</code> - Text search</li>
+<li><code>&lt;leader&gt;fr</code> - Recent files</li>
+<li><code>&lt;leader&gt;fb</code> - Open buffers</li>
+</ul>
+</li>
+<li><strong>Performance</strong>: Configured with extensive ignore patterns</li>
+</ul>
+<h3 id="ui--interface">UI &amp; Interface</h3>
+<h4 id="which-key">Which-Key</h4>
+<ul>
+<li><strong>Purpose</strong>: Key binding discovery</li>
+<li><strong>Usage</strong>: Press any prefix key and wait to see options</li>
+<li><strong>Example</strong>: Press <code>&lt;leader&gt;</code> and pause to see all leader commands</li>
+</ul>
+<h4 id="lualine">Lualine</h4>
+<ul>
+<li><strong>Purpose</strong>: Status line</li>
+<li><strong>Features</strong>: Shows mode, file info, git status, diagnostics</li>
+<li><strong>Configuration</strong>: Minimal for performance</li>
+</ul>
+<h4 id="bufferline">Bufferline</h4>
+<ul>
+<li><strong>Purpose</strong>: Buffer tabs at top</li>
+<li><strong>Navigation</strong>: <code>&lt;S-h&gt;</code> / <code>&lt;S-l&gt;</code> to switch tabs</li>
+<li><strong>Features</strong>: Shows buffer status and modifications</li>
+</ul>
+<h4 id="flashnvim">Flash.nvim</h4>
+<ul>
+<li><strong>Purpose</strong>: Enhanced navigation and jumping</li>
+<li><strong>Usage</strong>:
+<ul>
+<li><code>s</code> followed by 2 characters to jump anywhere on screen</li>
+<li><code>S</code> for treesitter-based selection</li>
+</ul>
+</li>
+<li><strong>Benefits</strong>: Faster than traditional search</li>
+</ul>
+<h3 id="git-integration">Git Integration</h3>
+<h4 id="gitsigns">Gitsigns</h4>
+<ul>
+<li><strong>Purpose</strong>: Git change indicators and operations</li>
+<li><strong>Visual</strong>: Shows added/modified/deleted lines in gutter</li>
+<li><strong>Operations</strong>:
+<ul>
+<li>Stage/unstage hunks</li>
+<li>Navigate changes</li>
+<li>Blame integration</li>
+</ul>
+</li>
+</ul>
+<h3 id="development-tools">Development Tools</h3>
+<h4 id="conformnvim">Conform.nvim</h4>
+<ul>
+<li><strong>Purpose</strong>: Code formatting</li>
+<li><strong>Usage</strong>:
+<ul>
+<li><code>&lt;leader&gt;cf</code> - Format current buffer</li>
+<li>Auto-format on save (toggleable)</li>
+</ul>
+</li>
+<li><strong>Your Setup</strong>: Can be toggled with <code>&lt;leader&gt;tf</code></li>
+</ul>
+<h4 id="nvim-lint">nvim-lint</h4>
+<ul>
+<li><strong>Purpose</strong>: Code linting integration</li>
+<li><strong>Usage</strong>: Automatic linting on file save/change</li>
+<li><strong>Configuration</strong>: Language-specific linters configured automatically</li>
+</ul>
+<h4 id="troublenvim">Trouble.nvim</h4>
+<ul>
+<li><strong>Purpose</strong>: Diagnostics and error management</li>
+<li><strong>Usage</strong>:
+<ul>
+<li>Shows errors/warnings in a dedicated panel</li>
+<li>Navigate between issues</li>
+</ul>
+</li>
+<li><strong>Commands</strong>: <code>:Trouble</code> to open diagnostics panel</li>
+</ul>
+<h3 id="disabled-plugins-for-performance">Disabled Plugins (For Performance)</h3>
+<p>These plugins are available but disabled in your configuration:</p>
+<ul>
+<li><strong>AI Plugins</strong>: Avante, NeoAI, Copilot (can be re-enabled)</li>
+<li><strong>Heavy UI</strong>: Noice notifications, dashboard</li>
+<li><strong>Debugging</strong>: DAP debugging suite</li>
+<li><strong>Markdown</strong>: Preview and rendering</li>
+<li><strong>Images</strong>: Image viewing in terminal</li>
+</ul>
+<hr>
+<h2 id="language-support-1">Language Support</h2>
+<h3 id="cc-development">C/C++ Development</h3>
+<h4 id="clangd-language-server">clangd Language Server</h4>
+<ul>
+<li><strong>Installation</strong>: <code>clangd</code> must be installed on system</li>
+<li><strong>Features</strong>:
+<ul>
+<li>Intelligent completion</li>
+<li>Error checking</li>
+<li>Refactoring tools</li>
+<li>Go to definition/references</li>
+</ul>
+</li>
+<li><strong>Configuration</strong>: Automatic through LazyVim</li>
+</ul>
+<h4 id="cuda-support">CUDA Support</h4>
+<ul>
+<li><strong>File Types</strong>: <code>.cu</code>, <code>.cuh</code> files</li>
+<li><strong>Conditional</strong>: Only enabled if <code>nvcc</code> compiler is available</li>
+<li><strong>Syntax</strong>: Full CUDA syntax highlighting and parsing</li>
+</ul>
+<h3 id="rust-development">Rust Development</h3>
+<h4 id="rustaceanvim">rustaceanvim</h4>
+<ul>
+<li><strong>Purpose</strong>: Comprehensive Rust support</li>
+<li><strong>Features</strong>:
+<ul>
+<li>rust-analyzer integration</li>
+<li>Cargo integration</li>
+<li>Debugging support</li>
+<li>Inlay hints</li>
+</ul>
+</li>
+</ul>
+<h4 id="cratesnvim">Crates.nvim</h4>
+<ul>
+<li><strong>Purpose</strong>: Cargo.toml dependency management</li>
+<li><strong>Features</strong>:
+<ul>
+<li>Version information</li>
+<li>Update notifications</li>
+<li>Documentation links</li>
+</ul>
+</li>
+</ul>
+<h3 id="web-development">Web Development</h3>
+<h4 id="json-support">JSON Support</h4>
+<ul>
+<li><strong>Schema Validation</strong>: SchemaStore integration</li>
+<li><strong>Features</strong>: Auto-completion for known JSON schemas</li>
+<li><strong>Usage</strong>: Works automatically for package.json, tsconfig.json, etc.</li>
+</ul>
+<h4 id="typescriptjavascript">TypeScript/JavaScript</h4>
+<ul>
+<li><strong>Language Server</strong>: Can be installed via Mason</li>
+<li><strong>Features</strong>: Full TS/JS support when enabled</li>
+</ul>
+<hr>
+<h2 id="custom-features">Custom Features</h2>
+<h3 id="formatting-control-system">Formatting Control System</h3>
+<p>Your configuration includes sophisticated formatting control:</p>
+<h4 id="toggle-auto-formatting">Toggle Auto-Formatting</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-vim" data-lang="vim"><span style="display:flex;"><span>:<span style="color:#a6e22e">ToggleFormat</span>     <span style="color:#75715e">&#34; Toggle global auto-formatting</span>
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#a6e22e">tf</span>        <span style="color:#75715e">&#34; Keymap for toggle</span>
+</span></span></code></pre></div><h4 id="save-without-formatting">Save Without Formatting</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-vim" data-lang="vim"><span style="display:flex;"><span>:<span style="color:#a6e22e">WriteNoFormat</span>    <span style="color:#75715e">&#34; Save bypassing all formatting</span>
+</span></span><span style="display:flex;"><span>:<span style="color:#a6e22e">W</span>                <span style="color:#75715e">&#34; Alias for WriteNoFormat  </span>
+</span></span><span style="display:flex;"><span>:<span style="color:#a6e22e">Wq</span>               <span style="color:#75715e">&#34; Save and quit without formatting</span>
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#a6e22e">C</span>-<span style="color:#a6e22e">s</span>&gt;             <span style="color:#75715e">&#34; Keymap for no-format save</span>
+</span></span></code></pre></div><h4 id="disable-line-wrapping">Disable Line Wrapping</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-vim" data-lang="vim"><span style="display:flex;"><span>:<span style="color:#a6e22e">NoWrap</span>           <span style="color:#75715e">&#34; Disable auto line wrapping</span>
+</span></span><span style="display:flex;"><span>:<span style="color:#a6e22e">DisableWrap</span>      <span style="color:#75715e">&#34; Alternative command</span>
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#a6e22e">tw</span>        <span style="color:#75715e">&#34; Keymap to disable wrapping</span>
+</span></span></code></pre></div><h3 id="performance-features">Performance Features</h3>
+<h4 id="startup-optimization">Startup Optimization</h4>
+<ul>
+<li><strong>Disabled Plugins</strong>: Heavy plugins removed for faster startup</li>
+<li><strong>Lazy Loading</strong>: All plugins load only when needed</li>
+<li><strong>Memory Limits</strong>: Reduced memory usage for syntax highlighting</li>
+</ul>
+<h4 id="runtime-optimization">Runtime Optimization</h4>
+<ul>
+<li><strong>Reduced Timeouts</strong>: Faster completion and key mapping responses</li>
+<li><strong>Limited History</strong>: Reduced command and undo history</li>
+<li><strong>Disabled Features</strong>: Swap files, backup files, cursor line</li>
+</ul>
+<hr>
+<h2 id="performance-optimizations">Performance Optimizations</h2>
+<p>Your configuration is extensively optimized for speed:</p>
+<h3 id="startup-time-optimizations">Startup Time Optimizations</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-lua" data-lang="lua"><span style="display:flex;"><span><span style="color:#75715e">-- Key optimizations in your config:</span>
+</span></span><span style="display:flex;"><span>updatetime <span style="color:#f92672">=</span> <span style="color:#ae81ff">100</span>        <span style="color:#75715e">-- Faster completion triggers</span>
+</span></span><span style="display:flex;"><span>timeoutlen <span style="color:#f92672">=</span> <span style="color:#ae81ff">300</span>        <span style="color:#75715e">-- Faster key mapping timeout</span>
+</span></span><span style="display:flex;"><span>lazyredraw <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>       <span style="color:#75715e">-- Don&#39;t redraw during macros</span>
+</span></span><span style="display:flex;"><span>maxmempattern <span style="color:#f92672">=</span> <span style="color:#ae81ff">1000</span>    <span style="color:#75715e">-- Limit pattern matching memory</span>
+</span></span><span style="display:flex;"><span>synmaxcol <span style="color:#f92672">=</span> <span style="color:#ae81ff">200</span>         <span style="color:#75715e">-- Limit syntax highlighting width</span>
+</span></span></code></pre></div><h3 id="plugin-performance">Plugin Performance</h3>
+<ul>
+<li><strong>Lazy Loading</strong>: All plugins load only when actually needed</li>
+<li><strong>Disabled Features</strong>: Heavy UI elements and effects removed</li>
+<li><strong>Reduced Scope</strong>: Limited treesitter parsers and features</li>
+</ul>
+<h3 id="memory-management">Memory Management</h3>
+<ul>
+<li><strong>No Swap Files</strong>: <code>noswapfile</code> for better performance</li>
+<li><strong>Limited History</strong>: Reduced undo levels and command history</li>
+<li><strong>Cache Optimization</strong>: Optimized plugin cache settings</li>
+</ul>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="common-issues">Common Issues</h3>
+<h4 id="slow-startup">Slow Startup</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Check startup time</span>
+</span></span><span style="display:flex;"><span>nvim --startuptime startup.log
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Your config should start in ~50ms</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># If slower, check :Lazy profile</span>
+</span></span></code></pre></div><h4 id="lsp-not-working">LSP Not Working</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-vim" data-lang="vim"><span style="display:flex;"><span>:<span style="color:#a6e22e">Mason</span>                  <span style="color:#75715e">&#34; Check if language server is installed</span>
+</span></span><span style="display:flex;"><span>:<span style="color:#a6e22e">LspInfo</span>               <span style="color:#75715e">&#34; Check LSP server status</span>
+</span></span><span style="display:flex;"><span>:<span style="color:#a6e22e">checkhealth</span>           <span style="color:#75715e">&#34; General health check</span>
+</span></span></code></pre></div><h4 id="formatting-issues">Formatting Issues</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-vim" data-lang="vim"><span style="display:flex;"><span>:<span style="color:#a6e22e">ToggleFormat</span>          <span style="color:#75715e">&#34; Check if auto-format is enabled</span>
+</span></span><span style="display:flex;"><span>:<span style="color:#a6e22e">ConformInfo</span>           <span style="color:#75715e">&#34; Check formatter configuration</span>
+</span></span></code></pre></div><h4 id="plugin-issues">Plugin Issues</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-vim" data-lang="vim"><span style="display:flex;"><span>:<span style="color:#a6e22e">Lazy</span>                  <span style="color:#75715e">&#34; Check plugin status</span>
+</span></span><span style="display:flex;"><span>:<span style="color:#a6e22e">Lazy</span> <span style="color:#a6e22e">sync</span>             <span style="color:#75715e">&#34; Update/sync plugins</span>
+</span></span><span style="display:flex;"><span>:<span style="color:#a6e22e">Lazy</span> <span style="color:#a6e22e">restore</span>          <span style="color:#75715e">&#34; Restore to locked versions</span>
+</span></span></code></pre></div><h3 id="performance-debugging">Performance Debugging</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-vim" data-lang="vim"><span style="display:flex;"><span>:<span style="color:#a6e22e">Lazy</span> <span style="color:#a6e22e">profile</span>          <span style="color:#75715e">&#34; Check plugin load times</span>
+</span></span><span style="display:flex;"><span>:<span style="color:#a6e22e">checkhealth</span> <span style="color:#a6e22e">lazy</span>      <span style="color:#75715e">&#34; Check lazy.nvim health</span>
+</span></span></code></pre></div><h3 id="file-specific-issues">File-Specific Issues</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-vim" data-lang="vim"><span style="display:flex;"><span>:<span style="color:#66d9ef">set</span> <span style="color:#66d9ef">filetype</span>?         <span style="color:#75715e">&#34; Check detected file type</span>
+</span></span><span style="display:flex;"><span>:<span style="color:#a6e22e">LspInfo</span>               <span style="color:#75715e">&#34; Check language server attachment</span>
+</span></span><span style="display:flex;"><span>:<span style="color:#a6e22e">Inspect</span>               <span style="color:#75715e">&#34; Debug syntax highlighting</span>
+</span></span></code></pre></div><hr>
+<h2 id="customization-guide">Customization Guide</h2>
+<h3 id="adding-new-plugins">Adding New Plugins</h3>
+<p>Create files in <code>~/.config/nvim/lua/plugins/</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-lua" data-lang="lua"><span style="display:flex;"><span><span style="color:#75715e">-- ~/.config/nvim/lua/plugins/my-plugin.lua</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">return</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;author/plugin-name&#34;</span>,
+</span></span><span style="display:flex;"><span>  event <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;VeryLazy&#34;</span>,    <span style="color:#75715e">-- Lazy load</span>
+</span></span><span style="display:flex;"><span>  config <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>()
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">-- Plugin configuration</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">end</span>,
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="custom-keymaps">Custom Keymaps</h3>
+<p>Add to <code>~/.config/nvim/lua/config/keymaps.lua</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-lua" data-lang="lua"><span style="display:flex;"><span><span style="color:#75715e">-- Custom keymap examples</span>
+</span></span><span style="display:flex;"><span>vim.keymap.set(<span style="color:#e6db74">&#34;n&#34;</span>, <span style="color:#e6db74">&#34;&lt;leader&gt;w&#34;</span>, <span style="color:#e6db74">&#34;&lt;cmd&gt;w&lt;cr&gt;&#34;</span>, { desc <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Save file&#34;</span> })
+</span></span><span style="display:flex;"><span>vim.keymap.set(<span style="color:#e6db74">&#34;n&#34;</span>, <span style="color:#e6db74">&#34;&lt;leader&gt;q&#34;</span>, <span style="color:#e6db74">&#34;&lt;cmd&gt;q&lt;cr&gt;&#34;</span>, { desc <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Quit&#34;</span> })
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Remove default keymaps</span>
+</span></span><span style="display:flex;"><span>vim.keymap.del(<span style="color:#e6db74">&#34;n&#34;</span>, <span style="color:#e6db74">&#34;&lt;S-h&gt;&#34;</span>)
+</span></span><span style="display:flex;"><span>vim.keymap.del(<span style="color:#e6db74">&#34;n&#34;</span>, <span style="color:#e6db74">&#34;&lt;S-l&gt;&#34;</span>)
+</span></span></code></pre></div><h3 id="language-server-setup">Language Server Setup</h3>
+<p>Add language servers through Mason:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-vim" data-lang="vim"><span style="display:flex;"><span>:<span style="color:#a6e22e">Mason</span>
+</span></span><span style="display:flex;"><span># <span style="color:#a6e22e">Install</span> <span style="color:#a6e22e">desired</span> <span style="color:#a6e22e">language</span> <span style="color:#a6e22e">server</span>
+</span></span><span style="display:flex;"><span># <span style="color:#a6e22e">LazyVim</span> <span style="color:#a6e22e">will</span> <span style="color:#a6e22e">auto</span>-<span style="color:#a6e22e">configure</span> <span style="color:#a6e22e">most</span> <span style="color:#a6e22e">servers</span>
+</span></span></code></pre></div><p>For custom configuration:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-lua" data-lang="lua"><span style="display:flex;"><span><span style="color:#75715e">-- In lua/plugins/lsp.lua</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">return</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;neovim/nvim-lspconfig&#34;</span>,
+</span></span><span style="display:flex;"><span>  opts <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>    servers <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>      pyright <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>        settings <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>          python <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>            analysis <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>              typeCheckingMode <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;basic&#34;</span>,
+</span></span><span style="display:flex;"><span>            },
+</span></span><span style="display:flex;"><span>          },
+</span></span><span style="display:flex;"><span>        },
+</span></span><span style="display:flex;"><span>      },
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>  },
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="enabling-disabled-plugins">Enabling Disabled Plugins</h3>
+<p>To re-enable AI or other disabled plugins:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-lua" data-lang="lua"><span style="display:flex;"><span><span style="color:#75715e">-- In lua/plugins/disabled.lua</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Comment out or remove the plugin from disabled list</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Or set enabled = true</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">return</span> {
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;yetone/avante.nvim&#34;</span>,
+</span></span><span style="display:flex;"><span>    enabled <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>,  <span style="color:#75715e">-- Re-enable</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">-- ... rest of config</span>
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="color-scheme-changes">Color Scheme Changes</h3>
+<p>Modify <code>lua/plugins/colorscheme.lua</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-lua" data-lang="lua"><span style="display:flex;"><span><span style="color:#66d9ef">return</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">-- Disable current minimal scheme</span>
+</span></span><span style="display:flex;"><span>  { <span style="color:#e6db74">&#34;vim/colorschemes&#34;</span>, enabled <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span> },
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">-- Enable new colorscheme</span>
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;folke/tokyonight.nvim&#34;</span>,
+</span></span><span style="display:flex;"><span>    lazy <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>,
+</span></span><span style="display:flex;"><span>    priority <span style="color:#f92672">=</span> <span style="color:#ae81ff">1000</span>,
+</span></span><span style="display:flex;"><span>    config <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>()
+</span></span><span style="display:flex;"><span>      vim.cmd(<span style="color:#e6db74">[[colorscheme tokyonight]]</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">end</span>,
+</span></span><span style="display:flex;"><span>  },
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="performance-vs-features">Performance vs Features</h3>
+<p>Your config prioritizes performance. To add features:</p>
+<ol>
+<li><strong>Enable more plugins</strong>: Remove from disabled.lua</li>
+<li><strong>Add UI elements</strong>: Enable noice, dashboard, etc.</li>
+<li><strong>AI Integration</strong>: Uncomment AI plugins and set API keys</li>
+<li><strong>Debugging</strong>: Enable DAP suite for debugging support</li>
+</ol>
+<hr>
+<h2 id="additional-resources">Additional Resources</h2>
+<h3 id="lazyvim-documentation">LazyVim Documentation</h3>
+<ul>
+<li><a href="https://lazyvim.github.io/">LazyVim Official Docs</a></li>
+<li><a href="https://lazy.folke.io/spec">Plugin Specifications</a></li>
+<li><a href="https://neovim.io/doc/">Neovim Documentation</a></li>
+</ul>
+<h3 id="your-configuration-files">Your Configuration Files</h3>
+<ul>
+<li>Main config: <code>~/.config/nvim/init.lua</code></li>
+<li>Plugin management: <code>~/.config/nvim/lua/config/lazy.lua</code></li>
+<li>Custom options: <code>~/.config/nvim/lua/config/options.lua</code></li>
+<li>Keymaps: <code>~/.config/nvim/lua/config/keymaps.lua</code></li>
+</ul>
+<h3 id="getting-help">Getting Help</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-vim" data-lang="vim"><span style="display:flex;"><span>:<span style="color:#a6e22e">help</span> &lt;<span style="color:#a6e22e">topic</span>&gt;          <span style="color:#75715e">&#34; Built-in help</span>
+</span></span><span style="display:flex;"><span>:<span style="color:#a6e22e">LazyVim</span>              <span style="color:#75715e">&#34; LazyVim-specific info</span>
+</span></span><span style="display:flex;"><span>:<span style="color:#a6e22e">checkhealth</span>          <span style="color:#75715e">&#34; System health check</span>
+</span></span><span style="display:flex;"><span>:<span style="color:#a6e22e">Lazy</span>                 <span style="color:#75715e">&#34; Plugin manager interface</span>
+</span></span><span style="display:flex;"><span>:<span style="color:#a6e22e">Mason</span>                <span style="color:#75715e">&#34; Language server installer</span>
+</span></span></code></pre></div><hr>
+<p><em>This reference book is based on your current configuration. Keep it updated as you modify your setup!</em></p>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>
