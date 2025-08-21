@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="#grouptheory #math #note #lecture
+1.1 Symmetry
+Naive concept about group: set of element with symmetrical operation.
+1.2 Definition of Group
+A group is a set with operation:
+
+$G\times G \to G$ i.e. $g_1 \cdot g_2 \to g_1g_2$
+
+Axioms:
+
+$\forall g_1, g_2, g_3 \in G$, $(g_1 g_2) g_3 = g_1(g_2 g_3)$ (associativity)
+$\exists e \in G$, $g \cdot e = e \cdot g = g$ (identity)
+$\forall g \in G$, $\exists g&rsquo; \in G$, where $g&rsquo;g = e$, denote $g&rsquo;$ as $g^{-1}$  (inverse)
+
+About triangle, we can define our group as:
+G: {e, R, R^2, S_A, S_B, S_C}">  
+
+  <title>
+    
+      Group Theory Note
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-08-21 08:42:27.767 &#43;0000 UTC">
+                            2025-08-21
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>Group Theory Note</h1>
+
+    
+
+    <p>#grouptheory #math #note #lecture</p>
+<h1 id="11-symmetry">1.1 Symmetry</h1>
+<p>Naive concept about group: set of element with symmetrical operation.</p>
+<h1 id="12-definition-of-group">1.2 Definition of Group</h1>
+<p>A group is a set with operation:</p>
+<ul>
+<li>$G\times G \to G$ i.e. $g_1 \cdot g_2 \to g_1g_2$</li>
+</ul>
+<p>Axioms:</p>
+<ul>
+<li>$\forall g_1, g_2, g_3 \in G$, $(g_1 g_2) g_3 = g_1(g_2 g_3)$ (associativity)</li>
+<li>$\exists e \in G$, $g \cdot e = e \cdot g = g$ (identity)</li>
+<li>$\forall g \in G$, $\exists g&rsquo; \in G$, where $g&rsquo;g = e$, denote $g&rsquo;$ as $g^{-1}$  (inverse)</li>
+</ul>
+<p>About triangle, we can define our group as:
+G: {e, R, R^2, S_A, S_B, S_C}</p>
+<p>take it as example, we can see the following:</p>
+<ul>
+<li>$S_A^{-1} = S_A$</li>
+<li>$S_B^{-1} = S_B$</li>
+<li>$S_C^{-1} = S_C$</li>
+<li>$R^{-1} = R^2$</li>
+<li>$(R^2)^{-1} = R2$</li>
+</ul>
+<h1 id="13-corollaries-of-the-axioms">1.3 Corollaries of the axioms</h1>
+<ul>
+<li>$e_1 = e_1e_2 = e_2$ (unique unit)</li>
+<li>$g&rsquo;g = e$, $g&rsquo;&lsquo;g = e$, $g&rsquo;&lsquo;g&rsquo;g = g&rsquo;&rsquo;e = g&rsquo;&rsquo;$, $g&rsquo;g&rsquo;&lsquo;g = g&rsquo;e = g&rsquo;$, $g&rsquo; = g&rsquo;&rsquo;$(unique inverse)</li>
+<li>$\forall g \in G$, $(g^{-1})^{-1} = g$</li>
+<li>$\forall g_1, g_2 \in G$, $g_1h = g_2h \implies g_1 = g_2$</li>
+<li>$xg_1 = g_2$ and $g_1 x = g_2$ have unique solution, $g_2g_1^{-1}$</li>
+</ul>
+<h2 id="abellain">Abellain</h2>
+<p>Abellian: A group is called &ldquo;Abellian&rdquo;, if $\forall g_1, g_2 \in G$, we have $g_1g_2 = g_2g_1$
+Example:</p>
+<ul>
+<li>(Q, +), (R, +)</li>
+<li>(C, +), (F, +), (V, +) (C, F, V stand for complex number, field, vector space respectively)</li>
+<li>the multiplication on Q, C, R, F without 0.</li>
+</ul>
+<p>They are abellian(g1g2 = g2g1)</p>
+<p>The cyclic Group, $\mathbb{Z}/n\mathbb{Z}$ is abellian, too.</p>
+<h1 id="15-order-subgroup-isomorphism">1.5 Order, Subgroup, Isomorphism</h1>
+<h2 id="order-of-group">Order of Group</h2>
+<p>We denote the order of G, as |G|, which is the number  of operation in G.
+$|\mathbb{S}_n| = n!$, $|\mathbb{G}| \in \mathbb{N} \cup \inf$<br>
+we say the order of G can be identified as either finite or infinite.</p>
+<p>Order of Element:
+An order &lsquo;k&rsquo; of element is the smallest $k \in \mathbb{N}$, s.t.  $g^k = e$, e.g.
+$e, g, g^2, g^3,g^4,\cdots,e$
+$\text{Ord}{g} \in \mathbb{N} \cup {\inf}$</p>
+<p>In Z, ord(0) = 1, Ord(k) = inf, &hellip;</p>
+<h2 id="subgroup">Subgroup</h2>
+<p>Def: G is a group, H is subset of G, H is a subgroup, if</p>
+<ul>
+<li>Closed, $\forall h_1, h_2 \in H$, $h_1 h_2 \in H$</li>
+<li>$e \in H$</li>
+<li>$\forall h \in H$, $h^{-1} \in H$.
+Operation of H is the same as G.</li>
+</ul>
+<p>Some corollaries:</p>
+<ul>
+<li>$H_1, H_2$ is subgroup of G, implies $H_1 \cap H_2$ is subgroup, too.</li>
+<li>$\forall G$, G and {e} are subgroup of G.</li>
+</ul>
+<p>Example of Subgroups:</p>
+<ul>
+<li>G = Z, H is even Number.</li>
+<li>G = Z/10 Z, H = {0, 5}</li>
+<li>S, H = {e, (1 2 3, 2 3 1), (1 2 3, 3 1 2)}</li>
+</ul>
+<h2 id="isomorphism">Isomorphism</h2>
+<p>f: G_1 -&gt; g_2
+f is isomorphism, if $f(g_1g_2) = f(g_1) f(g_2)$, here $g_1 g_2 \in G_1$, $g_1, g_2 \in G_2$.
+And f is bijection.</p>
+<ul>
+<li>Composition of isomorphism is an isomorphism.</li>
+<li>Inverse of an isomorphism is also an isomorphism.</li>
+</ul>
+<h1 id="lagrange-theorem">Lagrange Theorem</h1>
+<p>Theorem: Let G be a finite group, for $a \in G$, we have $a^{|G|} = e$.</p>
+<p>|G| is the order of G, which stands for the number of elements in G.
+Moreover, |G| can be divided by ord(a).</p>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

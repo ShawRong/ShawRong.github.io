@@ -6,8 +6,15 @@
     <description>Recent content in Posts on My New Hugo Site</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 20 Aug 2025 11:36:03 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 21 Aug 2025 08:42:27 +0000</lastBuildDate>
     <atom:link href="https://example.org/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Group Theory Note</title>
+      <link>https://example.org/posts/group-theory-note/</link>
+      <pubDate>Thu, 21 Aug 2025 08:42:27 +0000</pubDate>
+      <guid>https://example.org/posts/group-theory-note/</guid>
+      <description>&lt;p&gt;#grouptheory #math #note #lecture&lt;/p&gt;&#xA;&lt;h1 id=&#34;11-symmetry&#34;&gt;1.1 Symmetry&lt;/h1&gt;&#xA;&lt;p&gt;Naive concept about group: set of element with symmetrical operation.&lt;/p&gt;&#xA;&lt;h1 id=&#34;12-definition-of-group&#34;&gt;1.2 Definition of Group&lt;/h1&gt;&#xA;&lt;p&gt;A group is a set with operation:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;$G\times G \to G$ i.e. $g_1 \cdot g_2 \to g_1g_2$&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;Axioms:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;$\forall g_1, g_2, g_3 \in G$, $(g_1 g_2) g_3 = g_1(g_2 g_3)$ (associativity)&lt;/li&gt;&#xA;&lt;li&gt;$\exists e \in G$, $g \cdot e = e \cdot g = g$ (identity)&lt;/li&gt;&#xA;&lt;li&gt;$\forall g \in G$, $\exists g&amp;rsquo; \in G$, where $g&amp;rsquo;g = e$, denote $g&amp;rsquo;$ as $g^{-1}$  (inverse)&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;About triangle, we can define our group as:&#xA;G: {e, R, R^2, S_A, S_B, S_C}&lt;/p&gt;</description>
+    </item>
     <item>
       <title>DFloat16</title>
       <link>https://example.org/posts/dfloat16/</link>
