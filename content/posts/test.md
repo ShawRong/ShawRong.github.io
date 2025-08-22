@@ -1,34 +1,42 @@
 ---
-title: "Test Post"
+title: "Modified Test Post"
 date: 2025-08-22T00:00:00Z
 draft: false
-tags: [test, sample]
+tags: [test, sample, modified]
 ---
 
-# Test Post
+# Modified Test Post
 
-This is a test post for the Hugo blog.
+This is a modified test post for the Hugo blog - testing the update workflow.
 
-## Sample Content
+## Updated Sample Content
 
-Here's some sample content to test the blog functionality:
+Here's updated sample content to test the blog functionality:
 
-- List item 1
-- List item 2
-- List item 3
+- Modified list item 1
+- Modified list item 2
+- New list item 3
+- Additional item 4
 
-### Code Block
+### Updated Code Block
 
 ```python
-def hello_world():
-    print("Hello, World!")
-    return True
+def greet_user(name):
+    print(f"Hello, {name}! This is a modified test.")
+    return f"Greeting sent to {name}"
+
+# Test the function
+greet_user("Hugo Blog")
 ```
 
 ### Math Example (if MathJax is enabled)
 
-The quadratic formula: $x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}$
+The modified quadratic formula with additional variables: 
 
-## Conclusion
+$$x = \frac{-b \pm \sqrt{b^2-4ac}}{2a} + \epsilon$$
 
-This test post demonstrates the basic structure and formatting capabilities of the blog.
+Where $\epsilon$ represents error tolerance.
+
+## Updated Conclusion
+
+This modified test post demonstrates that the blog update workflow is functioning correctly with the `pushblog` command.

@@ -9,6 +9,13 @@
     <lastBuildDate>Fri, 22 Aug 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://example.org/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Modified</title>
+      <link>https://example.org/tags/modified/</link>
+      <pubDate>Fri, 22 Aug 2025 00:00:00 +0000</pubDate>
+      <guid>https://example.org/tags/modified/</guid>
+      <description></description>
+    </item>
+    <item>
       <title>Sample</title>
       <link>https://example.org/tags/sample/</link>
       <pubDate>Fri, 22 Aug 2025 00:00:00 +0000</pubDate>
