@@ -9,10 +9,31 @@
     <lastBuildDate>Fri, 22 Aug 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://example.org/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Grammar</title>
+      <link>https://example.org/tags/grammar/</link>
+      <pubDate>Fri, 22 Aug 2025 00:00:00 +0000</pubDate>
+      <guid>https://example.org/tags/grammar/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Mistakes</title>
+      <link>https://example.org/tags/mistakes/</link>
+      <pubDate>Fri, 22 Aug 2025 00:00:00 +0000</pubDate>
+      <guid>https://example.org/tags/mistakes/</guid>
+      <description></description>
+    </item>
+    <item>
       <title>Modified</title>
       <link>https://example.org/tags/modified/</link>
       <pubDate>Fri, 22 Aug 2025 00:00:00 +0000</pubDate>
       <guid>https://example.org/tags/modified/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Reference</title>
+      <link>https://example.org/tags/reference/</link>
+      <pubDate>Fri, 22 Aug 2025 00:00:00 +0000</pubDate>
+      <guid>https://example.org/tags/reference/</guid>
       <description></description>
     </item>
     <item>
@@ -27,6 +48,13 @@
       <link>https://example.org/tags/test/</link>
       <pubDate>Fri, 22 Aug 2025 00:00:00 +0000</pubDate>
       <guid>https://example.org/tags/test/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Writing</title>
+      <link>https://example.org/tags/writing/</link>
+      <pubDate>Fri, 22 Aug 2025 00:00:00 +0000</pubDate>
+      <guid>https://example.org/tags/writing/</guid>
       <description></description>
     </item>
   </channel>

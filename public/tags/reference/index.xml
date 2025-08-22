@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Reference on My New Hugo Site</title>
+    <link>https://example.org/tags/reference/</link>
+    <description>Recent content in Reference on My New Hugo Site</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 22 Aug 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://example.org/tags/reference/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Grammar and Vocabulary Mistakes Summary</title>
+      <link>https://example.org/posts/grammar-vocabulary-mistakes-summary/</link>
+      <pubDate>Fri, 22 Aug 2025 00:00:00 +0000</pubDate>
+      <guid>https://example.org/posts/grammar-vocabulary-mistakes-summary/</guid>
+      <description>&lt;h1 id=&#34;grammar-and-vocabulary-mistakes-summary&#34;&gt;Grammar and Vocabulary Mistakes Summary&lt;/h1&gt;&#xA;&lt;p&gt;This document summarizes grammar, vocabulary, and style mistakes found in the blog posts for future reference and improvement.&lt;/p&gt;&#xA;&lt;h2 id=&#34;grammar-mistakes&#34;&gt;Grammar Mistakes&lt;/h2&gt;&#xA;&lt;h3 id=&#34;1-subject-verb-disagreement&#34;&gt;1. Subject-Verb Disagreement&lt;/h3&gt;&#xA;&lt;p&gt;&lt;strong&gt;File&lt;/strong&gt;: &lt;code&gt;CSAPP Memo.md&lt;/code&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Error&lt;/strong&gt;: &amp;ldquo;It&amp;rsquo;s a lot of different things, but we can describe them as a whole abstract thing&amp;rdquo;&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Correction&lt;/strong&gt;: &amp;ldquo;They are a lot of different things, but we can describe them as one abstract thing&amp;rdquo;&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Issue&lt;/strong&gt;: &amp;ldquo;Things&amp;rdquo; is plural, so should use &amp;ldquo;they are&amp;rdquo; not &amp;ldquo;it&amp;rsquo;s&amp;rdquo;&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h3 id=&#34;2-missing-articles--incorrect-word-forms&#34;&gt;2. Missing Articles &amp;amp; Incorrect Word Forms&lt;/h3&gt;&#xA;&lt;p&gt;&lt;strong&gt;File&lt;/strong&gt;: &lt;code&gt;CSAPP Memo.md&lt;/code&gt;&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
