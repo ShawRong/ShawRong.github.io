@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Programming Reference Book
+Table of Contents
+
+Programming Fundamentals
+Data Structures
+Algorithms
+Git Commands
+Command Line Reference
+Web Development
+Database Operations
+Testing
+Security Best Practices
+Common Patterns
+
+
+Programming Fundamentals
+Variables and Data Types
+JavaScript
+// Variables
+let name = &#34;John&#34;;
+const age = 25;
+var isActive = true;
+
+// Data Types
+let number = 42;
+let string = &#34;Hello World&#34;;
+let boolean = true;
+let array = [1, 2, 3];
+let object = { key: &#34;value&#34; };
+let nullValue = null;
+let undefinedValue = undefined;
+Python
+# Variables
+name = &#34;John&#34;
+age = 25
+is_active = True
+
+# Data Types
+number = 42
+string = &#34;Hello World&#34;
+boolean = True
+list_data = [1, 2, 3]
+dict_data = {&#34;key&#34;: &#34;value&#34;}
+none_value = None
+Control Structures
+Conditionals
+// JavaScript
+if (condition) {
+    // code
+} else if (anotherCondition) {
+    // code
+} else {
+    // code
+}
+
+// Ternary operator
+let result = condition ? &#34;true value&#34; : &#34;false value&#34;;
+# Python
+if condition:
+    # code
+elif another_condition:
+    # code
+else:
+    # code
+
+# Ternary operator
+result = &#34;true value&#34; if condition else &#34;false value&#34;
+Loops
+// JavaScript
+for (let i = 0; i &lt; 10; i&#43;&#43;) {
+    console.log(i);
+}
+
+// For...of loop
+for (const item of array) {
+    console.log(item);
+}
+
+// While loop
+while (condition) {
+    // code
+}
+# Python
+for i in range(10):
+    print(i)
+
+# For loop with list
+for item in list_data:
+    print(item)
+
+# While loop
+while condition:
+    # code
+Functions
+JavaScript
+// Function declaration
+function greet(name) {
+    return `Hello, ${name}!`;
+}
+
+// Arrow function
+const greet = (name) =&gt; `Hello, ${name}!`;
+
+// Async function
+async function fetchData() {
+    const response = await fetch(&#39;/api/data&#39;);
+    return response.json();
+}
+Python
+# Function definition
+def greet(name):
+    return f&#34;Hello, {name}!&#34;
+
+# Lambda function
+greet = lambda name: f&#34;Hello, {name}!&#34;
+
+# Async function
+async def fetch_data():
+    response = await client.get(&#39;/api/data&#39;)
+    return response.json()
+
+Data Structures
+Arrays/Lists
+JavaScript Arrays
+// Creation
+let arr = [1, 2, 3, 4, 5];
+
+// Common methods
+arr.push(6);           // Add to end
+arr.pop();             // Remove from end
+arr.unshift(0);        // Add to beginning
+arr.shift();           // Remove from beginning
+arr.splice(2, 1);      // Remove at index
+arr.slice(1, 3);       // Extract portion
+arr.indexOf(3);        // Find index
+arr.includes(4);       // Check existence
+
+// Iteration methods
+arr.forEach(item =&gt; console.log(item));
+arr.map(item =&gt; item * 2);
+arr.filter(item =&gt; item &gt; 2);
+arr.reduce((sum, item) =&gt; sum &#43; item, 0);
+Python Lists
+# Creation
+arr = [1, 2, 3, 4, 5]
+
+# Common methods
+arr.append(6)          # Add to end
+arr.pop()              # Remove from end
+arr.insert(0, 0)       # Add at index
+arr.remove(3)          # Remove first occurrence
+arr.index(4)           # Find index
+4 in arr               # Check existence
+
+# List comprehension
+doubled = [item * 2 for item in arr]
+filtered = [item for item in arr if item &gt; 2]
+Objects/Dictionaries
+JavaScript Objects
+// Creation
+let obj = {
+    name: &#34;John&#34;,
+    age: 25,
+    greet() {
+        return `Hello, I&#39;m ${this.name}`;
+    }
+};
+
+// Access
+obj.name;              // Dot notation
+obj[&#34;age&#34;];            // Bracket notation
+
+// Manipulation
+obj.city = &#34;New York&#34;; // Add property
+delete obj.age;        // Delete property
+
+// Object methods
+Object.keys(obj);      // Get keys
+Object.values(obj);    // Get values
+Object.entries(obj);   // Get key-value pairs
+Python Dictionaries
+# Creation
+obj = {
+    &#34;name&#34;: &#34;John&#34;,
+    &#34;age&#34;: 25
+}
+
+# Access
+obj[&#34;name&#34;]            # Bracket notation
+obj.get(&#34;age&#34;, 0)      # Safe access with default
+
+# Manipulation
+obj[&#34;city&#34;] = &#34;New York&#34;  # Add key-value
+del obj[&#34;age&#34;]         # Delete key
+
+# Dictionary methods
+obj.keys()             # Get keys
+obj.values()           # Get values
+obj.items()            # Get key-value pairs
+
+Algorithms
+Sorting Algorithms
+Quick Sort
+def quicksort(arr):
+    if len(arr) &lt;= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x &lt; pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x &gt; pivot]
+    return quicksort(left) &#43; middle &#43; quicksort(right)
+Merge Sort
+def mergesort(arr):
+    if len(arr) &lt;= 1:
+        return arr
+    
+    mid = len(arr) // 2
+    left = mergesort(arr[:mid])
+    right = mergesort(arr[mid:])
+    
+    return merge(left, right)
+
+def merge(left, right):
+    result = []
+    i = j = 0
+    
+    while i &lt; len(left) and j &lt; len(right):
+        if left[i] &lt;= right[j]:
+            result.append(left[i])
+            i &#43;= 1
+        else:
+            result.append(right[j])
+            j &#43;= 1
+    
+    result.extend(left[i:])
+    result.extend(right[j:])
+    return result
+Search Algorithms
+Binary Search
+def binary_search(arr, target):
+    left, right = 0, len(arr) - 1
+    
+    while left &lt;= right:
+        mid = (left &#43; right) // 2
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] &lt; target:
+            left = mid &#43; 1
+        else:
+            right = mid - 1
+    
+    return -1
+
+Git Commands
+Basic Commands
+# Repository setup
+git init                    # Initialize repository
+git clone &lt;url&gt;             # Clone repository
+git remote add origin &lt;url&gt; # Add remote
+
+# Status and changes
+git status                  # Check status
+git diff                    # Show changes
+git diff --staged           # Show staged changes
+
+# Staging and committing
+git add &lt;file&gt;              # Stage file
+git add .                   # Stage all files
+git commit -m &#34;message&#34;     # Commit with message
+git commit -am &#34;message&#34;    # Stage and commit
+
+# Branching
+git branch                  # List branches
+git branch &lt;name&gt;           # Create branch
+git checkout &lt;branch&gt;       # Switch branch
+git checkout -b &lt;branch&gt;    # Create and switch
+git merge &lt;branch&gt;          # Merge branch
+git branch -d &lt;branch&gt;      # Delete branch
+
+# Remote operations
+git push                    # Push to remote
+git pull                    # Pull from remote
+git fetch                   # Fetch changes
+
+# History
+git log                     # View commit history
+git log --oneline           # Compact log
+git show &lt;commit&gt;           # Show commit details
+
+Command Line Reference
+Navigation
+pwd                        # Print working directory
+ls                         # List files
+ls -la                     # List with details
+cd &lt;directory&gt;             # Change directory
+cd ..                      # Go up one level
+cd ~                       # Go to home directory
+File Operations
+mkdir &lt;directory&gt;          # Create directory
+rmdir &lt;directory&gt;          # Remove empty directory
+rm &lt;file&gt;                  # Remove file
+rm -rf &lt;directory&gt;         # Remove directory recursively
+cp &lt;source&gt; &lt;dest&gt;         # Copy file
+mv &lt;source&gt; &lt;dest&gt;         # Move/rename file
+touch &lt;file&gt;               # Create empty file
+File Content
+cat &lt;file&gt;                 # Display file content
+less &lt;file&gt;                # View file with pagination
+head &lt;file&gt;                # Show first 10 lines
+tail &lt;file&gt;                # Show last 10 lines
+tail -f &lt;file&gt;             # Follow file changes
+grep &lt;pattern&gt; &lt;file&gt;      # Search in file
+find &lt;path&gt; -name &lt;pattern&gt; # Find files
+Process Management
+ps                         # List running processes
+ps aux                     # Detailed process list
+top                        # Real-time process monitor
+htop                       # Enhanced process monitor
+kill &lt;pid&gt;                 # Kill process by ID
+killall &lt;name&gt;             # Kill processes by name
+
+Web Development
+HTML Structure
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&#34;en&#34;&gt;
+&lt;head&gt;
+    &lt;meta charset=&#34;UTF-8&#34;&gt;
+    &lt;meta name=&#34;viewport&#34; content=&#34;width=device-width, initial-scale=1.0&#34;&gt;
+    &lt;title&gt;Page Title&lt;/title&gt;
+    &lt;link rel=&#34;stylesheet&#34; href=&#34;styles.css&#34;&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;header&gt;
+        &lt;nav&gt;
+            &lt;ul&gt;
+                &lt;li&gt;&lt;a href=&#34;#home&#34;&gt;Home&lt;/a&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;a href=&#34;#about&#34;&gt;About&lt;/a&gt;&lt;/li&gt;
+            &lt;/ul&gt;
+        &lt;/nav&gt;
+    &lt;/header&gt;
+    
+    &lt;main&gt;
+        &lt;section&gt;
+            &lt;h1&gt;Main Heading&lt;/h1&gt;
+            &lt;p&gt;Content paragraph&lt;/p&gt;
+        &lt;/section&gt;
+    &lt;/main&gt;
+    
+    &lt;footer&gt;
+        &lt;p&gt;&amp;copy; 2024 Website Name&lt;/p&gt;
+    &lt;/footer&gt;
+    
+    &lt;script src=&#34;script.js&#34;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+CSS Basics
+/* Selectors */
+.class-name { }
+#id-name { }
+element { }
+element.class { }
+element &gt; child { }
+element &#43; sibling { }
+
+/* Common Properties */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        padding: 10px;
+    }
+}
+JavaScript DOM Manipulation
+// Selecting elements
+const element = document.getElementById(&#39;id&#39;);
+const elements = document.querySelectorAll(&#39;.class&#39;);
+const element = document.querySelector(&#39;.class&#39;);
+
+// Creating elements
+const newDiv = document.createElement(&#39;div&#39;);
+newDiv.textContent = &#39;Hello World&#39;;
+newDiv.classList.add(&#39;my-class&#39;);
+
+// Adding to DOM
+document.body.appendChild(newDiv);
+
+// Event handling
+element.addEventListener(&#39;click&#39;, function(e) {
+    e.preventDefault();
+    console.log(&#39;Element clicked&#39;);
+});
+
+// Fetch API
+async function fetchData() {
+    try {
+        const response = await fetch(&#39;/api/data&#39;);
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error(&#39;Error:&#39;, error);
+    }
+}
+
+Database Operations
+SQL Basics
+-- Create table
+CREATE TABLE users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insert data
+INSERT INTO users (name, email) VALUES (&#39;John Doe&#39;, &#39;john@email.com&#39;);
+
+-- Select data
+SELECT * FROM users;
+SELECT name, email FROM users WHERE age &gt; 18;
+SELECT COUNT(*) FROM users;
+
+-- Update data
+UPDATE users SET name = &#39;Jane Doe&#39; WHERE id = 1;
+
+-- Delete data
+DELETE FROM users WHERE id = 1;
+
+-- Joins
+SELECT u.name, p.title 
+FROM users u 
+JOIN posts p ON u.id = p.user_id;
+MongoDB Operations
+// Connect to database
+const { MongoClient } = require(&#39;mongodb&#39;);
+const client = new MongoClient(url);
+
+// Insert document
+await collection.insertOne({
+    name: &#39;John Doe&#39;,
+    email: &#39;john@email.com&#39;
+});
+
+// Find documents
+const users = await collection.find({ age: { $gt: 18 } }).toArray();
+
+// Update document
+await collection.updateOne(
+    { _id: userId },
+    { $set: { name: &#39;Jane Doe&#39; } }
+);
+
+// Delete document
+await collection.deleteOne({ _id: userId });
+
+Testing
+Unit Testing with Jest
+// test.js
+const sum = require(&#39;./sum&#39;);
+
+describe(&#39;Sum function&#39;, () =&gt; {
+    test(&#39;adds 1 &#43; 2 to equal 3&#39;, () =&gt; {
+        expect(sum(1, 2)).toBe(3);
+    });
+    
+    test(&#39;handles negative numbers&#39;, () =&gt; {
+        expect(sum(-1, 1)).toBe(0);
+    });
+    
+    test(&#39;throws error for invalid input&#39;, () =&gt; {
+        expect(() =&gt; {
+            sum(&#39;a&#39;, &#39;b&#39;);
+        }).toThrow();
+    });
+});
+
+// Async testing
+test(&#39;async function test&#39;, async () =&gt; {
+    const data = await fetchData();
+    expect(data).toBeDefined();
+});
+
+// Mock testing
+jest.mock(&#39;./api&#39;);
+const mockFetch = require(&#39;./api&#39;);
+mockFetch.getData.mockResolvedValue({ id: 1, name: &#39;Test&#39; });
+Python Testing with pytest
+import pytest
+
+def test_sum():
+    assert sum([1, 2, 3]) == 6
+
+def test_division_by_zero():
+    with pytest.raises(ZeroDivisionError):
+        result = 1 / 0
+
+@pytest.fixture
+def sample_data():
+    return {&#34;name&#34;: &#34;Test&#34;, &#34;value&#34;: 42}
+
+def test_with_fixture(sample_data):
+    assert sample_data[&#34;name&#34;] == &#34;Test&#34;
+    assert sample_data[&#34;value&#34;] == 42
+
+@pytest.mark.asyncio
+async def test_async_function():
+    result = await async_function()
+    assert result is not None
+
+Security Best Practices
+Input Validation
+// Sanitize user input
+const validator = require(&#39;validator&#39;);
+
+function validateEmail(email) {
+    return validator.isEmail(email);
+}
+
+function sanitizeHtml(input) {
+    return validator.escape(input);
+}
+
+// Prevent SQL injection
+const query = &#39;SELECT * FROM users WHERE id = ?&#39;;
+db.query(query, [userId], (err, results) =&gt; {
+    // Safe parameterized query
+});
+Authentication &amp; Authorization
+const bcrypt = require(&#39;bcrypt&#39;);
+const jwt = require(&#39;jsonwebtoken&#39;);
+
+// Hash password
+async function hashPassword(password) {
+    const saltRounds = 12;
+    return await bcrypt.hash(password, saltRounds);
+}
+
+// Verify password
+async function verifyPassword(password, hash) {
+    return await bcrypt.compare(password, hash);
+}
+
+// JWT token
+function generateToken(userId) {
+    return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: &#39;1h&#39; });
+}
+
+// Verify token middleware
+function authenticateToken(req, res, next) {
+    const token = req.header(&#39;Authorization&#39;)?.replace(&#39;Bearer &#39;, &#39;&#39;);
+    
+    if (!token) {
+        return res.status(401).json({ error: &#39;Access denied&#39; });
+    }
+    
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.userId = decoded.userId;
+        next();
+    } catch (error) {
+        res.status(403).json({ error: &#39;Invalid token&#39; });
+    }
+}
+Environment Variables
+# .env file
+DATABASE_URL=postgresql://user:pass@localhost:5432/db
+JWT_SECRET=your-secret-key
+API_KEY=your-api-key
+NODE_ENV=development
+// Using environment variables
+require(&#39;dotenv&#39;).config();
+
+const config = {
+    port: process.env.PORT || 3000,
+    database: process.env.DATABASE_URL,
+    jwtSecret: process.env.JWT_SECRET
+};
+
+Common Patterns
+Design Patterns
+Singleton Pattern
+class Singleton {
+    constructor() {
+        if (Singleton.instance) {
+            return Singleton.instance;
+        }
+        Singleton.instance = this;
+    }
+    
+    static getInstance() {
+        if (!Singleton.instance) {
+            Singleton.instance = new Singleton();
+        }
+        return Singleton.instance;
+    }
+}
+Observer Pattern
+class EventEmitter {
+    constructor() {
+        this.events = {};
+    }
+    
+    on(event, listener) {
+        if (!this.events[event]) {
+            this.events[event] = [];
+        }
+        this.events[event].push(listener);
+    }
+    
+    emit(event, data) {
+        if (this.events[event]) {
+            this.events[event].forEach(listener =&gt; listener(data));
+        }
+    }
+    
+    off(event, listenerToRemove) {
+        if (this.events[event]) {
+            this.events[event] = this.events[event].filter(
+                listener =&gt; listener !== listenerToRemove
+            );
+        }
+    }
+}
+Factory Pattern
+class UserFactory {
+    static createUser(type, data) {
+        switch (type) {
+            case &#39;admin&#39;:
+                return new AdminUser(data);
+            case &#39;regular&#39;:
+                return new RegularUser(data);
+            default:
+                throw new Error(&#39;Invalid user type&#39;);
+        }
+    }
+}
+Error Handling
+JavaScript
+// Try-catch for sync code
+try {
+    const result = riskyOperation();
+    console.log(result);
+} catch (error) {
+    console.error(&#39;Error occurred:&#39;, error.message);
+} finally {
+    // Cleanup code
+    console.log(&#39;Cleanup completed&#39;);
+}
+
+// Promise error handling
+fetchData()
+    .then(data =&gt; processData(data))
+    .catch(error =&gt; console.error(&#39;Error:&#39;, error))
+    .finally(() =&gt; console.log(&#39;Done&#39;));
+
+// Async/await error handling
+async function handleAsyncOperation() {
+    try {
+        const data = await fetchData();
+        const processed = await processData(data);
+        return processed;
+    } catch (error) {
+        console.error(&#39;Async error:&#39;, error);
+        throw error; // Re-throw if needed
+    }
+}
+Python
+# Try-except for error handling
+try:
+    result = risky_operation()
+    print(result)
+except ValueError as e:
+    print(f&#34;Value error: {e}&#34;)
+except Exception as e:
+    print(f&#34;General error: {e}&#34;)
+else:
+    print(&#34;No errors occurred&#34;)
+finally:
+    print(&#34;Cleanup completed&#34;)
+
+# Context manager
+with open(&#39;file.txt&#39;, &#39;r&#39;) as f:
+    content = f.read()
+# File automatically closed
+Regular Expressions
+Common Patterns
+// Email validation
+const emailRegex = /^[^\s@]&#43;@[^\s@]&#43;\.[^\s@]&#43;$/;
+
+// Phone number (US format)
+const phoneRegex = /^\(\d{3}\)\s\d{3}-\d{4}$/;
+
+// URL validation
+const urlRegex = /^https?:\/\/[^\s/$.?#].[^\s]*$/;
+
+// Password strength (8&#43; chars, 1 upper, 1 lower, 1 digit)
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&amp;]{8,}$/;
+
+// Usage
+function validateInput(input, regex) {
+    return regex.test(input);
+}
+
+Performance Optimization
+JavaScript Optimization
+// Debouncing
+function debounce(func, delay) {
+    let timeoutId;
+    return function (...args) {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() =&gt; func.apply(this, args), delay);
+    };
+}
+
+// Throttling
+function throttle(func, delay) {
+    let lastCall = 0;
+    return function (...args) {
+        const now = Date.now();
+        if (now - lastCall &gt;= delay) {
+            lastCall = now;
+            func.apply(this, args);
+        }
+    };
+}
+
+// Memoization
+function memoize(fn) {
+    const cache = new Map();
+    return function (...args) {
+        const key = JSON.stringify(args);
+        if (cache.has(key)) {
+            return cache.get(key);
+        }
+        const result = fn.apply(this, args);
+        cache.set(key, result);
+        return result;
+    };
+}
+
+Useful Resources
+Documentation Links
+
+MDN Web Docs
+Python Documentation
+Git Documentation
+React Documentation
+Node.js Documentation
+
+Package Managers
+# npm (Node.js)
+npm init                   # Initialize package.json
+npm install &lt;package&gt;      # Install package
+npm install -g &lt;package&gt;   # Install globally
+npm run &lt;script&gt;           # Run script from package.json
+
+# pip (Python)
+pip install &lt;package&gt;      # Install package
+pip install -r requirements.txt  # Install from requirements
+pip freeze &gt; requirements.txt    # Save dependencies
+
+# yarn (Alternative to npm)
+yarn init                  # Initialize package.json
+yarn add &lt;package&gt;         # Install package
+yarn run &lt;script&gt;          # Run script
+
+This reference book covers essential programming concepts, commands, and patterns. Keep it handy for quick reference during development!">  
+
+  <title>
+    
+      
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="0001-01-01 00:00:00 &#43;0000 UTC">
+                            0001-01-01
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1></h1>
+
+    
+
+    <h1 id="programming-reference-book">Programming Reference Book</h1>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#programming-fundamentals">Programming Fundamentals</a></li>
+<li><a href="#data-structures">Data Structures</a></li>
+<li><a href="#algorithms">Algorithms</a></li>
+<li><a href="#git-commands">Git Commands</a></li>
+<li><a href="#command-line-reference">Command Line Reference</a></li>
+<li><a href="#web-development">Web Development</a></li>
+<li><a href="#database-operations">Database Operations</a></li>
+<li><a href="#testing">Testing</a></li>
+<li><a href="#security-best-practices">Security Best Practices</a></li>
+<li><a href="#common-patterns">Common Patterns</a></li>
+</ol>
+<hr>
+<h2 id="programming-fundamentals">Programming Fundamentals</h2>
+<h3 id="variables-and-data-types">Variables and Data Types</h3>
+<h4 id="javascript">JavaScript</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#75715e">// Variables
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">name</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;John&#34;</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">age</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">25</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">isActive</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Data Types
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">number</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">42</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">string</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Hello World&#34;</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#66d9ef">boolean</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">array</span> <span style="color:#f92672">=</span> [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>];
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">object</span> <span style="color:#f92672">=</span> { <span style="color:#a6e22e">key</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;value&#34;</span> };
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">nullValue</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">undefinedValue</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">undefined</span>;
+</span></span></code></pre></div><h4 id="python">Python</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Variables</span>
+</span></span><span style="display:flex;"><span>name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;John&#34;</span>
+</span></span><span style="display:flex;"><span>age <span style="color:#f92672">=</span> <span style="color:#ae81ff">25</span>
+</span></span><span style="display:flex;"><span>is_active <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Data Types</span>
+</span></span><span style="display:flex;"><span>number <span style="color:#f92672">=</span> <span style="color:#ae81ff">42</span>
+</span></span><span style="display:flex;"><span>string <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Hello World&#34;</span>
+</span></span><span style="display:flex;"><span>boolean <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>list_data <span style="color:#f92672">=</span> [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>]
+</span></span><span style="display:flex;"><span>dict_data <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#34;key&#34;</span>: <span style="color:#e6db74">&#34;value&#34;</span>}
+</span></span><span style="display:flex;"><span>none_value <span style="color:#f92672">=</span> <span style="color:#66d9ef">None</span>
+</span></span></code></pre></div><h3 id="control-structures">Control Structures</h3>
+<h4 id="conditionals">Conditionals</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#75715e">// JavaScript
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">condition</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// code
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">anotherCondition</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// code
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>} <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// code
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Ternary operator
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">result</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">condition</span> <span style="color:#f92672">?</span> <span style="color:#e6db74">&#34;true value&#34;</span> <span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;false value&#34;</span>;
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Python</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> condition:
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># code</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">elif</span> another_condition:
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># code</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># code</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Ternary operator</span>
+</span></span><span style="display:flex;"><span>result <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;true value&#34;</span> <span style="color:#66d9ef">if</span> condition <span style="color:#66d9ef">else</span> <span style="color:#e6db74">&#34;false value&#34;</span>
+</span></span></code></pre></div><h4 id="loops">Loops</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#75715e">// JavaScript
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">let</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">10</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">i</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// For...of loop
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">item</span> <span style="color:#66d9ef">of</span> <span style="color:#a6e22e">array</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">item</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// While loop
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">while</span> (<span style="color:#a6e22e">condition</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// code
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Python</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">10</span>):
+</span></span><span style="display:flex;"><span>    print(i)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># For loop with list</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> item <span style="color:#f92672">in</span> list_data:
+</span></span><span style="display:flex;"><span>    print(item)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># While loop</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">while</span> condition:
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># code</span>
+</span></span></code></pre></div><h3 id="functions">Functions</h3>
+<h4 id="javascript-1">JavaScript</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#75715e">// Function declaration
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">greet</span>(<span style="color:#a6e22e">name</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">`Hello, </span><span style="color:#e6db74">${</span><span style="color:#a6e22e">name</span><span style="color:#e6db74">}</span><span style="color:#e6db74">!`</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Arrow function
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">greet</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">name</span>) =&gt; <span style="color:#e6db74">`Hello, </span><span style="color:#e6db74">${</span><span style="color:#a6e22e">name</span><span style="color:#e6db74">}</span><span style="color:#e6db74">!`</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Async function
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">fetchData</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">response</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">fetch</span>(<span style="color:#e6db74">&#39;/api/data&#39;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">response</span>.<span style="color:#a6e22e">json</span>();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="python-1">Python</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Function definition</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">greet</span>(name):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Hello, </span><span style="color:#e6db74">{</span>name<span style="color:#e6db74">}</span><span style="color:#e6db74">!&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Lambda function</span>
+</span></span><span style="display:flex;"><span>greet <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> name: <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Hello, </span><span style="color:#e6db74">{</span>name<span style="color:#e6db74">}</span><span style="color:#e6db74">!&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Async function</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">fetch_data</span>():
+</span></span><span style="display:flex;"><span>    response <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> client<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#39;/api/data&#39;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> response<span style="color:#f92672">.</span>json()
+</span></span></code></pre></div><hr>
+<h2 id="data-structures">Data Structures</h2>
+<h3 id="arrayslists">Arrays/Lists</h3>
+<h4 id="javascript-arrays">JavaScript Arrays</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#75715e">// Creation
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">arr</span> <span style="color:#f92672">=</span> [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Common methods
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">arr</span>.<span style="color:#a6e22e">push</span>(<span style="color:#ae81ff">6</span>);           <span style="color:#75715e">// Add to end
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">arr</span>.<span style="color:#a6e22e">pop</span>();             <span style="color:#75715e">// Remove from end
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">arr</span>.<span style="color:#a6e22e">unshift</span>(<span style="color:#ae81ff">0</span>);        <span style="color:#75715e">// Add to beginning
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">arr</span>.<span style="color:#a6e22e">shift</span>();           <span style="color:#75715e">// Remove from beginning
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">arr</span>.<span style="color:#a6e22e">splice</span>(<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">1</span>);      <span style="color:#75715e">// Remove at index
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">arr</span>.<span style="color:#a6e22e">slice</span>(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">3</span>);       <span style="color:#75715e">// Extract portion
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">arr</span>.<span style="color:#a6e22e">indexOf</span>(<span style="color:#ae81ff">3</span>);        <span style="color:#75715e">// Find index
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">arr</span>.<span style="color:#a6e22e">includes</span>(<span style="color:#ae81ff">4</span>);       <span style="color:#75715e">// Check existence
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Iteration methods
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">arr</span>.<span style="color:#a6e22e">forEach</span>(<span style="color:#a6e22e">item</span> =&gt; <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">item</span>));
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">arr</span>.<span style="color:#a6e22e">map</span>(<span style="color:#a6e22e">item</span> =&gt; <span style="color:#a6e22e">item</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>);
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">arr</span>.<span style="color:#a6e22e">filter</span>(<span style="color:#a6e22e">item</span> =&gt; <span style="color:#a6e22e">item</span> <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">2</span>);
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">arr</span>.<span style="color:#a6e22e">reduce</span>((<span style="color:#a6e22e">sum</span>, <span style="color:#a6e22e">item</span>) =&gt; <span style="color:#a6e22e">sum</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">item</span>, <span style="color:#ae81ff">0</span>);
+</span></span></code></pre></div><h4 id="python-lists">Python Lists</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Creation</span>
+</span></span><span style="display:flex;"><span>arr <span style="color:#f92672">=</span> [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Common methods</span>
+</span></span><span style="display:flex;"><span>arr<span style="color:#f92672">.</span>append(<span style="color:#ae81ff">6</span>)          <span style="color:#75715e"># Add to end</span>
+</span></span><span style="display:flex;"><span>arr<span style="color:#f92672">.</span>pop()              <span style="color:#75715e"># Remove from end</span>
+</span></span><span style="display:flex;"><span>arr<span style="color:#f92672">.</span>insert(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>)       <span style="color:#75715e"># Add at index</span>
+</span></span><span style="display:flex;"><span>arr<span style="color:#f92672">.</span>remove(<span style="color:#ae81ff">3</span>)          <span style="color:#75715e"># Remove first occurrence</span>
+</span></span><span style="display:flex;"><span>arr<span style="color:#f92672">.</span>index(<span style="color:#ae81ff">4</span>)           <span style="color:#75715e"># Find index</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">4</span> <span style="color:#f92672">in</span> arr               <span style="color:#75715e"># Check existence</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># List comprehension</span>
+</span></span><span style="display:flex;"><span>doubled <span style="color:#f92672">=</span> [item <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span> <span style="color:#66d9ef">for</span> item <span style="color:#f92672">in</span> arr]
+</span></span><span style="display:flex;"><span>filtered <span style="color:#f92672">=</span> [item <span style="color:#66d9ef">for</span> item <span style="color:#f92672">in</span> arr <span style="color:#66d9ef">if</span> item <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">2</span>]
+</span></span></code></pre></div><h3 id="objectsdictionaries">Objects/Dictionaries</h3>
+<h4 id="javascript-objects">JavaScript Objects</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#75715e">// Creation
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">obj</span> <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">name</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;John&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">age</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">25</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">greet</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">`Hello, I&#39;m </span><span style="color:#e6db74">${</span><span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">name</span><span style="color:#e6db74">}</span><span style="color:#e6db74">`</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Access
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">obj</span>.<span style="color:#a6e22e">name</span>;              <span style="color:#75715e">// Dot notation
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">obj</span>[<span style="color:#e6db74">&#34;age&#34;</span>];            <span style="color:#75715e">// Bracket notation
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Manipulation
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">obj</span>.<span style="color:#a6e22e">city</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;New York&#34;</span>; <span style="color:#75715e">// Add property
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">delete</span> <span style="color:#a6e22e">obj</span>.<span style="color:#a6e22e">age</span>;        <span style="color:#75715e">// Delete property
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Object methods
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>Object.<span style="color:#a6e22e">keys</span>(<span style="color:#a6e22e">obj</span>);      <span style="color:#75715e">// Get keys
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>Object.<span style="color:#a6e22e">values</span>(<span style="color:#a6e22e">obj</span>);    <span style="color:#75715e">// Get values
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>Object.<span style="color:#a6e22e">entries</span>(<span style="color:#a6e22e">obj</span>);   <span style="color:#75715e">// Get key-value pairs
+</span></span></span></code></pre></div><h4 id="python-dictionaries">Python Dictionaries</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Creation</span>
+</span></span><span style="display:flex;"><span>obj <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;John&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;age&#34;</span>: <span style="color:#ae81ff">25</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Access</span>
+</span></span><span style="display:flex;"><span>obj[<span style="color:#e6db74">&#34;name&#34;</span>]            <span style="color:#75715e"># Bracket notation</span>
+</span></span><span style="display:flex;"><span>obj<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;age&#34;</span>, <span style="color:#ae81ff">0</span>)      <span style="color:#75715e"># Safe access with default</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Manipulation</span>
+</span></span><span style="display:flex;"><span>obj[<span style="color:#e6db74">&#34;city&#34;</span>] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;New York&#34;</span>  <span style="color:#75715e"># Add key-value</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">del</span> obj[<span style="color:#e6db74">&#34;age&#34;</span>]         <span style="color:#75715e"># Delete key</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Dictionary methods</span>
+</span></span><span style="display:flex;"><span>obj<span style="color:#f92672">.</span>keys()             <span style="color:#75715e"># Get keys</span>
+</span></span><span style="display:flex;"><span>obj<span style="color:#f92672">.</span>values()           <span style="color:#75715e"># Get values</span>
+</span></span><span style="display:flex;"><span>obj<span style="color:#f92672">.</span>items()            <span style="color:#75715e"># Get key-value pairs</span>
+</span></span></code></pre></div><hr>
+<h2 id="algorithms">Algorithms</h2>
+<h3 id="sorting-algorithms">Sorting Algorithms</h3>
+<h4 id="quick-sort">Quick Sort</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">quicksort</span>(arr):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> len(arr) <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">1</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> arr
+</span></span><span style="display:flex;"><span>    pivot <span style="color:#f92672">=</span> arr[len(arr) <span style="color:#f92672">//</span> <span style="color:#ae81ff">2</span>]
+</span></span><span style="display:flex;"><span>    left <span style="color:#f92672">=</span> [x <span style="color:#66d9ef">for</span> x <span style="color:#f92672">in</span> arr <span style="color:#66d9ef">if</span> x <span style="color:#f92672">&lt;</span> pivot]
+</span></span><span style="display:flex;"><span>    middle <span style="color:#f92672">=</span> [x <span style="color:#66d9ef">for</span> x <span style="color:#f92672">in</span> arr <span style="color:#66d9ef">if</span> x <span style="color:#f92672">==</span> pivot]
+</span></span><span style="display:flex;"><span>    right <span style="color:#f92672">=</span> [x <span style="color:#66d9ef">for</span> x <span style="color:#f92672">in</span> arr <span style="color:#66d9ef">if</span> x <span style="color:#f92672">&gt;</span> pivot]
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> quicksort(left) <span style="color:#f92672">+</span> middle <span style="color:#f92672">+</span> quicksort(right)
+</span></span></code></pre></div><h4 id="merge-sort">Merge Sort</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">mergesort</span>(arr):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> len(arr) <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">1</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> arr
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    mid <span style="color:#f92672">=</span> len(arr) <span style="color:#f92672">//</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>    left <span style="color:#f92672">=</span> mergesort(arr[:mid])
+</span></span><span style="display:flex;"><span>    right <span style="color:#f92672">=</span> mergesort(arr[mid:])
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> merge(left, right)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">merge</span>(left, right):
+</span></span><span style="display:flex;"><span>    result <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>    i <span style="color:#f92672">=</span> j <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span> i <span style="color:#f92672">&lt;</span> len(left) <span style="color:#f92672">and</span> j <span style="color:#f92672">&lt;</span> len(right):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> left[i] <span style="color:#f92672">&lt;=</span> right[j]:
+</span></span><span style="display:flex;"><span>            result<span style="color:#f92672">.</span>append(left[i])
+</span></span><span style="display:flex;"><span>            i <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>            result<span style="color:#f92672">.</span>append(right[j])
+</span></span><span style="display:flex;"><span>            j <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    result<span style="color:#f92672">.</span>extend(left[i:])
+</span></span><span style="display:flex;"><span>    result<span style="color:#f92672">.</span>extend(right[j:])
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> result
+</span></span></code></pre></div><h3 id="search-algorithms">Search Algorithms</h3>
+<h4 id="binary-search">Binary Search</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">binary_search</span>(arr, target):
+</span></span><span style="display:flex;"><span>    left, right <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>, len(arr) <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span> left <span style="color:#f92672">&lt;=</span> right:
+</span></span><span style="display:flex;"><span>        mid <span style="color:#f92672">=</span> (left <span style="color:#f92672">+</span> right) <span style="color:#f92672">//</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> arr[mid] <span style="color:#f92672">==</span> target:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> mid
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">elif</span> arr[mid] <span style="color:#f92672">&lt;</span> target:
+</span></span><span style="display:flex;"><span>            left <span style="color:#f92672">=</span> mid <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>            right <span style="color:#f92672">=</span> mid <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>
+</span></span></code></pre></div><hr>
+<h2 id="git-commands">Git Commands</h2>
+<h3 id="basic-commands">Basic Commands</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Repository setup</span>
+</span></span><span style="display:flex;"><span>git init                    <span style="color:#75715e"># Initialize repository</span>
+</span></span><span style="display:flex;"><span>git clone &lt;url&gt;             <span style="color:#75715e"># Clone repository</span>
+</span></span><span style="display:flex;"><span>git remote add origin &lt;url&gt; <span style="color:#75715e"># Add remote</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Status and changes</span>
+</span></span><span style="display:flex;"><span>git status                  <span style="color:#75715e"># Check status</span>
+</span></span><span style="display:flex;"><span>git diff                    <span style="color:#75715e"># Show changes</span>
+</span></span><span style="display:flex;"><span>git diff --staged           <span style="color:#75715e"># Show staged changes</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Staging and committing</span>
+</span></span><span style="display:flex;"><span>git add &lt;file&gt;              <span style="color:#75715e"># Stage file</span>
+</span></span><span style="display:flex;"><span>git add .                   <span style="color:#75715e"># Stage all files</span>
+</span></span><span style="display:flex;"><span>git commit -m <span style="color:#e6db74">&#34;message&#34;</span>     <span style="color:#75715e"># Commit with message</span>
+</span></span><span style="display:flex;"><span>git commit -am <span style="color:#e6db74">&#34;message&#34;</span>    <span style="color:#75715e"># Stage and commit</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Branching</span>
+</span></span><span style="display:flex;"><span>git branch                  <span style="color:#75715e"># List branches</span>
+</span></span><span style="display:flex;"><span>git branch &lt;name&gt;           <span style="color:#75715e"># Create branch</span>
+</span></span><span style="display:flex;"><span>git checkout &lt;branch&gt;       <span style="color:#75715e"># Switch branch</span>
+</span></span><span style="display:flex;"><span>git checkout -b &lt;branch&gt;    <span style="color:#75715e"># Create and switch</span>
+</span></span><span style="display:flex;"><span>git merge &lt;branch&gt;          <span style="color:#75715e"># Merge branch</span>
+</span></span><span style="display:flex;"><span>git branch -d &lt;branch&gt;      <span style="color:#75715e"># Delete branch</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Remote operations</span>
+</span></span><span style="display:flex;"><span>git push                    <span style="color:#75715e"># Push to remote</span>
+</span></span><span style="display:flex;"><span>git pull                    <span style="color:#75715e"># Pull from remote</span>
+</span></span><span style="display:flex;"><span>git fetch                   <span style="color:#75715e"># Fetch changes</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># History</span>
+</span></span><span style="display:flex;"><span>git log                     <span style="color:#75715e"># View commit history</span>
+</span></span><span style="display:flex;"><span>git log --oneline           <span style="color:#75715e"># Compact log</span>
+</span></span><span style="display:flex;"><span>git show &lt;commit&gt;           <span style="color:#75715e"># Show commit details</span>
+</span></span></code></pre></div><hr>
+<h2 id="command-line-reference">Command Line Reference</h2>
+<h3 id="navigation">Navigation</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>pwd                        <span style="color:#75715e"># Print working directory</span>
+</span></span><span style="display:flex;"><span>ls                         <span style="color:#75715e"># List files</span>
+</span></span><span style="display:flex;"><span>ls -la                     <span style="color:#75715e"># List with details</span>
+</span></span><span style="display:flex;"><span>cd &lt;directory&gt;             <span style="color:#75715e"># Change directory</span>
+</span></span><span style="display:flex;"><span>cd ..                      <span style="color:#75715e"># Go up one level</span>
+</span></span><span style="display:flex;"><span>cd ~                       <span style="color:#75715e"># Go to home directory</span>
+</span></span></code></pre></div><h3 id="file-operations">File Operations</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>mkdir &lt;directory&gt;          <span style="color:#75715e"># Create directory</span>
+</span></span><span style="display:flex;"><span>rmdir &lt;directory&gt;          <span style="color:#75715e"># Remove empty directory</span>
+</span></span><span style="display:flex;"><span>rm &lt;file&gt;                  <span style="color:#75715e"># Remove file</span>
+</span></span><span style="display:flex;"><span>rm -rf &lt;directory&gt;         <span style="color:#75715e"># Remove directory recursively</span>
+</span></span><span style="display:flex;"><span>cp &lt;source&gt; &lt;dest&gt;         <span style="color:#75715e"># Copy file</span>
+</span></span><span style="display:flex;"><span>mv &lt;source&gt; &lt;dest&gt;         <span style="color:#75715e"># Move/rename file</span>
+</span></span><span style="display:flex;"><span>touch &lt;file&gt;               <span style="color:#75715e"># Create empty file</span>
+</span></span></code></pre></div><h3 id="file-content">File Content</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cat &lt;file&gt;                 <span style="color:#75715e"># Display file content</span>
+</span></span><span style="display:flex;"><span>less &lt;file&gt;                <span style="color:#75715e"># View file with pagination</span>
+</span></span><span style="display:flex;"><span>head &lt;file&gt;                <span style="color:#75715e"># Show first 10 lines</span>
+</span></span><span style="display:flex;"><span>tail &lt;file&gt;                <span style="color:#75715e"># Show last 10 lines</span>
+</span></span><span style="display:flex;"><span>tail -f &lt;file&gt;             <span style="color:#75715e"># Follow file changes</span>
+</span></span><span style="display:flex;"><span>grep &lt;pattern&gt; &lt;file&gt;      <span style="color:#75715e"># Search in file</span>
+</span></span><span style="display:flex;"><span>find &lt;path&gt; -name &lt;pattern&gt; <span style="color:#75715e"># Find files</span>
+</span></span></code></pre></div><h3 id="process-management">Process Management</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ps                         <span style="color:#75715e"># List running processes</span>
+</span></span><span style="display:flex;"><span>ps aux                     <span style="color:#75715e"># Detailed process list</span>
+</span></span><span style="display:flex;"><span>top                        <span style="color:#75715e"># Real-time process monitor</span>
+</span></span><span style="display:flex;"><span>htop                       <span style="color:#75715e"># Enhanced process monitor</span>
+</span></span><span style="display:flex;"><span>kill &lt;pid&gt;                 <span style="color:#75715e"># Kill process by ID</span>
+</span></span><span style="display:flex;"><span>killall &lt;name&gt;             <span style="color:#75715e"># Kill processes by name</span>
+</span></span></code></pre></div><hr>
+<h2 id="web-development">Web Development</h2>
+<h3 id="html-structure">HTML Structure</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span><span style="color:#75715e">&lt;!DOCTYPE html&gt;</span>
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#f92672">html</span> <span style="color:#a6e22e">lang</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;en&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#f92672">head</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">meta</span> <span style="color:#a6e22e">charset</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;UTF-8&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">meta</span> <span style="color:#a6e22e">name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;viewport&#34;</span> <span style="color:#a6e22e">content</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;width=device-width, initial-scale=1.0&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">title</span>&gt;Page Title&lt;/<span style="color:#f92672">title</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">link</span> <span style="color:#a6e22e">rel</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;stylesheet&#34;</span> <span style="color:#a6e22e">href</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;styles.css&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">head</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#f92672">body</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">header</span>&gt;
+</span></span><span style="display:flex;"><span>        &lt;<span style="color:#f92672">nav</span>&gt;
+</span></span><span style="display:flex;"><span>            &lt;<span style="color:#f92672">ul</span>&gt;
+</span></span><span style="display:flex;"><span>                &lt;<span style="color:#f92672">li</span>&gt;&lt;<span style="color:#f92672">a</span> <span style="color:#a6e22e">href</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;#home&#34;</span>&gt;Home&lt;/<span style="color:#f92672">a</span>&gt;&lt;/<span style="color:#f92672">li</span>&gt;
+</span></span><span style="display:flex;"><span>                &lt;<span style="color:#f92672">li</span>&gt;&lt;<span style="color:#f92672">a</span> <span style="color:#a6e22e">href</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;#about&#34;</span>&gt;About&lt;/<span style="color:#f92672">a</span>&gt;&lt;/<span style="color:#f92672">li</span>&gt;
+</span></span><span style="display:flex;"><span>            &lt;/<span style="color:#f92672">ul</span>&gt;
+</span></span><span style="display:flex;"><span>        &lt;/<span style="color:#f92672">nav</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;/<span style="color:#f92672">header</span>&gt;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">main</span>&gt;
+</span></span><span style="display:flex;"><span>        &lt;<span style="color:#f92672">section</span>&gt;
+</span></span><span style="display:flex;"><span>            &lt;<span style="color:#f92672">h1</span>&gt;Main Heading&lt;/<span style="color:#f92672">h1</span>&gt;
+</span></span><span style="display:flex;"><span>            &lt;<span style="color:#f92672">p</span>&gt;Content paragraph&lt;/<span style="color:#f92672">p</span>&gt;
+</span></span><span style="display:flex;"><span>        &lt;/<span style="color:#f92672">section</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;/<span style="color:#f92672">main</span>&gt;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">footer</span>&gt;
+</span></span><span style="display:flex;"><span>        &lt;<span style="color:#f92672">p</span>&gt;&amp;copy; 2024 Website Name&lt;/<span style="color:#f92672">p</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;/<span style="color:#f92672">footer</span>&gt;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">script</span> <span style="color:#a6e22e">src</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;script.js&#34;</span>&gt;&lt;/<span style="color:#f92672">script</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">body</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">html</span>&gt;
+</span></span></code></pre></div><h3 id="css-basics">CSS Basics</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-css" data-lang="css"><span style="display:flex;"><span><span style="color:#75715e">/* Selectors */</span>
+</span></span><span style="display:flex;"><span>.<span style="color:#a6e22e">class-name</span> { }
+</span></span><span style="display:flex;"><span>#id-name { }
+</span></span><span style="display:flex;"><span><span style="color:#f92672">element</span> { }
+</span></span><span style="display:flex;"><span><span style="color:#f92672">element</span>.<span style="color:#a6e22e">class</span> { }
+</span></span><span style="display:flex;"><span><span style="color:#f92672">element</span> <span style="color:#f92672">&gt;</span> <span style="color:#f92672">child</span> { }
+</span></span><span style="display:flex;"><span><span style="color:#f92672">element</span> <span style="color:#f92672">+</span> <span style="color:#f92672">sibling</span> { }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/* Common Properties */</span>
+</span></span><span style="display:flex;"><span>.<span style="color:#a6e22e">container</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">display</span>: <span style="color:#66d9ef">flex</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">justify-content</span>: <span style="color:#66d9ef">center</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">align-items</span>: <span style="color:#66d9ef">center</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">width</span>: <span style="color:#ae81ff">100</span><span style="color:#66d9ef">%</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">max-width</span>: <span style="color:#ae81ff">1200</span><span style="color:#66d9ef">px</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">margin</span>: <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">auto</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">padding</span>: <span style="color:#ae81ff">20</span><span style="color:#66d9ef">px</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">background-color</span>: <span style="color:#ae81ff">#f5f5f5</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">border</span>: <span style="color:#ae81ff">1</span><span style="color:#66d9ef">px</span> <span style="color:#66d9ef">solid</span> <span style="color:#ae81ff">#ddd</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">border-radius</span>: <span style="color:#ae81ff">8</span><span style="color:#66d9ef">px</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">box-shadow</span>: <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">2</span><span style="color:#66d9ef">px</span> <span style="color:#ae81ff">4</span><span style="color:#66d9ef">px</span> rgba(<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">0.1</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/* Responsive Design */</span>
+</span></span><span style="display:flex;"><span>@<span style="color:#66d9ef">media</span> <span style="color:#f92672">(</span><span style="color:#f92672">max-width</span><span style="color:#f92672">:</span> <span style="color:#f92672">768px</span><span style="color:#f92672">)</span> {
+</span></span><span style="display:flex;"><span>    .<span style="color:#a6e22e">container</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">flex-direction</span>: <span style="color:#66d9ef">column</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">padding</span>: <span style="color:#ae81ff">10</span><span style="color:#66d9ef">px</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="javascript-dom-manipulation">JavaScript DOM Manipulation</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#75715e">// Selecting elements
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">element</span> <span style="color:#f92672">=</span> document.<span style="color:#a6e22e">getElementById</span>(<span style="color:#e6db74">&#39;id&#39;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">elements</span> <span style="color:#f92672">=</span> document.<span style="color:#a6e22e">querySelectorAll</span>(<span style="color:#e6db74">&#39;.class&#39;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">element</span> <span style="color:#f92672">=</span> document.<span style="color:#a6e22e">querySelector</span>(<span style="color:#e6db74">&#39;.class&#39;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Creating elements
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">newDiv</span> <span style="color:#f92672">=</span> document.<span style="color:#a6e22e">createElement</span>(<span style="color:#e6db74">&#39;div&#39;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">newDiv</span>.<span style="color:#a6e22e">textContent</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;Hello World&#39;</span>;
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">newDiv</span>.<span style="color:#a6e22e">classList</span>.<span style="color:#a6e22e">add</span>(<span style="color:#e6db74">&#39;my-class&#39;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Adding to DOM
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>document.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">appendChild</span>(<span style="color:#a6e22e">newDiv</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Event handling
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">element</span>.<span style="color:#a6e22e">addEventListener</span>(<span style="color:#e6db74">&#39;click&#39;</span>, <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">e</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">preventDefault</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;Element clicked&#39;</span>);
+</span></span><span style="display:flex;"><span>});
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Fetch API
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">fetchData</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">response</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">fetch</span>(<span style="color:#e6db74">&#39;/api/data&#39;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">data</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">response</span>.<span style="color:#a6e22e">json</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">data</span>;
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">error</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">error</span>(<span style="color:#e6db74">&#39;Error:&#39;</span>, <span style="color:#a6e22e">error</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><hr>
+<h2 id="database-operations">Database Operations</h2>
+<h3 id="sql-basics">SQL Basics</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- Create table
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> users (
+</span></span><span style="display:flex;"><span>    id INT <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span> AUTO_INCREMENT,
+</span></span><span style="display:flex;"><span>    name VARCHAR(<span style="color:#ae81ff">100</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+</span></span><span style="display:flex;"><span>    email VARCHAR(<span style="color:#ae81ff">100</span>) <span style="color:#66d9ef">UNIQUE</span>,
+</span></span><span style="display:flex;"><span>    created_at <span style="color:#66d9ef">TIMESTAMP</span> <span style="color:#66d9ef">DEFAULT</span> <span style="color:#66d9ef">CURRENT_TIMESTAMP</span>
+</span></span><span style="display:flex;"><span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Insert data
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> users (name, email) <span style="color:#66d9ef">VALUES</span> (<span style="color:#e6db74">&#39;John Doe&#39;</span>, <span style="color:#e6db74">&#39;john@email.com&#39;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Select data
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> users;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> name, email <span style="color:#66d9ef">FROM</span> users <span style="color:#66d9ef">WHERE</span> age <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">18</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> <span style="color:#66d9ef">COUNT</span>(<span style="color:#f92672">*</span>) <span style="color:#66d9ef">FROM</span> users;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Update data
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">UPDATE</span> users <span style="color:#66d9ef">SET</span> name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;Jane Doe&#39;</span> <span style="color:#66d9ef">WHERE</span> id <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Delete data
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">DELETE</span> <span style="color:#66d9ef">FROM</span> users <span style="color:#66d9ef">WHERE</span> id <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Joins
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">SELECT</span> u.name, p.title 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> users u 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">JOIN</span> posts p <span style="color:#66d9ef">ON</span> u.id <span style="color:#f92672">=</span> p.user_id;
+</span></span></code></pre></div><h3 id="mongodb-operations">MongoDB Operations</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#75715e">// Connect to database
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> { <span style="color:#a6e22e">MongoClient</span> } <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;mongodb&#39;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">client</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">MongoClient</span>(<span style="color:#a6e22e">url</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Insert document
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">await</span> <span style="color:#a6e22e">collection</span>.<span style="color:#a6e22e">insertOne</span>({
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">name</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;John Doe&#39;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">email</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;john@email.com&#39;</span>
+</span></span><span style="display:flex;"><span>});
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Find documents
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">users</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">collection</span>.<span style="color:#a6e22e">find</span>({ <span style="color:#a6e22e">age</span><span style="color:#f92672">:</span> { <span style="color:#a6e22e">$gt</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">18</span> } }).<span style="color:#a6e22e">toArray</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Update document
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">await</span> <span style="color:#a6e22e">collection</span>.<span style="color:#a6e22e">updateOne</span>(
+</span></span><span style="display:flex;"><span>    { <span style="color:#a6e22e">_id</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">userId</span> },
+</span></span><span style="display:flex;"><span>    { <span style="color:#a6e22e">$set</span><span style="color:#f92672">:</span> { <span style="color:#a6e22e">name</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;Jane Doe&#39;</span> } }
+</span></span><span style="display:flex;"><span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Delete document
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">await</span> <span style="color:#a6e22e">collection</span>.<span style="color:#a6e22e">deleteOne</span>({ <span style="color:#a6e22e">_id</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">userId</span> });
+</span></span></code></pre></div><hr>
+<h2 id="testing">Testing</h2>
+<h3 id="unit-testing-with-jest">Unit Testing with Jest</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#75715e">// test.js
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">sum</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;./sum&#39;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">describe</span>(<span style="color:#e6db74">&#39;Sum function&#39;</span>, () =&gt; {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">test</span>(<span style="color:#e6db74">&#39;adds 1 + 2 to equal 3&#39;</span>, () =&gt; {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">expect</span>(<span style="color:#a6e22e">sum</span>(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>)).<span style="color:#a6e22e">toBe</span>(<span style="color:#ae81ff">3</span>);
+</span></span><span style="display:flex;"><span>    });
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">test</span>(<span style="color:#e6db74">&#39;handles negative numbers&#39;</span>, () =&gt; {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">expect</span>(<span style="color:#a6e22e">sum</span>(<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>)).<span style="color:#a6e22e">toBe</span>(<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    });
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">test</span>(<span style="color:#e6db74">&#39;throws error for invalid input&#39;</span>, () =&gt; {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">expect</span>(() =&gt; {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">sum</span>(<span style="color:#e6db74">&#39;a&#39;</span>, <span style="color:#e6db74">&#39;b&#39;</span>);
+</span></span><span style="display:flex;"><span>        }).<span style="color:#a6e22e">toThrow</span>();
+</span></span><span style="display:flex;"><span>    });
+</span></span><span style="display:flex;"><span>});
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Async testing
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">test</span>(<span style="color:#e6db74">&#39;async function test&#39;</span>, <span style="color:#66d9ef">async</span> () =&gt; {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">data</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">fetchData</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">expect</span>(<span style="color:#a6e22e">data</span>).<span style="color:#a6e22e">toBeDefined</span>();
+</span></span><span style="display:flex;"><span>});
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Mock testing
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">jest</span>.<span style="color:#a6e22e">mock</span>(<span style="color:#e6db74">&#39;./api&#39;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">mockFetch</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;./api&#39;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">mockFetch</span>.<span style="color:#a6e22e">getData</span>.<span style="color:#a6e22e">mockResolvedValue</span>({ <span style="color:#a6e22e">id</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">name</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;Test&#39;</span> });
+</span></span></code></pre></div><h3 id="python-testing-with-pytest">Python Testing with pytest</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> pytest
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">test_sum</span>():
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">assert</span> sum([<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>]) <span style="color:#f92672">==</span> <span style="color:#ae81ff">6</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">test_division_by_zero</span>():
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">with</span> pytest<span style="color:#f92672">.</span>raises(<span style="color:#a6e22e">ZeroDivisionError</span>):
+</span></span><span style="display:flex;"><span>        result <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">/</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@pytest.fixture</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">sample_data</span>():
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> {<span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;Test&#34;</span>, <span style="color:#e6db74">&#34;value&#34;</span>: <span style="color:#ae81ff">42</span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">test_with_fixture</span>(sample_data):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">assert</span> sample_data[<span style="color:#e6db74">&#34;name&#34;</span>] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;Test&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">assert</span> sample_data[<span style="color:#e6db74">&#34;value&#34;</span>] <span style="color:#f92672">==</span> <span style="color:#ae81ff">42</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@pytest.mark.asyncio</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">test_async_function</span>():
+</span></span><span style="display:flex;"><span>    result <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> async_function()
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">assert</span> result <span style="color:#f92672">is</span> <span style="color:#f92672">not</span> <span style="color:#66d9ef">None</span>
+</span></span></code></pre></div><hr>
+<h2 id="security-best-practices">Security Best Practices</h2>
+<h3 id="input-validation">Input Validation</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#75715e">// Sanitize user input
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">validator</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;validator&#39;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">validateEmail</span>(<span style="color:#a6e22e">email</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">validator</span>.<span style="color:#a6e22e">isEmail</span>(<span style="color:#a6e22e">email</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">sanitizeHtml</span>(<span style="color:#a6e22e">input</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">validator</span>.<span style="color:#a6e22e">escape</span>(<span style="color:#a6e22e">input</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Prevent SQL injection
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">query</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;SELECT * FROM users WHERE id = ?&#39;</span>;
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">db</span>.<span style="color:#a6e22e">query</span>(<span style="color:#a6e22e">query</span>, [<span style="color:#a6e22e">userId</span>], (<span style="color:#a6e22e">err</span>, <span style="color:#a6e22e">results</span>) =&gt; {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Safe parameterized query
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>});
+</span></span></code></pre></div><h3 id="authentication--authorization">Authentication &amp; Authorization</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">bcrypt</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;bcrypt&#39;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">jwt</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;jsonwebtoken&#39;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Hash password
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">hashPassword</span>(<span style="color:#a6e22e">password</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">saltRounds</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">12</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">bcrypt</span>.<span style="color:#a6e22e">hash</span>(<span style="color:#a6e22e">password</span>, <span style="color:#a6e22e">saltRounds</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Verify password
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">verifyPassword</span>(<span style="color:#a6e22e">password</span>, <span style="color:#a6e22e">hash</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">bcrypt</span>.<span style="color:#a6e22e">compare</span>(<span style="color:#a6e22e">password</span>, <span style="color:#a6e22e">hash</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// JWT token
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">generateToken</span>(<span style="color:#a6e22e">userId</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">jwt</span>.<span style="color:#a6e22e">sign</span>({ <span style="color:#a6e22e">userId</span> }, <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">JWT_SECRET</span>, { <span style="color:#a6e22e">expiresIn</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;1h&#39;</span> });
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Verify token middleware
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">authenticateToken</span>(<span style="color:#a6e22e">req</span>, <span style="color:#a6e22e">res</span>, <span style="color:#a6e22e">next</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">token</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">header</span>(<span style="color:#e6db74">&#39;Authorization&#39;</span>)<span style="color:#f92672">?</span>.<span style="color:#a6e22e">replace</span>(<span style="color:#e6db74">&#39;Bearer &#39;</span>, <span style="color:#e6db74">&#39;&#39;</span>);
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">token</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">status</span>(<span style="color:#ae81ff">401</span>).<span style="color:#a6e22e">json</span>({ <span style="color:#a6e22e">error</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;Access denied&#39;</span> });
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">decoded</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">jwt</span>.<span style="color:#a6e22e">verify</span>(<span style="color:#a6e22e">token</span>, <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">JWT_SECRET</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">userId</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">decoded</span>.<span style="color:#a6e22e">userId</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">next</span>();
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">error</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">status</span>(<span style="color:#ae81ff">403</span>).<span style="color:#a6e22e">json</span>({ <span style="color:#a6e22e">error</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;Invalid token&#39;</span> });
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="environment-variables">Environment Variables</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># .env file</span>
+</span></span><span style="display:flex;"><span>DATABASE_URL<span style="color:#f92672">=</span>postgresql://user:pass@localhost:5432/db
+</span></span><span style="display:flex;"><span>JWT_SECRET<span style="color:#f92672">=</span>your-secret-key
+</span></span><span style="display:flex;"><span>API_KEY<span style="color:#f92672">=</span>your-api-key
+</span></span><span style="display:flex;"><span>NODE_ENV<span style="color:#f92672">=</span>development
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#75715e">// Using environment variables
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;dotenv&#39;</span>).<span style="color:#a6e22e">config</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">config</span> <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">port</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">PORT</span> <span style="color:#f92672">||</span> <span style="color:#ae81ff">3000</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">database</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">DATABASE_URL</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">jwtSecret</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">JWT_SECRET</span>
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><hr>
+<h2 id="common-patterns">Common Patterns</h2>
+<h3 id="design-patterns">Design Patterns</h3>
+<h4 id="singleton-pattern">Singleton Pattern</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Singleton</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">constructor</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Singleton</span>.<span style="color:#a6e22e">instance</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">Singleton</span>.<span style="color:#a6e22e">instance</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">Singleton</span>.<span style="color:#a6e22e">instance</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">static</span> <span style="color:#a6e22e">getInstance</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">Singleton</span>.<span style="color:#a6e22e">instance</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">Singleton</span>.<span style="color:#a6e22e">instance</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">Singleton</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">Singleton</span>.<span style="color:#a6e22e">instance</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="observer-pattern">Observer Pattern</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">EventEmitter</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">constructor</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">events</span> <span style="color:#f92672">=</span> {};
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">on</span>(<span style="color:#a6e22e">event</span>, <span style="color:#a6e22e">listener</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">events</span>[<span style="color:#a6e22e">event</span>]) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">events</span>[<span style="color:#a6e22e">event</span>] <span style="color:#f92672">=</span> [];
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">events</span>[<span style="color:#a6e22e">event</span>].<span style="color:#a6e22e">push</span>(<span style="color:#a6e22e">listener</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">emit</span>(<span style="color:#a6e22e">event</span>, <span style="color:#a6e22e">data</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">events</span>[<span style="color:#a6e22e">event</span>]) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">events</span>[<span style="color:#a6e22e">event</span>].<span style="color:#a6e22e">forEach</span>(<span style="color:#a6e22e">listener</span> =&gt; <span style="color:#a6e22e">listener</span>(<span style="color:#a6e22e">data</span>));
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">off</span>(<span style="color:#a6e22e">event</span>, <span style="color:#a6e22e">listenerToRemove</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">events</span>[<span style="color:#a6e22e">event</span>]) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">events</span>[<span style="color:#a6e22e">event</span>] <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">events</span>[<span style="color:#a6e22e">event</span>].<span style="color:#a6e22e">filter</span>(
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">listener</span> =&gt; <span style="color:#a6e22e">listener</span> <span style="color:#f92672">!==</span> <span style="color:#a6e22e">listenerToRemove</span>
+</span></span><span style="display:flex;"><span>            );
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="factory-pattern">Factory Pattern</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">UserFactory</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">static</span> <span style="color:#a6e22e">createUser</span>(<span style="color:#a6e22e">type</span>, <span style="color:#a6e22e">data</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">switch</span> (<span style="color:#a6e22e">type</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#39;admin&#39;</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">AdminUser</span>(<span style="color:#a6e22e">data</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#39;regular&#39;</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">RegularUser</span>(<span style="color:#a6e22e">data</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> Error(<span style="color:#e6db74">&#39;Invalid user type&#39;</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="error-handling">Error Handling</h3>
+<h4 id="javascript-2">JavaScript</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#75715e">// Try-catch for sync code
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">result</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">riskyOperation</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">result</span>);
+</span></span><span style="display:flex;"><span>} <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">error</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">error</span>(<span style="color:#e6db74">&#39;Error occurred:&#39;</span>, <span style="color:#a6e22e">error</span>.<span style="color:#a6e22e">message</span>);
+</span></span><span style="display:flex;"><span>} <span style="color:#66d9ef">finally</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Cleanup code
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;Cleanup completed&#39;</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Promise error handling
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">fetchData</span>()
+</span></span><span style="display:flex;"><span>    .<span style="color:#a6e22e">then</span>(<span style="color:#a6e22e">data</span> =&gt; <span style="color:#a6e22e">processData</span>(<span style="color:#a6e22e">data</span>))
+</span></span><span style="display:flex;"><span>    .<span style="color:#66d9ef">catch</span>(<span style="color:#a6e22e">error</span> =&gt; <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">error</span>(<span style="color:#e6db74">&#39;Error:&#39;</span>, <span style="color:#a6e22e">error</span>))
+</span></span><span style="display:flex;"><span>    .<span style="color:#66d9ef">finally</span>(() =&gt; <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;Done&#39;</span>));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Async/await error handling
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">handleAsyncOperation</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">data</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">fetchData</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">processed</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">processData</span>(<span style="color:#a6e22e">data</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">processed</span>;
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">error</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">error</span>(<span style="color:#e6db74">&#39;Async error:&#39;</span>, <span style="color:#a6e22e">error</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">throw</span> <span style="color:#a6e22e">error</span>; <span style="color:#75715e">// Re-throw if needed
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="python-2">Python</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Try-except for error handling</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>    result <span style="color:#f92672">=</span> risky_operation()
+</span></span><span style="display:flex;"><span>    print(result)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">except</span> <span style="color:#a6e22e">ValueError</span> <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Value error: </span><span style="color:#e6db74">{</span>e<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;General error: </span><span style="color:#e6db74">{</span>e<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;No errors occurred&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">finally</span>:
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;Cleanup completed&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Context manager</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">&#39;file.txt&#39;</span>, <span style="color:#e6db74">&#39;r&#39;</span>) <span style="color:#66d9ef">as</span> f:
+</span></span><span style="display:flex;"><span>    content <span style="color:#f92672">=</span> f<span style="color:#f92672">.</span>read()
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># File automatically closed</span>
+</span></span></code></pre></div><h3 id="regular-expressions">Regular Expressions</h3>
+<h4 id="common-patterns-1">Common Patterns</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#75715e">// Email validation
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">emailRegex</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">/^[^\s@]+@[^\s@]+\.[^\s@]+$/</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Phone number (US format)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">phoneRegex</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">/^\(\d{3}\)\s\d{3}-\d{4}$/</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// URL validation
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">urlRegex</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">/^https?:\/\/[^\s/$.?#].[^\s]*$/</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Password strength (8+ chars, 1 upper, 1 lower, 1 digit)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">passwordRegex</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&amp;]{8,}$/</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Usage
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">validateInput</span>(<span style="color:#a6e22e">input</span>, <span style="color:#a6e22e">regex</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">regex</span>.<span style="color:#a6e22e">test</span>(<span style="color:#a6e22e">input</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><hr>
+<h2 id="performance-optimization">Performance Optimization</h2>
+<h3 id="javascript-optimization">JavaScript Optimization</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#75715e">// Debouncing
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">debounce</span>(<span style="color:#a6e22e">func</span>, <span style="color:#a6e22e">delay</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">timeoutId</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">function</span> (...<span style="color:#a6e22e">args</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">clearTimeout</span>(<span style="color:#a6e22e">timeoutId</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">timeoutId</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">setTimeout</span>(() =&gt; <span style="color:#a6e22e">func</span>.<span style="color:#a6e22e">apply</span>(<span style="color:#66d9ef">this</span>, <span style="color:#a6e22e">args</span>), <span style="color:#a6e22e">delay</span>);
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Throttling
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">throttle</span>(<span style="color:#a6e22e">func</span>, <span style="color:#a6e22e">delay</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">lastCall</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">function</span> (...<span style="color:#a6e22e">args</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">now</span> <span style="color:#f92672">=</span> Date.<span style="color:#a6e22e">now</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">now</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">lastCall</span> <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">delay</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">lastCall</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">now</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">func</span>.<span style="color:#a6e22e">apply</span>(<span style="color:#66d9ef">this</span>, <span style="color:#a6e22e">args</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Memoization
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">memoize</span>(<span style="color:#a6e22e">fn</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">cache</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">Map</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">function</span> (...<span style="color:#a6e22e">args</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">key</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">JSON</span>.<span style="color:#a6e22e">stringify</span>(<span style="color:#a6e22e">args</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">cache</span>.<span style="color:#a6e22e">has</span>(<span style="color:#a6e22e">key</span>)) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">cache</span>.<span style="color:#a6e22e">get</span>(<span style="color:#a6e22e">key</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">result</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">fn</span>.<span style="color:#a6e22e">apply</span>(<span style="color:#66d9ef">this</span>, <span style="color:#a6e22e">args</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">cache</span>.<span style="color:#a6e22e">set</span>(<span style="color:#a6e22e">key</span>, <span style="color:#a6e22e">result</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">result</span>;
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><hr>
+<h2 id="useful-resources">Useful Resources</h2>
+<h3 id="documentation-links">Documentation Links</h3>
+<ul>
+<li><a href="https://developer.mozilla.org/">MDN Web Docs</a></li>
+<li><a href="https://docs.python.org/">Python Documentation</a></li>
+<li><a href="https://git-scm.com/docs">Git Documentation</a></li>
+<li><a href="https://reactjs.org/docs">React Documentation</a></li>
+<li><a href="https://nodejs.org/docs">Node.js Documentation</a></li>
+</ul>
+<h3 id="package-managers">Package Managers</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># npm (Node.js)</span>
+</span></span><span style="display:flex;"><span>npm init                   <span style="color:#75715e"># Initialize package.json</span>
+</span></span><span style="display:flex;"><span>npm install &lt;package&gt;      <span style="color:#75715e"># Install package</span>
+</span></span><span style="display:flex;"><span>npm install -g &lt;package&gt;   <span style="color:#75715e"># Install globally</span>
+</span></span><span style="display:flex;"><span>npm run &lt;script&gt;           <span style="color:#75715e"># Run script from package.json</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># pip (Python)</span>
+</span></span><span style="display:flex;"><span>pip install &lt;package&gt;      <span style="color:#75715e"># Install package</span>
+</span></span><span style="display:flex;"><span>pip install -r requirements.txt  <span style="color:#75715e"># Install from requirements</span>
+</span></span><span style="display:flex;"><span>pip freeze &gt; requirements.txt    <span style="color:#75715e"># Save dependencies</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># yarn (Alternative to npm)</span>
+</span></span><span style="display:flex;"><span>yarn init                  <span style="color:#75715e"># Initialize package.json</span>
+</span></span><span style="display:flex;"><span>yarn add &lt;package&gt;         <span style="color:#75715e"># Install package</span>
+</span></span><span style="display:flex;"><span>yarn run &lt;script&gt;          <span style="color:#75715e"># Run script</span>
+</span></span></code></pre></div><hr>
+<p><em>This reference book covers essential programming concepts, commands, and patterns. Keep it handy for quick reference during development!</em></p>
+<p><strong>Last updated:</strong> August 2024</p>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>
