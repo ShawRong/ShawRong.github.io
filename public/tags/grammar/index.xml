@@ -6,8 +6,15 @@
     <description>Recent content in Grammar on My New Hugo Site</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 22 Aug 2025 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 22 Aug 2025 12:00:00 +0000</lastBuildDate>
     <atom:link href="https://example.org/tags/grammar/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Grammar &amp; Vocabulary Refinement Report</title>
+      <link>https://example.org/posts/grammar-vocabulary-refinement-report/</link>
+      <pubDate>Fri, 22 Aug 2025 12:00:00 +0000</pubDate>
+      <guid>https://example.org/posts/grammar-vocabulary-refinement-report/</guid>
+      <description>&lt;h1 id=&#34;grammar--vocabulary-refinement-report&#34;&gt;Grammar &amp;amp; Vocabulary Refinement Report&lt;/h1&gt;&#xA;&lt;h2 id=&#34;overview&#34;&gt;Overview&lt;/h2&gt;&#xA;&lt;p&gt;This report analyzes common grammar and vocabulary patterns in your markdown files and provides suggestions for improvement to enhance clarity, readability, and professional tone.&lt;/p&gt;&#xA;&lt;h2 id=&#34;common-grammar-issues-found&#34;&gt;Common Grammar Issues Found&lt;/h2&gt;&#xA;&lt;h3 id=&#34;1-article-usage-a-an-the&#34;&gt;1. Article Usage (a, an, the)&lt;/h3&gt;&#xA;&lt;p&gt;&lt;strong&gt;Issues Found:&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Missing articles before countable nouns&lt;/li&gt;&#xA;&lt;li&gt;Incorrect article choice&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;&lt;strong&gt;Examples from your files:&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;❌ &amp;ldquo;Build-in variables&amp;rdquo; → ✅ &amp;ldquo;Built-in variables&amp;rdquo;&lt;/li&gt;&#xA;&lt;li&gt;❌ &amp;ldquo;using explicity copying&amp;rdquo; → ✅ &amp;ldquo;using explicit copying&amp;rdquo;&lt;/li&gt;&#xA;&lt;li&gt;❌ &amp;ldquo;There are two component of solving problem&amp;rdquo; → ✅ &amp;ldquo;There are two components of solving problems&amp;rdquo;&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;&lt;strong&gt;Rule:&lt;/strong&gt; Use &amp;ldquo;a/an&amp;rdquo; for singular countable nouns (first mention), &amp;ldquo;the&amp;rdquo; for specific/previously mentioned items.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Grammar and Vocabulary Mistakes Summary</title>
       <link>https://example.org/posts/grammar-vocabulary-mistakes-summary/</link>

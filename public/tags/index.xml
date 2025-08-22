@@ -6,13 +6,34 @@
     <description>Recent content in Tags on My New Hugo Site</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 22 Aug 2025 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 22 Aug 2025 12:00:00 +0000</lastBuildDate>
     <atom:link href="https://example.org/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Grammar</title>
       <link>https://example.org/tags/grammar/</link>
-      <pubDate>Fri, 22 Aug 2025 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 22 Aug 2025 12:00:00 +0000</pubDate>
       <guid>https://example.org/tags/grammar/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Language-Learning</title>
+      <link>https://example.org/tags/language-learning/</link>
+      <pubDate>Fri, 22 Aug 2025 12:00:00 +0000</pubDate>
+      <guid>https://example.org/tags/language-learning/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Vocabulary</title>
+      <link>https://example.org/tags/vocabulary/</link>
+      <pubDate>Fri, 22 Aug 2025 12:00:00 +0000</pubDate>
+      <guid>https://example.org/tags/vocabulary/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Writing</title>
+      <link>https://example.org/tags/writing/</link>
+      <pubDate>Fri, 22 Aug 2025 12:00:00 +0000</pubDate>
+      <guid>https://example.org/tags/writing/</guid>
       <description></description>
     </item>
     <item>
@@ -48,13 +69,6 @@
       <link>https://example.org/tags/test/</link>
       <pubDate>Fri, 22 Aug 2025 00:00:00 +0000</pubDate>
       <guid>https://example.org/tags/test/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Writing</title>
-      <link>https://example.org/tags/writing/</link>
-      <pubDate>Fri, 22 Aug 2025 00:00:00 +0000</pubDate>
-      <guid>https://example.org/tags/writing/</guid>
       <description></description>
     </item>
   </channel>
