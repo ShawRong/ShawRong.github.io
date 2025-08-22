@@ -500,6 +500,13 @@
     </item>
     <item>
       <title></title>
+      <link>https://example.org/posts/claude/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://example.org/posts/claude/</guid>
+      <description>&lt;h1 id=&#34;claudemd&#34;&gt;CLAUDE.md&lt;/h1&gt;&#xA;&lt;p&gt;This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.&lt;/p&gt;&#xA;&lt;h2 id=&#34;repository-overview&#34;&gt;Repository Overview&lt;/h2&gt;&#xA;&lt;p&gt;This is a research workspace containing multiple machine learning and high-performance computing projects, with emphasis on:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Machine Learning Research&lt;/strong&gt;: LLM quantization, mixed precision computing, weight decay studies&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;High-Performance Computing&lt;/strong&gt;: CUDA programming, MPI, parallel computing&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Academic Projects&lt;/strong&gt;: Course materials, homework assignments, and research experiments&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Personal Documents&lt;/strong&gt;: Academic credentials, research papers, and personal files&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h2 id=&#34;key-projects-structure&#34;&gt;Key Projects Structure&lt;/h2&gt;&#xA;&lt;h3 id=&#34;core-research-projects&#34;&gt;Core Research Projects&lt;/h3&gt;&#xA;&lt;p&gt;&lt;strong&gt;&lt;code&gt;/research/mustafar/&lt;/code&gt;&lt;/strong&gt; - LLM inference optimization with sparse KV cache pruning&#xA;&lt;strong&gt;&lt;code&gt;/unstructured_mixture_precision_demo/&lt;/code&gt;&lt;/strong&gt; - Mixed precision FP16/FP8 computing library&lt;br&gt;&#xA;&lt;strong&gt;&lt;code&gt;/research/mix_weight_decay/&lt;/code&gt;&lt;/strong&gt; - Weight decay regularization studies&#xA;&lt;strong&gt;&lt;code&gt;/research/mnist/&lt;/code&gt;&lt;/strong&gt; - MNIST optimization experiments&#xA;&lt;strong&gt;&lt;code&gt;/research/weight_norm_research/&lt;/code&gt;&lt;/strong&gt; - Weight normalization analysis&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title></title>
       <link>https://example.org/posts/programming_reference_book/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       <guid>https://example.org/posts/programming_reference_book/</guid>

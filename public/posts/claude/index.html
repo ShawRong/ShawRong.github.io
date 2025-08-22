@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="CLAUDE.md
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Repository Overview
+This is a research workspace containing multiple machine learning and high-performance computing projects, with emphasis on:
+
+Machine Learning Research: LLM quantization, mixed precision computing, weight decay studies
+High-Performance Computing: CUDA programming, MPI, parallel computing
+Academic Projects: Course materials, homework assignments, and research experiments
+Personal Documents: Academic credentials, research papers, and personal files
+
+Key Projects Structure
+Core Research Projects
+/research/mustafar/ - LLM inference optimization with sparse KV cache pruning
+/unstructured_mixture_precision_demo/ - Mixed precision FP16/FP8 computing library
+/research/mix_weight_decay/ - Weight decay regularization studies
+/research/mnist/ - MNIST optimization experiments
+/research/weight_norm_research/ - Weight normalization analysis">  
+
+  <title>
+    
+      
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="0001-01-01 00:00:00 &#43;0000 UTC">
+                            0001-01-01
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1></h1>
+
+    
+
+    <h1 id="claudemd">CLAUDE.md</h1>
+<p>This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.</p>
+<h2 id="repository-overview">Repository Overview</h2>
+<p>This is a research workspace containing multiple machine learning and high-performance computing projects, with emphasis on:</p>
+<ul>
+<li><strong>Machine Learning Research</strong>: LLM quantization, mixed precision computing, weight decay studies</li>
+<li><strong>High-Performance Computing</strong>: CUDA programming, MPI, parallel computing</li>
+<li><strong>Academic Projects</strong>: Course materials, homework assignments, and research experiments</li>
+<li><strong>Personal Documents</strong>: Academic credentials, research papers, and personal files</li>
+</ul>
+<h2 id="key-projects-structure">Key Projects Structure</h2>
+<h3 id="core-research-projects">Core Research Projects</h3>
+<p><strong><code>/research/mustafar/</code></strong> - LLM inference optimization with sparse KV cache pruning
+<strong><code>/unstructured_mixture_precision_demo/</code></strong> - Mixed precision FP16/FP8 computing library<br>
+<strong><code>/research/mix_weight_decay/</code></strong> - Weight decay regularization studies
+<strong><code>/research/mnist/</code></strong> - MNIST optimization experiments
+<strong><code>/research/weight_norm_research/</code></strong> - Weight normalization analysis</p>
+<h3 id="development-areas">Development Areas</h3>
+<p><strong><code>/cuda/</code></strong> - CUDA kernel development (int8 GEMM, tensor cores)
+<strong><code>/temp/</code></strong> - CUDA practice and experimental kernels
+<strong><code>/mpi/</code></strong> - MPI parallel programming exercises
+<strong><code>/parallel_programming/</code></strong> - OpenMP, CUDA, MPI implementations</p>
+<h3 id="academic-materials">Academic Materials</h3>
+<p><strong><code>/archive/</code></strong> - Course materials (MSBD 5001, 5002, 5003, 5004, 5007, 5014, 5017, 5018)
+<strong><code>/comp6211j/</code></strong> - Advanced machine learning systems course materials</p>
+<h2 id="development-commands">Development Commands</h2>
+<h3 id="python-projects">Python Projects</h3>
+<p>For Python-based research projects, use these patterns:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Install dependencies</span>
+</span></span><span style="display:flex;"><span>pip install -r requirements.txt
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Development installation (for libraries)</span>
+</span></span><span style="display:flex;"><span>pip install -e .
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Run tests (when available)</span>
+</span></span><span style="display:flex;"><span>pytest
+</span></span><span style="display:flex;"><span>pytest --cov<span style="color:#f92672">=</span>project_name
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Code formatting and quality</span>
+</span></span><span style="display:flex;"><span>black .
+</span></span><span style="display:flex;"><span>mypy .
+</span></span><span style="display:flex;"><span>flake8 .
+</span></span><span style="display:flex;"><span>isort .
+</span></span></code></pre></div><h3 id="cuda-development">CUDA Development</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Compile CUDA kernels</span>
+</span></span><span style="display:flex;"><span>nvcc -o program kernel.cu
+</span></span><span style="display:flex;"><span>nvcc -arch<span style="color:#f92672">=</span>sm_70 -o optimized_program kernel.cu
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># For projects with Makefiles</span>
+</span></span><span style="display:flex;"><span>cd kernel/build
+</span></span><span style="display:flex;"><span>make -j8
+</span></span></code></pre></div><h3 id="cmpi-projects">C++/MPI Projects</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># MPI compilation</span>
+</span></span><span style="display:flex;"><span>mpicc -o program source.c
+</span></span><span style="display:flex;"><span>mpicxx -o program source.cpp
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># CMake projects</span>
+</span></span><span style="display:flex;"><span>mkdir build <span style="color:#f92672">&amp;&amp;</span> cd build
+</span></span><span style="display:flex;"><span>cmake ..
+</span></span><span style="display:flex;"><span>make -j8
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Run MPI programs</span>
+</span></span><span style="display:flex;"><span>mpirun -np <span style="color:#ae81ff">4</span> ./program
+</span></span></code></pre></div><h3 id="research-project-specific-commands">Research Project Specific Commands</h3>
+<p><strong>Mustafar (LLM KV Cache Pruning)</strong>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Install dependencies and build kernels</span>
+</span></span><span style="display:flex;"><span>pip install -r requirements.txt
+</span></span><span style="display:flex;"><span>cd kernel/build <span style="color:#f92672">&amp;&amp;</span> make -j8
+</span></span><span style="display:flex;"><span>cd ../kernel_wrapper <span style="color:#f92672">&amp;&amp;</span> pip install -e .
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Run LongBench evaluation</span>
+</span></span><span style="display:flex;"><span>bash long_test.sh 0.7 0.7 meta-llama/Llama-2-7b-hf mustafar
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Evaluate results</span>
+</span></span><span style="display:flex;"><span>python eval_long_bench.py --model Llama-2-7b-hf_4096_K_0.7_V_0.7
+</span></span></code></pre></div><p><strong>Mixed Precision Library</strong>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Install and test</span>
+</span></span><span style="display:flex;"><span>pip install -e .
+</span></span><span style="display:flex;"><span>pytest --cov<span style="color:#f92672">=</span>mixed_precision_lib
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Run CLI tools</span>
+</span></span><span style="display:flex;"><span>mixed-precision-benchmark conversion --size <span style="color:#ae81ff">128</span> --threshold 2.0
+</span></span><span style="display:flex;"><span>mixed-precision-demo
+</span></span></code></pre></div><h2 id="architecture-patterns">Architecture Patterns</h2>
+<h3 id="research-project-structure">Research Project Structure</h3>
+<p>Most research projects follow this pattern:</p>
+<ul>
+<li><strong>Main implementation</strong> in root directory (.py files)</li>
+<li><strong>Requirements</strong> specified in requirements.txt or pyproject.toml</li>
+<li><strong>Scripts</strong> for running experiments (.sh files)</li>
+<li><strong>Data/Results</strong> in separate directories</li>
+<li><strong>README.md</strong> with detailed setup and usage instructions</li>
+</ul>
+<h3 id="cuda-project-structure">CUDA Project Structure</h3>
+<p>CUDA projects typically have:</p>
+<ul>
+<li><strong>Kernel implementation</strong> (.cu files)</li>
+<li><strong>Host code</strong> (.cpp/.c files)</li>
+<li><strong>Build scripts</strong> (Makefile or CMakeLists.txt)</li>
+<li><strong>Compilation flags</strong> for specific GPU architectures</li>
+</ul>
+<h3 id="python-library-structure">Python Library Structure</h3>
+<p>Well-structured Python libraries follow:</p>
+<pre tabindex="0"><code>project_name/
+├── project_name/          # Main package
+│   ├── core/             # Core functionality
+│   ├── utils/            # Utilities
+│   └── cli/              # Command-line tools
+├── tests/                # Test suite
+├── examples/             # Usage examples
+├── requirements.txt      # Dependencies
+└── pyproject.toml        # Build configuration
+</code></pre><h2 id="testing-patterns">Testing Patterns</h2>
+<h3 id="python-testing">Python Testing</h3>
+<ul>
+<li>Use <strong>pytest</strong> as the primary testing framework</li>
+<li>Test files follow <code>test_*.py</code> or <code>*_test.py</code> naming</li>
+<li>Coverage reporting with <code>pytest-cov</code></li>
+<li>Separate unit, integration, and benchmark tests</li>
+</ul>
+<h3 id="cuda-testing">CUDA Testing</h3>
+<ul>
+<li>Build separate test executables</li>
+<li>Use simple assertions for correctness</li>
+<li>Compare with CPU reference implementations</li>
+<li>Test different input sizes and edge cases</li>
+</ul>
+<h2 id="development-environment-notes">Development Environment Notes</h2>
+<h3 id="gpu-computing">GPU Computing</h3>
+<ul>
+<li>Projects expect NVIDIA GPUs with CUDA 12.x+</li>
+<li>Many experiments use specific architectures (sm_70, sm_80)</li>
+<li>CUDA kernels often require compilation with appropriate compute capability flags</li>
+</ul>
+<h3 id="python-environment">Python Environment</h3>
+<ul>
+<li>Most projects use Python 3.8+</li>
+<li>PyTorch-based machine learning projects</li>
+<li>Mixed precision and quantization libraries require specific PyTorch versions</li>
+<li>Virtual environments recommended for dependency isolation</li>
+</ul>
+<h3 id="academic-workflow">Academic Workflow</h3>
+<ul>
+<li>Experiments often generate CSV files with results</li>
+<li>LaTeX documents for academic papers and reports</li>
+<li>Jupyter notebooks for data analysis and visualization</li>
+<li>Git repositories for version control (when initialized)</li>
+</ul>
+<h2 id="common-development-tasks">Common Development Tasks</h2>
+<h3 id="running-experiments">Running Experiments</h3>
+<ol>
+<li>Check README.md for specific setup instructions</li>
+<li>Install dependencies from requirements.txt</li>
+<li>Run provided shell scripts for batch experiments</li>
+<li>Monitor results in generated output directories</li>
+</ol>
+<h3 id="adding-new-research-code">Adding New Research Code</h3>
+<ol>
+<li>Follow existing project structure patterns</li>
+<li>Add appropriate requirements.txt or pyproject.toml</li>
+<li>Include README.md with setup and usage instructions</li>
+<li>Add shell scripts for common operations</li>
+</ol>
+<h3 id="cuda-development-1">CUDA Development</h3>
+<ol>
+<li>Start with simple kernels in <code>/temp/</code> for experimentation</li>
+<li>Use appropriate compilation flags for target GPU architecture</li>
+<li>Test against CPU reference implementations</li>
+<li>Optimize for specific use cases (memory bandwidth, compute throughput)</li>
+</ol>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>
