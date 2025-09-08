@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Cuda C&#43;&#43; Programming guide
+Scalable Progamming Model
+There are a crucial problem when we are facing multi-core system. It&rsquo;s hard to pragram. To solve this problem, cuda devised a programming concept, a abstraction called block. Block are logical abstractions that get mapped to physical hardware automatically without mental burgen when programming. Blocks are scheduled on SMs, i.e. Stream Multiprocessors. Each SM can run multiple blocks, and blocks can be assigned to any available SM.">  
+
+  <title>
+    
+      Cuda Toolkit Reading Note1
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-09-08 11:49:19.151 &#43;0000 UTC">
+                            2025-09-08
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>Cuda Toolkit Reading Note1</h1>
+
+    
+
+    <h1 id="cuda-c-programming-guide">Cuda C++ Programming guide</h1>
+<h2 id="scalable-progamming-model">Scalable Progamming Model</h2>
+<p>There are a crucial problem when we are facing multi-core system. It&rsquo;s hard to pragram. To solve this problem, cuda devised a programming concept, a abstraction called block. Block are logical abstractions that get mapped to physical hardware automatically without mental burgen when programming. Blocks are scheduled on SMs, i.e. Stream Multiprocessors. Each SM can run multiple blocks, and blocks can be assigned to any available SM.</p>
+<p>Thread communication can happend only within blocks. Thread in the same block can share memory and synchronize. This is a demand comes from the design to make parallel programming more manageable. This restriction is what enables the automatic scalability, since blocks are independent, the runtime can distribute them freely.</p>
+<p>In conclusion, by restricting communication to within blocks, Cuda forces you to write code that&rsquo;s naturally scalable. If blocks could talk to each other, the runtime couldn&rsquo;t freely move them around different processors.</p>
+<h2 id="hardware-implmentation">Hardware Implmentation</h2>
+<p>This is about the whole architecture about the GPU. The general concept comes from the Streaming Multiprocessor. Cuda program on the CPU invoke a kernel grid on the GPU, and the blocks of the grid are distributed to SMs with available execution capacity. Then the thread of these block execute concurrently on each multiprocessor, and each multiple thread blocks can execute concurrently on each SM.</p>
+<p>These threads of the same block executes according to the SIMT Architecture. And the instructions are pipelined, too. This leverages the instruction level parallelism within a single thread, as well as extensive thread-level parallelism. There are no such branch prediction or speculative execution.</p>
+<h2 id="programming-model">Programming Model</h2>
+<p>There is a limit to the number of the threads per block, due to the constraint that all threads of a block are expected to reside on the same streaming multiprocessor core and must share the limited memory resources of the core. And on current GPUs, a thread block may contain up to 1024 threads.</p>
+<p>But, for a kernel, which can be executed by multiple equally-shaped thread blocks, so that the total number of threads is equal to the number of threads per block times the number of blocks.</p>
+<p>So about block, it get its index and dim. And this works for thread, too.
+So we can get a code just like this.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">//Kernel definition
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">MatAdd</span>(<span style="color:#66d9ef">float</span> A[N][N], <span style="color:#66d9ef">float</span> B[N][N], <span style="color:#66d9ef">float</span> C[N][N]) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> j <span style="color:#f92672">=</span> blockIdx.y <span style="color:#f92672">*</span> blockDim.y <span style="color:#f92672">+</span> threadIdx.y;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> (i <span style="color:#f92672">&lt;</span> N <span style="color:#f92672">&amp;&amp;</span> j <span style="color:#f92672">&lt;</span> N)
+</span></span><span style="display:flex;"><span>		C[i][j] <span style="color:#f92672">=</span> A[i][j] <span style="color:#f92672">+</span> B[i][j];
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">//Kernel invocation
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	dim3 threadsPerBlock(<span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">16</span>);
+</span></span><span style="display:flex;"><span>	dim3 numBlocks(N <span style="color:#f92672">/</span> threadsPerBlock.x, N <span style="color:#f92672">/</span> threadsPerBlock.y)
+</span></span><span style="display:flex;"><span>	MatAdd<span style="color:#f92672">&lt;&lt;&lt;</span>numBlocks, threadsPerBlock<span style="color:#f92672">&gt;&gt;&gt;</span>(A, B, C);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>There the block size is set to be 16 x 16(256 threads), is a common choice for the thread block size.</p>
+<p>Again, the thread blocks are required to execute independently, and it allows thread blocks to be scheduled in any order and across any number of cores.</p>
+<p>Threads within a block can cooperate by sharing data through some shared memory and by synchronizing their execution to coordinate memory accesses(like coalesced).</p>
+<p>The things we can do within a block:</p>
+<ul>
+<li>__syncthreads: act more like a barrier in a range of block</li>
+<li>Shared memory</li>
+<li>Some other cooperative groups</li>
+</ul>
+<p><strong>Cooperative groups</strong>:
+In the past time before CUDA 9, CUDA programming model has provided a single simple construct for synchronizing cooperating threads: a barrier across all threads of a <strong>thread block</strong>, as implemented with the <strong>__syncthreads</strong> intrinsic function. And many developers seek to a operation at other granularities, like threads in the same warp, or across sets of thread blocks running on a single GPU.
+Therefore, cooperative groups are here to provide these kinds of granularity for flexity.</p>
+<p>Keywords: <strong>granularity at block-level</strong>, <strong>granularity at warp-level</strong> and <strong>granularity at single GPU-level</strong>.</p>
+<h2 id="new-launchapi">New LaunchAPI</h2>
+<p>This Cooperative groups also provide us some new launch APIs that enforce certain restrictions and therefore can guarantee the synchronization will work.</p>
+<p>Here the &ldquo;launch APIs&rdquo; refers to the API that start kernel from the host. Traditional CUDA launch uses the &laquo;&lt;&raquo;&gt; syntax. But now we can use the new launch APIs that provide additional guarantees and restrictions.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>cudaLaunchCooperativeKernel()
+</span></span></code></pre></div><p>Restrictions:</p>
+<ul>
+<li>All thread blocks must be launched simultaneously. (Not scheduled over time that due to resource restriction, some can&rsquo;t launch at the first time)</li>
+<li>The GPU must have enough resources to run all blocks concurrently</li>
+<li>Certain hardware capabilities must be present</li>
+</ul>
+<p>This kind of enforcement guarantees that global synchronization will work.</p>
+<h2 id="some-cooperative-parallelism">Some Cooperative Parallelism</h2>
+<p>We can use <strong>this_grid</strong> api to get the object that represent all the thread in the grid, including all the thread across the grid.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">auto</span> grid <span style="color:#f92672">=</span> cooperative_groups<span style="color:#f92672">::</span>this_grid()
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//or
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>cooperative_groups<span style="color:#f92672">::</span>grid_group grid <span style="color:#f92672">=</span> cooperative_groups<span style="color:#f92672">::</span>this_grid();
+</span></span></code></pre></div><p>We can use some method of this object, like:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">// Wait for all threads across all blocks to reach this point
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>grid.sync()
+</span></span></code></pre></div><p><strong>Producer-Consumer Parallelism</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">// Simple example
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">producer_consumer_kernel</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">auto</span> grid <span style="color:#f92672">=</span> cooperative_groups<span style="color:#f92672">::</span>this_grid();
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> (blockIdx.x <span style="color:#f92672">&lt;</span> num_producer_blocks) {
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// select some of the block to be producer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		produce_data();
+</span></span><span style="display:flex;"><span>		grid_sync();
+</span></span><span style="display:flex;"><span>	} <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>		grid.sync() <span style="color:#75715e">// wait for producers, this make sure all the thread should reach to the grid_sync point
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		consume_data();
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>Opportunistic Parallelism</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">opportunistic_kernel</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">auto</span> grid <span style="color:#f92672">=</span> cooperative_groups<span style="color:#f92672">::</span>this_grid();
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">while</span>(work_available()) {
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// find work
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#66d9ef">int</span> work_id <span style="color:#f92672">=</span> atomicAdd(<span style="color:#f92672">&amp;</span>global_work_counter, <span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> (work_id <span style="color:#f92672">&lt;</span> total_work) {
+</span></span><span style="display:flex;"><span>			process_work_item(work_id);
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		grid.sync();
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>Note</strong>: we can see there are many warp divergence and some mutex like atom add here. So, as a result, opportunistic parallelism is not recommended for GPUs.
+<strong>Global Synchronization</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">global_sync_kernel</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">auto</span> grid <span style="color:#f92672">=</span>  cooperative_groups<span style="color:#f92672">::</span>this_grid();
+</span></span><span style="display:flex;"><span>	phase1_computation();
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">//sync all the thread across all blocks
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	grid.sync();
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	phase2_computation();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Before cooperative groups, you could only synchronize threads within a single block using __synchtreads. But now we can synchronize across the entire grid.</p>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

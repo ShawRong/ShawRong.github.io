@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Abstraction
+There are 3 improvement based on the previous work QuIP.
+
+It uses Hadamard transform instead of previous random matrix.
+It uses vector quantization to take advantage of the ball-shaped sub-Gaussian distribution, specifically introducing a set of hardware-efficient codebooks based on the highly symmetric E_8 lattice.
+It uses fine-tuning to improve fidelity to the original model.
+
+Notation
+
+The only important thing for me right now, is the hadamard matrix part.
+The vector quantization for sub-Gaussian distribution is not that fast as we can see.
+Finetune is not what I want to use, which can be complicate
+There it involves a blockLDLQ, which should pay attention to.
+
+Summary of Hadamard Matrix Rotation
+Question
+
+ What&rsquo;s the detail to prove that the theoretical bound on the incoherence parameter is improved by using RHT
+It states that &ldquo;QuIP#&rsquo;s RHT achieves superior incoherence via a log dependence on the matrix size rather than the Kronecker method&rsquo;s log-squared dependence&rdquo;.
+ What&rsquo;s the log dependence and log-square dependence?
+It gives a Lemma, to provide us the incoherence parameter, to show that this parameter is of a formula of n with a log dependence, which can be superior compared with the parameter analyzed in the previous paper QuIP.
+ What&rsquo;s the random? How to generate a RH?
+It states that &ldquo;In the previous paper, the incoherence processing is performed by conjugate weight matrix W and proxy hessian H by structured random orthogonal matrices. QuIP# uses the RHT, which performs x to VSx where V is Hadamard matrix, and S is a random sign vector {&#43;- 1}^n&rdquo;.
+ I still don&rsquo;t understand how to perform conjugate by using x to VSx, where is conjugation?
+It says after this statement clarifying the procedure of performing rotation is like &ldquo;VSHSV^T&rdquo; and &ldquo;USWSV^T&rdquo;.
+ What&rsquo;s the U here? What&rsquo;s the S_U here? Is it ok to use different conjugation part in the front and the end? I think you need to check the original paper.
+
+Summary
+
+It replace the original 2-factor Kronecker product by a Randomized Hadamard Transformation(RHT)
+The original Kronecker product is from the previous paper &ldquo;QuIP&rdquo;. This Kronecker product is involved due to the difficulty and large scale of the random matrix. And we can solve the problem by using Kronecker product which can accelerate the inference.
+By using RHT, there are 3 improvement. First, the theoretical bound on incoherence parameter is improved. Second, the asymptotic cost of multiplying by structured orthogonal matrix is improved. Third, the cost to multiply is further reduced. It&rsquo;s show by experiment that the perplexity is improved by performing this change.
+There are constraint to construct any dimension hadamard matrix. So the author proposed Randomized Fast Fourier Transform (RFFT) with similar runtime and concentration properties as the RHT. RFFT requires dimension to be even, which is a weaker constraint compare with the RHT.
+
+Summary of BlockLDLQ
+Question
+
+ What&rsquo;s central limit theorem? Is it &ldquo;RHT transformed weight follow a roughly ball-shaped Gaussian distribution?&rdquo;
+ 
+
+Summary
+
+It states that &ldquo;It follows from the central limit theorem that RHT-transformed weights follow a roughly ball-shaped Gaussian distribution&rdquo;
+
+Adaptive Rounding
+Summary">  
+
+  <title>
+    
+      QuIP sharpe Note
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-09-08 11:49:22.555 &#43;0000 UTC">
+                            2025-09-08
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>QuIP sharpe Note</h1>
+
+    
+
+    <h1 id="abstraction">Abstraction</h1>
+<p>There are 3 improvement based on the previous work QuIP.</p>
+<ul>
+<li>It uses Hadamard transform instead of previous random matrix.</li>
+<li>It uses vector quantization to take advantage of the ball-shaped sub-Gaussian distribution, specifically introducing a set of hardware-efficient codebooks based on the highly symmetric E_8 lattice.</li>
+<li>It uses fine-tuning to improve fidelity to the original model.</li>
+</ul>
+<h1 id="notation">Notation</h1>
+<ul>
+<li>The only important thing for me right now, is the hadamard matrix part.</li>
+<li>The vector quantization for sub-Gaussian distribution is not that fast as we can see.</li>
+<li>Finetune is not what I want to use, which can be complicate</li>
+<li>There it involves a blockLDLQ, which should pay attention to.</li>
+</ul>
+<h1 id="summary-of-hadamard-matrix-rotation">Summary of Hadamard Matrix Rotation</h1>
+<h2 id="question">Question</h2>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> What&rsquo;s the detail to prove that the theoretical bound on the incoherence parameter is improved by using RHT
+It states that &ldquo;QuIP#&rsquo;s RHT achieves superior incoherence via a log dependence on the matrix size rather than the Kronecker method&rsquo;s log-squared dependence&rdquo;.</li>
+<li><input checked="" disabled="" type="checkbox"> What&rsquo;s the log dependence and log-square dependence?
+It gives a Lemma, to provide us the incoherence parameter, to show that this parameter is of a formula of n with a log dependence, which can be superior compared with the parameter analyzed in the previous paper QuIP.</li>
+<li><input disabled="" type="checkbox"> What&rsquo;s the random? How to generate a RH?
+It states that &ldquo;In the previous paper, the incoherence processing is performed by conjugate weight matrix W and proxy hessian H by structured random orthogonal matrices. QuIP# uses the RHT, which performs x to VSx where V is Hadamard matrix, and S is a random sign vector {+- 1}^n&rdquo;.</li>
+<li><input checked="" disabled="" type="checkbox"> I still don&rsquo;t understand how to perform conjugate by using x to VSx, where is conjugation?
+It says after this statement clarifying the procedure of performing rotation is like &ldquo;VSHSV^T&rdquo; and &ldquo;USWSV^T&rdquo;.</li>
+<li><input disabled="" type="checkbox"> What&rsquo;s the U here? What&rsquo;s the S_U here? Is it ok to use different conjugation part in the front and the end? I think you need to check the original paper.</li>
+</ul>
+<h2 id="summary">Summary</h2>
+<ul>
+<li>It replace the original 2-factor Kronecker product by a Randomized Hadamard Transformation(RHT)</li>
+<li>The original Kronecker product is from the previous paper &ldquo;QuIP&rdquo;. This Kronecker product is involved due to the difficulty and large scale of the random matrix. And we can solve the problem by using Kronecker product which can accelerate the inference.</li>
+<li>By using RHT, there are 3 improvement. First, the theoretical bound on incoherence parameter is improved. Second, the asymptotic cost of multiplying by structured orthogonal matrix is improved. Third, the cost to multiply is further reduced. It&rsquo;s show by experiment that the perplexity is improved by performing this change.</li>
+<li>There are constraint to construct any dimension hadamard matrix. So the author proposed Randomized Fast Fourier Transform (RFFT) with similar runtime and concentration properties as the RHT. RFFT requires dimension to be even, which is a weaker constraint compare with the RHT.</li>
+</ul>
+<h1 id="summary-of-blockldlq">Summary of BlockLDLQ</h1>
+<h2 id="question-1">Question</h2>
+<ul>
+<li><input disabled="" type="checkbox"> What&rsquo;s central limit theorem? Is it &ldquo;RHT transformed weight follow a roughly ball-shaped Gaussian distribution?&rdquo;</li>
+<li><input disabled="" type="checkbox"> </li>
+</ul>
+<h2 id="summary-1">Summary</h2>
+<ul>
+<li>It states that &ldquo;It follows from the central limit theorem that RHT-transformed weights follow a roughly ball-shaped Gaussian distribution&rdquo;</li>
+</ul>
+<h1 id="adaptive-rounding">Adaptive Rounding</h1>
+<h2 id="summary-2">Summary</h2>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Abstract
+GPTQ Method Summary
+Questions
+
+ It said that &ldquo;As a consequence, the set of unquantized weights F and similarly H_F^{-1} is always the same for all rows.&rdquo; I don&rsquo;t quite understand it.
+ What&rsquo; the procedure of this quantization specifically? I mean what&rsquo;s the Inverse Layer Hessain, and weight matrix / block. I think I can see that the inverse layer hessian seems to follow a row major way, and the weight matrix follows a column major way?
+ In the background part, it mentions that they assume that the quantization grid of W is fixed before the process, and that individual weights can move freely as in. I don&rsquo;t quite understand this.
+ It still need to read more things about the hessian thing. First question definitely to be why hessian looks like this. Second, why there are full-precision weights involved?
+ I found it&rsquo;s hard to read these formula. What&rsquo;s the qq and q here?
+ More numerically stable than direct matrix inversion if we use Cholesky Decomposition. But why?
+ Why small eigenvalues often correspond to noise rather than signal, and why it says directions with little statistical support get massive influence?
+
+Summary
+
+It found that the order does not matter when do the quantization one by one in the pretty large language model. So it draw a insight that any fixed order may perform well, especially on large models.
+
+
+Dampening Part
+In GPTQ quantization, when a weight is quantized, remaining weights must be updated to compensate for the quantization error.">  
+
+  <title>
+    
+      GPTQ Note
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-09-08 11:49:15.836 &#43;0000 UTC">
+                            2025-09-08
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>GPTQ Note</h1>
+
+    
+
+    <h1 id="abstract">Abstract</h1>
+<h1 id="gptq-method-summary">GPTQ Method Summary</h1>
+<h2 id="questions">Questions</h2>
+<ul>
+<li><input disabled="" type="checkbox"> It said that &ldquo;As a consequence, the set of unquantized weights F and similarly H_F^{-1} is always the same for all rows.&rdquo; I don&rsquo;t quite understand it.</li>
+<li><input disabled="" type="checkbox"> What&rsquo; the procedure of this quantization specifically? I mean what&rsquo;s the Inverse Layer Hessain, and weight matrix / block. I think I can see that the inverse layer hessian seems to follow a row major way, and the weight matrix follows a column major way?</li>
+<li><input disabled="" type="checkbox"> In the background part, it mentions that they assume that the quantization grid of W is fixed before the process, and that individual weights can move freely as in. I don&rsquo;t quite understand this.</li>
+<li><input disabled="" type="checkbox"> It still need to read more things about the hessian thing. First question definitely to be why hessian looks like this. Second, why there are full-precision weights involved?</li>
+<li><input disabled="" type="checkbox"> I found it&rsquo;s hard to read these formula. What&rsquo;s the qq and q here?</li>
+<li><input disabled="" type="checkbox"> More numerically stable than direct matrix inversion if we use Cholesky Decomposition. But why?</li>
+<li><input disabled="" type="checkbox"> Why small eigenvalues often correspond to noise rather than signal, and why it says directions with little statistical support get massive influence?</li>
+</ul>
+<h2 id="summary">Summary</h2>
+<ul>
+<li>It found that the order does not matter when do the quantization one by one in the pretty large language model. So it draw a insight that any fixed order may perform well, especially on large models.</li>
+<li></li>
+</ul>
+<h2 id="dampening-part">Dampening Part</h2>
+<p>In GPTQ quantization, when a weight is quantized, remaining weights must be updated to compensate for the quantization error.</p>
+<p>And from the perspective of Matrix, we get matrix conditioning theory to help.</p>
+<hr>
+<p><strong>Matrix conditioning theory</strong>:
+For any invertible matrix A:
+$$
+\kappa(A) = |A||A^{-1}|
+$$
+This is the definition of the condition number of an invertible matrix A.</p>
+<p>And since we know:
+$$
+\begin{align}
+|A| &amp;= \sigma_{max}(A) \
+|A^{-1}| &amp;= \sigma_{max}(A^{-1}) = 1/\sigma_{min}(A) \
+\kappa(A) &amp;= |A||A^{-1}| = \sigma_{max}(A) / \sigma_{min} (A)
+\end{align}
+$$</p>
+<p>Alternative form:
+$$
+\kappa (A) = \lambda_{max}(A) / \lambda_{min} (A) = \sigma_{max}(A) / \sigma_{min}(A)
+$$
+Since for symmetric positive definite matrices, we have:
+$$
+\begin{align}
+A^T A &amp;= A^2 \
+\lambda_i(A^2) &amp;= \lambda_i(A)^2 \
+A^TAv &amp;= A^T\lambda v = \lambda Av = \lambda^2 v \
+\sigma_i(A) &amp;= \sqrt{\lambda_i(A^2)} = \sqrt{\lambda_i(A)^2} = \lambda_i(A)
+\end{align}
+$$</p>
+<p>For a system Ax = b, with a error perturbation $\delta x$, we can see:
+$$
+|\delta x| / |x| \leq \kappa(A) |\delta b| / |b|
+$$
+<strong>This mean that condition number bounds relative error amplification.</strong></p>
+<hr>
+<p><strong>Ill-conditioning problem</strong>
+This comes to a definition of ill-conditioning problem.</p>
+<ul>
+<li>Large condition number $\kappa(A)$</li>
+<li>Small eigenvalues, even some $\lambda_i = 0$</li>
+<li>Near-singular: $det(A) = 0$</li>
+</ul>
+<p>We don&rsquo;t have to explain the condition number thing, since large condition number means large bound of relative error amplification of a system Ax=b.</p>
+<p>So why small eigenvalues cause huge updates?
+Idk, need more explaination.</p>
+<hr>
+<p><strong>Dampening</strong></p>
+<p>$H_{damped} = H + \lambda I$</p>
+<p>Here lambda is the 1% of average diagonal value of H.</p>
+<p>By using dampening, we can shift the original eigenvalue from $\lambda_1, \lambda_2, \cdots, \lambda_n$ to $\lambda_1 + \lambda, \lambda_2 + \lambda, \cdots, \lambda_n + \lambda$.
+Therefore, the
+$$
+\begin{align}
+\kappa(H) = \lambda_{max} / \lambda_{min} \approx \lambda_{max}/0 = \infty \
+\kappa(H + \lambda I) = (\lambda_{max} + \lambda) / (\lambda_{min} + \lambda)
+\end{align}
+$$
+Therefore, we can prevent the problem leading by the small eigenvalue.</p>
+<hr>
+<p>GPTQ uses <strong>Cholesky</strong> for numerical stability.</p>
+<p>$H = LL^T$, where L is lower triangular.</p>
+<p>The advantage of the Cholesky Decomposition is:</p>
+<ul>
+<li>More numerically stable than direct matrix inversion.</li>
+<li>Efficient for positive definite matrices</li>
+<li>Well-optimized kernel</li>
+</ul>
+<p>When we invert a matrix A directly, the condition number of $A^{-1}$ is same as A, but the errors get amplified. With Cholesky decomposition, we are working with triangular matrices L that typically have better condition numbers than the original matrix A.</p>
+<p>Direct matrix inversion using methods like Gaussian elimination involves many division operation and intermediate results that can accumulate floating-point errors.</p>
+<p>In conclusion, using Cholesky decomposition to solve inversion can lead to less error compared with the Gaussian elimination.</p>
+<hr>
+<p>In conclusion, the GPTQ algorithm optimize to be like:
+$H^{-1} = \text{Cholesky}((2XX^T + \lambda I)^{-1})$</p>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

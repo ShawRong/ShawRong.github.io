@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Abstract Summary
+
+Using MXFP 4 GEMMs, which are 2x faster than FP 8 on supported hardware. Because the training is mostly computation bound, at the forward and backward stage.
+The key insight is to compute unbiased gradient estimates with stochastic rounding.
+Directly applying SR to MXFP 4 can result in high variance from block-level outliers.
+Their recipe computes &gt; 1/2 the training FLOPs in MXFP4, in the computation aspect. And it enables an estimated speedup of &gt;1.3 x over FP8, &gt;1.7x over BF 16 during back propagation.
+
+Summary
+
+LLM training is compute bound in matrix multiplication. LP GEMMs can accelerate training.
+It&rsquo;s shown in section 4 that directly using MXFP4 in even only the backward pass of decoder linear layers significantly degrades model quality.
+Their method hinges on computing low-variance, unbiased gradient estimates.
+Their method is: first use stochastic rounding to compute unbiased GEMMs. Then, they use a memory bound construction of random Hadamard transform to reduce the effect of outliers and theoretically bound the variance of SR.
+Gap between MXFP4 and BF16 is &lt; 0.1 validation perplexity on pre train GPT model.
+
+IEEE 754
+
+IEEE 754 format: $(-1)^S (1 &#43; M) 2^{E - \text{bias}}$ .
+This exponent mantissa construction means FP datatypes are scale invariant with respect to quantization signal-to-noise ratio(SNR) bar over/underflow. It means SNR is not variant with the scale when using this FP format without considering over/underflow.
+While the exact training setup may differ, the core bottlenecks of training are the compute-bound forward and backward passes that calculate the loss and gradient, respectively.
+
+MP
+
+In MP(Mixed Precision), parameters are kept in high precision and GEMM operands are converted to a LP datatype for a LP GEMM. Quantization usually has minimal overhead.
+However, quantization introduces distortion in the GEMM operands. And since the forward and backward passes all happen in low precision, both the loss and the model updates can deviate from their true values.
+There it gives an example that FP8 MP recipes typically use E4M3 in the forward pass and E5M2 in the backward pass due to the different properties of gradient, weights and activations..
+
+Stochastic Rounding
+
+NR(nearest rounding) method rounds each high precision number to its closest representable value in the LP datatype. But NR is not unbiased, which can be detrimental to low precision training.
+SR(stochastic rounding) can achieve unbiased rounding, which randomly rounds a number to a representable value in the LP datatype so that the rounded number equals the original number in expectation.
+SR can be implemented through dithering. It adds random uniform noise to the input number and then performs NR to achieve a unbiased rounding, which randomly rounds a number to a representable value in the LP datatype.
+The dithering for a uniform integer and non-uniform one is different, which requires modifying the noise scale. The dithering looks like:
+$$\begin{align} \delta &amp;= \mathcal{U}(-0.5, -0.5) \quad (1)\ \text{SR}_\text{dither} (x) &amp;= \begin{cases}\lfloor x \rfloor \quad x &#43; \delta &lt; \lfloor x \rfloor &#43; \frac 1 2 \ \lceil x \rceil \quad x &#43; \delta \geq \lfloor x \rfloor &#43; \frac 1 2 \end{cases} \quad (2) \end{align}$$
+
+Questions
+
+ Why directly applying SR to MXFP 4 can result in high variance form block-level outliers?
+ It says that MXFP4 uses an INT8 scale s for every contiguous block v of 32 FP4 numbers to represent 2^{s-1}v. where 1 is the exponent bias for FP4. I got a question for what&rsquo;s the bias here? Is this universal?
+ What&rsquo;s the stochastic rounding here. And how can it used to compute the GEMMs? And how does the Hadamard transform applied? It&rsquo;s applied to what?
+ What if we just use the Hadamard transform? Is there any ablation study?
+ What does they do to avoid the overhead of the RHT and SR.
+ IEEE 754 format: $(-1)^S (1 &#43; M) 2^{E - \text{bias}}$ . Does fp4 obey this format?
+ Here it says about the back propagate through a linear layer, we need to calculate the gradient of y with respect to x. Why? Shouldn&rsquo;t we calculate the gradient like Loss to W? And it&rsquo;s says something like: dL/dx = dL/dy W, dL/dW = dL/dY x, and dL/db = 1 dL/ dy. What&rsquo;s all this, and what&rsquo;s our purpose?
+ Why the dL/dx and dL/dW is computationally intensive?
+ How can this dithering achieve a random rounding with its expectation to be equal with the original one?
+ It says: &ldquo;For example, near the end of the training, the model update norm is much smaller than the parameter norm and information in low precision updates can be &ldquo;lost&rdquo;. Here, stochastic rounding can be used to preserve the update in expectation&rdquo;. I don&rsquo;t really understand why keep the update in expectation can help the training near the end.
+">  
+
+  <title>
+    
+      Training LLMs with MXFP4
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-09-08 11:48:28.689 &#43;0000 UTC">
+                            2025-09-08
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>Training LLMs with MXFP4</h1>
+
+    
+
+    <h1 id="abstract-summary">Abstract Summary</h1>
+<ul>
+<li>Using MXFP 4 GEMMs, which are 2x faster than FP 8 on supported hardware. Because the training is mostly computation bound, at the forward and backward stage.</li>
+<li>The key insight is to compute unbiased gradient estimates with stochastic rounding.</li>
+<li>Directly applying SR to MXFP 4 can result in high variance from block-level outliers.</li>
+<li>Their recipe computes &gt; 1/2 the training FLOPs in MXFP4, in the computation aspect. And it enables an estimated speedup of &gt;1.3 x over FP8, &gt;1.7x over BF 16 during back propagation.</li>
+</ul>
+<h1 id="summary">Summary</h1>
+<ul>
+<li>LLM training is compute bound in matrix multiplication. LP GEMMs can accelerate training.</li>
+<li>It&rsquo;s shown in section 4 that directly using MXFP4 in even only the backward pass of decoder linear layers significantly degrades model quality.</li>
+<li>Their method hinges on computing low-variance, unbiased gradient estimates.</li>
+<li>Their method is: first use stochastic rounding to compute unbiased GEMMs. Then, they use a memory bound construction of random Hadamard transform to reduce the effect of outliers and theoretically bound the variance of SR.</li>
+<li>Gap between MXFP4 and BF16 is &lt; 0.1 validation perplexity on pre train GPT model.</li>
+</ul>
+<h2 id="ieee-754">IEEE 754</h2>
+<ul>
+<li>IEEE 754 format: $(-1)^S (1 + M) 2^{E - \text{bias}}$ .</li>
+<li>This exponent mantissa construction means FP datatypes are scale invariant with respect to quantization signal-to-noise ratio(SNR) bar over/underflow. It means SNR is not variant with the scale when using this FP format without considering over/underflow.</li>
+<li>While the exact training setup may differ, the core bottlenecks of training are the compute-bound forward and backward passes that calculate the loss and gradient, respectively.</li>
+</ul>
+<h2 id="mp">MP</h2>
+<ul>
+<li>In MP(Mixed Precision), parameters are kept in high precision and GEMM operands are converted to a LP datatype for a LP GEMM. Quantization usually has minimal overhead.</li>
+<li>However, quantization introduces distortion in the GEMM operands. And since the forward and backward passes all happen in low precision, both the loss and the model updates can deviate from their true values.</li>
+<li>There it gives an example that FP8 MP recipes typically use E4M3 in the forward pass and E5M2 in the backward pass due to the different properties of gradient, weights and activations..</li>
+</ul>
+<h2 id="stochastic-rounding">Stochastic Rounding</h2>
+<ul>
+<li>NR(nearest rounding) method rounds each high precision number to its closest representable value in the LP datatype. But NR is not unbiased, which can be detrimental to low precision training.</li>
+<li>SR(stochastic rounding) can achieve unbiased rounding, which randomly rounds a number to a representable value in the LP datatype so that the rounded number equals the original number in expectation.</li>
+<li>SR can be implemented through dithering. It adds random uniform noise to the input number and then performs NR to achieve a unbiased rounding, which randomly rounds a number to a representable value in the LP datatype.</li>
+<li>The dithering for a uniform integer and non-uniform one is different, which requires modifying the noise scale. The dithering looks like:</li>
+<li>$$\begin{align} \delta &amp;= \mathcal{U}(-0.5, -0.5) \quad (1)\ \text{SR}_\text{dither} (x) &amp;= \begin{cases}\lfloor x \rfloor \quad x + \delta &lt; \lfloor x \rfloor + \frac 1 2 \ \lceil x \rceil \quad x + \delta \geq \lfloor x \rfloor + \frac 1 2 \end{cases} \quad (2) \end{align}$$</li>
+</ul>
+<h1 id="questions">Questions</h1>
+<ul>
+<li><input disabled="" type="checkbox"> Why directly applying SR to MXFP 4 can result in high variance form block-level outliers?</li>
+<li><input disabled="" type="checkbox"> It says that MXFP4 uses an INT8 scale s for every contiguous block v of 32 FP4 numbers to represent 2^{s-1}v. where 1 is the exponent bias for FP4. I got a question for what&rsquo;s the bias here? Is this universal?</li>
+<li><input disabled="" type="checkbox"> What&rsquo;s the stochastic rounding here. And how can it used to compute the GEMMs? And how does the Hadamard transform applied? It&rsquo;s applied to what?</li>
+<li><input disabled="" type="checkbox"> What if we just use the Hadamard transform? Is there any ablation study?</li>
+<li><input disabled="" type="checkbox"> What does they do to avoid the overhead of the RHT and SR.</li>
+<li><input disabled="" type="checkbox"> IEEE 754 format: $(-1)^S (1 + M) 2^{E - \text{bias}}$ . Does fp4 obey this format?</li>
+<li><input disabled="" type="checkbox"> Here it says about the back propagate through a linear layer, we need to calculate the gradient of y with respect to x. Why? Shouldn&rsquo;t we calculate the gradient like Loss to W? And it&rsquo;s says something like: dL/dx = dL/dy W, dL/dW = dL/dY x, and dL/db = 1 dL/ dy. What&rsquo;s all this, and what&rsquo;s our purpose?</li>
+<li><input disabled="" type="checkbox"> Why the dL/dx and dL/dW is computationally intensive?</li>
+<li><input disabled="" type="checkbox"> How can this dithering achieve a random rounding with its expectation to be equal with the original one?</li>
+<li><input disabled="" type="checkbox"> It says: &ldquo;For example, near the end of the training, the model update norm is much smaller than the parameter norm and information in low precision updates can be &ldquo;lost&rdquo;. Here, stochastic rounding can be used to preserve the update in expectation&rdquo;. I don&rsquo;t really understand why keep the update in expectation can help the training near the end.</li>
+</ul>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

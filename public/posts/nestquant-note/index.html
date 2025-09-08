@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Abstract
+
+This is a PTQ scheme for weights and activations that based on self-similar nested lattices.
+It&rsquo;s said NestQuant have mathematically shown to be information theoretically optimal.
+The authors implement a practical low-complexity version of NestQuant base on Gosset Lattice.
+
+Questions
+
+ What&rsquo;s self-similar nested lattices? What&rsquo;s the purpose of this design. Why it&rsquo;s helpful for quantization.
+ It&rsquo;s said that recent works have mathematically shown such quantizers to be &ldquo;information theoretically optimal&rdquo;. Is is shown in this paper, or another paper?
+The paper called &lsquo;Gosset lattice spherical vector quantization with low complexity&rsquo; is the source to prove self-similar nested lattices to be information-theoretically optimal.
+ What&rsquo;s Gosset Lattice. Why it&rsquo;s chosen to be the practical way to implement this so-called NestQuant?
+Gosset lattice is E8 lattice.
+ What&rsquo;s the using method of storing these quantized vector of weight and activations or KV-cache? Is it still vector quantization?
+ What&rsquo;s QA-LDLQ, what&rsquo;s the change comparing with the original LDLQ?
+ The author of NestQuant believes that the normal quantization method, diving by the L-inf norm to get entires to be in [-1, 1] is suboptimal. There are two reasons, one is that uniform quantization induces error that is distributed uniformly on the small cube.
+
+The author uses L2 norm to normalize these data, so that these data point are not get into a unit sphere. $\hat{x} = x/|x|_2$ .
+
+
+ How does QA-LDLQ works, can we adopt it to a mxfp 4 version?
+
+It&rsquo;s needed to add a noise to the original activation to model the quantized activation. Here authors use gaussian distribution to model the noise.
+Let W to denote the original weight matrix, and U is the quantized weight matrix. Therefore, the original proxy loss becomes $\sigma(U) := WX - U(X &#43; Z)$, $E[|\sigma(U)|^2]$.
+
+
+
+Summary
+
+In the related work section of LLM quantization, it state that the method including QuIP# and QTIP which uses residual vector quantization and trelis codebook appear to be too expensive to apply in runtime. That perhaps explaining why non-uniform quantization for activations and KV-cache was not attempted before this work. This part is trying to explain that we cannot use this method similarly to apply on activation and KV-cache.
+It state previous work LDLQ as &ldquo;replacing the MSE distortion loss to be a weighted MSE loss dependent on the statistics of the incoming activations&rdquo;, following the authors of QuIP, QuIP# and GPTQ.
+However, when we extend this method to activation quantization, it&rsquo;s natural to understand that the statistic of activation itself will definitely change comparing with the original activations. So the authors modified the LDLQ, which is called QA-LDLQ.
+The author hold a belief that previous work employ normalization to handle Gaussian-like data. The data were divided by the L_inf norm to get entries to be in [-1, 1 ], which forms a unit cube. And the shape is not suitable for the sphere-like gaussian distribution. To solve these problem, author use normalization by the L2 norm and points inside the Voronoi region of a Gosset lattice.
+
+Todo
+
+ Learn what&rsquo;s nested lattices.
+ Read the paper called &lsquo;Gosset lattice spherical vector quantization with low complexity&rsquo;
+ Conway&amp;Sloane &ldquo;Sphere Packings, Lattices and Groups&rdquo;(Chapter 1)
+ Micciancio &amp; Goldwasser &ldquo;Complexity of Lattice Problems&rdquo;
+
+Summary">  
+
+  <title>
+    
+      Nestquant Note
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-09-08 11:49:25.642 &#43;0000 UTC">
+                            2025-09-08
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>Nestquant Note</h1>
+
+    
+
+    <h1 id="abstract">Abstract</h1>
+<ul>
+<li>This is a PTQ scheme for weights and activations that based on self-similar nested lattices.</li>
+<li>It&rsquo;s said NestQuant have mathematically shown to be information theoretically optimal.</li>
+<li>The authors implement a practical low-complexity version of NestQuant base on Gosset Lattice.</li>
+</ul>
+<h1 id="questions">Questions</h1>
+<ul>
+<li><input disabled="" type="checkbox"> What&rsquo;s self-similar nested lattices? What&rsquo;s the purpose of this design. Why it&rsquo;s helpful for quantization.</li>
+<li><input disabled="" type="checkbox"> It&rsquo;s said that recent works have mathematically shown such quantizers to be &ldquo;information theoretically optimal&rdquo;. Is is shown in this paper, or another paper?
+The paper called &lsquo;Gosset lattice spherical vector quantization with low complexity&rsquo; is the source to prove self-similar nested lattices to be information-theoretically optimal.</li>
+<li><input disabled="" type="checkbox"> What&rsquo;s Gosset Lattice. Why it&rsquo;s chosen to be the practical way to implement this so-called NestQuant?
+Gosset lattice is E8 lattice.</li>
+<li><input disabled="" type="checkbox"> What&rsquo;s the using method of storing these quantized vector of weight and activations or KV-cache? Is it still vector quantization?</li>
+<li><input disabled="" type="checkbox"> What&rsquo;s QA-LDLQ, what&rsquo;s the change comparing with the original LDLQ?</li>
+<li><input disabled="" type="checkbox"> The author of NestQuant believes that the normal quantization method, diving by the L-inf norm to get entires to be in [-1, 1] is suboptimal. There are two reasons, one is that uniform quantization induces error that is distributed uniformly on the small cube.
+<ul>
+<li>The author uses L2 norm to normalize these data, so that these data point are not get into a unit sphere. $\hat{x} = x/|x|_2$ .</li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> How does QA-LDLQ works, can we adopt it to a mxfp 4 version?
+<ul>
+<li>It&rsquo;s needed to add a noise to the original activation to model the quantized activation. Here authors use gaussian distribution to model the noise.</li>
+<li>Let W to denote the original weight matrix, and U is the quantized weight matrix. Therefore, the original proxy loss becomes $\sigma(U) := WX - U(X + Z)$, $E[|\sigma(U)|^2]$.</li>
+</ul>
+</li>
+</ul>
+<h1 id="summary">Summary</h1>
+<ul>
+<li>In the related work section of LLM quantization, it state that the method including QuIP# and QTIP which uses residual vector quantization and trelis codebook appear to be too expensive to apply in runtime. That perhaps explaining why non-uniform quantization for activations and KV-cache was not attempted before this work. This part is trying to explain that we cannot use this method similarly to apply on activation and KV-cache.</li>
+<li>It state previous work LDLQ as &ldquo;replacing the MSE distortion loss to be a weighted MSE loss dependent on the statistics of the incoming activations&rdquo;, following the authors of QuIP, QuIP# and GPTQ.</li>
+<li>However, when we extend this method to activation quantization, it&rsquo;s natural to understand that the statistic of activation itself will definitely change comparing with the original activations. So the authors modified the LDLQ, which is called QA-LDLQ.</li>
+<li>The author hold a belief that previous work employ normalization to handle Gaussian-like data. The data were divided by the L_inf norm to get entries to be in [-1, 1 ], which forms a unit cube. And the shape is not suitable for the sphere-like gaussian distribution. To solve these problem, author use normalization by the L2 norm and points inside the Voronoi region of a Gosset lattice.</li>
+</ul>
+<h1 id="todo">Todo</h1>
+<ul>
+<li><input disabled="" type="checkbox"> Learn what&rsquo;s nested lattices.</li>
+<li><input disabled="" type="checkbox"> Read the paper called &lsquo;Gosset lattice spherical vector quantization with low complexity&rsquo;</li>
+<li><input disabled="" type="checkbox"> Conway&amp;Sloane &ldquo;Sphere Packings, Lattices and Groups&rdquo;(Chapter 1)</li>
+<li><input disabled="" type="checkbox"> Micciancio &amp; Goldwasser &ldquo;Complexity of Lattice Problems&rdquo;</li>
+</ul>
+<h1 id="summary-1">Summary</h1>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

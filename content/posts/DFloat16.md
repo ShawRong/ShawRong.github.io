@@ -1,6 +1,6 @@
 ---
 title: "DFloat16"
-date: 2025-08-20T11:36:03.072Z
+date: 2025-09-08T11:50:02.058Z
 draft: false
 tags: []
 ---
