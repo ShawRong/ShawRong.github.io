@@ -6,14 +6,14 @@
     <description>Recent content in Posts on My New Hugo Site</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 25 Sep 2025 09:55:37 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 25 Sep 2025 09:58:21 +0000</lastBuildDate>
     <atom:link href="https://example.org/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>How to use docker easy connect</title>
       <link>https://example.org/posts/how-to-use-docker-easy-connect/</link>
-      <pubDate>Thu, 25 Sep 2025 09:55:37 +0000</pubDate>
+      <pubDate>Thu, 25 Sep 2025 09:58:21 +0000</pubDate>
       <guid>https://example.org/posts/how-to-use-docker-easy-connect/</guid>
-      <description>&lt;ul&gt;&#xA;&lt;li&gt;Install docker&lt;/li&gt;&#xA;&lt;li&gt;Use command&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;docker run --rm --device /dev/net/tun \&#xA;&#x9;--cap-add NET_ADMIN -ti -e PASSWORD=xxxx \&#xA;&#x9;-e DISABLE_PKG_VERSION_XML=1 -e URLWIN=1 \&#xA;&#x9;-v $HOME/.ecdata:/root -p 127.0.0.1:5901:5901 \&#xA;&#x9;-p 127.0.0.1:1081:1080 -p 127.0.0.1:8889:8888 \&#xA;&#x9;hagb/docker-easyconnect:latest&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;&#xA;&lt;li&gt;Optional: You can make it into your bashrc or zshrc. And you can use prompt &amp;ldquo;easyconnect&amp;rdquo; to launch your easyconnect docker&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;alias easyconnect=&amp;#39;docker run --rm --device /dev/net/tun --cap-add NET_ADMIN -ti -e PASSWORD=xxxx -e DISABLE_PKG_VERSION_XML=1 -e URLWIN=1 -v $HOME/.ecdata:/root -p 127.0.0.1:5901:5901 -p 127.0.0.1:1081:1080 -p 127.0.0.1:8889:8888 hagb/docker-easyconnect:latest&amp;#39;&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;&#xA;&lt;li&gt;Type &amp;ldquo;easyconnect&amp;rdquo; to launch easyconnect docker&lt;/li&gt;&#xA;&lt;li&gt;Use VNC software to connect to &amp;ldquo;127.0.0.1:5091&amp;rdquo;. If you are using mac, you can use software &amp;ldquo;ScreenSharing&amp;rdquo;. The password is &amp;ldquo;xxxx&amp;rdquo;.&lt;/li&gt;&#xA;&lt;li&gt;Use screen sharing, type &lt;a href=&#34;https://remote.hkust-gz.edu.cn&#34;&gt;https://remote.hkust-gz.edu.cn&lt;/a&gt; to enter the domain, and type your account and password.&lt;/li&gt;&#xA;&lt;li&gt;Now you need to use the socks port &amp;ldquo;127.0.0.1:1080&amp;rdquo; as your proxy.&lt;/li&gt;&#xA;&lt;/ul&gt;</description>
+      <description>&lt;ul&gt;&#xA;&lt;li&gt;Install docker&lt;/li&gt;&#xA;&lt;li&gt;Use command&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;docker run --rm --device /dev/net/tun \&#xA;&#x9;--cap-add NET_ADMIN -ti -e PASSWORD=xxxx \&#xA;&#x9;-e DISABLE_PKG_VERSION_XML=1 -e URLWIN=1 \&#xA;&#x9;-v $HOME/.ecdata:/root -p 127.0.0.1:5901:5901 \&#xA;&#x9;-p 127.0.0.1:1080:1080 -p 127.0.0.1:8888:8888 \&#xA;&#x9;hagb/docker-easyconnect:latest&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;It maps the 127.0.0.1:1080 as socks proxy, and 127.0.0.1:8888 as http proxy. Mostly, you should use 127.0.0.1:1080 as your proxy.&#xA;If 1080 or 8888 is occupied by some other application, you can change to another port like 1081 or 8889.&lt;/p&gt;</description>
     </item>
     <item>
       <title>vimbook</title>
