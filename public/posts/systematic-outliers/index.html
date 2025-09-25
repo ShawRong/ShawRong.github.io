@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Systematic Outliers are Simultaneous and Interconnected
+
+The three types of outliers are not isolated but occur simultaneously.
+(Weight)Weight outliers align perfectly with activation outliers in the feature dimensions
+(Activation and Attention)95% of the positions in the input sequence that have activation outliers also coincide with positions where attention outliers appear. (activation and attention)
+The outliers of activation and attention concentrated in start tokens like &lt;\s&gt; and [CLS] and Weak Semantic tokens.
+Corelation between different types of outliers: 1. weight outliers has 100% consistency with the activation outliers 2. Attentions outliers has 95% consistency with the activation outliers. 3. weight outliers appear at the same feature dimmension with the activation outliers.
+They got an important observation that: In the process, weight outliers lead to activation outliers, which then influence attention outliers, with this influence extending to non-outlier tokens.
+Just like the Figure 7 shows, we can see a normal activation comes in and amplified by gate and up_proj, and further amplyfied by the down_proj. So they says weight outliers lead to activation outliers.
+The activation outliers can influence the generated Q and K. But the value vectors corresponding to these tokens show comparatively smaller magnitudes.
+Some tokens become outliers in activation space. These outlier tokens, via their queries and keys, align in such a way that other tokens strongly “pay attention” to them (i.e., their dot-product attention scores become large). But those tokens’ values (the information they carry) are not proportionally large. So, the model might be using these tokens not to contribute large content but as anchors — reference tokens that “pull” or arrange the attention structure, indirectly shaping how other tokens’ information gets aggregated.
+Outliers gradually vanish in the final layers by values of opposite signs. You can check the Figure 9 for more infomation. You can see that the activation after down_proj adding with input activation cancel out each other and produce a reasonable fair activation.
+Summary: In the lifecycle of systematic outliers, weight outliers drive the emergence of activation outliers, which propagate anomalies into the attention mechanism. This interdependence extends their influence to non-outlier tokens.
+
+Questions
+
+ It said that &ldquo;The systematic outliers exhibit strong correlations across feature and squenece dimensions as well as layers.&rdquo; what&rsquo;s the sequence dimension here?
+It means this sytematic outlier appear at token level in different features but also shows in different token level and layer level. Outliers are rare, but when they occur, they are highly structured. The same feature dimensions light up across token and layers, rather than being random one-offs. That&rsquo;s why they&rsquo;re called systematic outliers.
+ It&rsquo;s said there are three types of outliers, what&rsquo;s them?
+ What&rsquo;s the meaning of  consistency in table 1?
+ Are they analysing training or inference?
+
+Future Analysis of Systematic Outlers
+Questions
+
+ It says that &ldquo;ensuring minimal updates for those tokens&rdquo;, I am not that clear about this so called update things.
+ 
+">  
+
+  <title>
+    
+      Systematic Outliers
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-09-25 09:49:09.037 &#43;0000 UTC">
+                            2025-09-25
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>Systematic Outliers</h1>
+
+    
+
+    <h1 id="systematic-outliers-are-simultaneous-and-interconnected">Systematic Outliers are Simultaneous and Interconnected</h1>
+<ul>
+<li>The three types of outliers are not isolated but occur simultaneously.</li>
+<li>(<strong>Weight</strong>)Weight outliers align perfectly with activation outliers in the <strong>feature dimensions</strong></li>
+<li>(<strong>Activation and Attention</strong>)95% of the positions in the input sequence that have activation outliers also coincide with positions where attention outliers appear. (activation and attention)</li>
+<li>The outliers of activation and attention concentrated in start tokens like &lt;\s&gt; and [CLS] and Weak Semantic tokens.</li>
+<li>Corelation between different types of outliers: 1. weight outliers has 100% consistency with the activation outliers 2. Attentions outliers has 95% consistency with the activation outliers. 3. weight outliers appear at the same feature dimmension with the activation outliers.</li>
+<li>They got an important observation that: In the process, weight outliers lead to activation outliers, which then influence attention outliers, with this influence extending to non-outlier tokens.</li>
+<li>Just like the Figure 7 shows, we can see a normal activation comes in and amplified by gate and up_proj, and further amplyfied by the down_proj. So they says weight outliers lead to activation outliers.</li>
+<li>The activation outliers can influence the generated Q and K. But the value vectors corresponding to these tokens show comparatively smaller magnitudes.</li>
+<li>Some tokens become <strong>outliers</strong> in activation space. These outlier tokens, via their queries and keys, align in such a way that other tokens strongly “pay attention” to them (i.e., their dot-product attention scores become large). But those tokens’ <strong>values</strong> (the information they carry) are <em>not</em> proportionally large. So, the model might be using these tokens not to contribute large content but as <strong>anchors</strong> — reference tokens that “pull” or arrange the attention structure, indirectly shaping how other tokens’ information gets aggregated.</li>
+<li>Outliers gradually vanish in the final layers by values of opposite signs. You can check the Figure 9 for more infomation. You can see that the activation after down_proj adding with input activation cancel out each other and produce a reasonable fair activation.</li>
+<li><strong>Summary</strong>: In the lifecycle of systematic outliers, weight outliers drive the emergence of activation outliers, which propagate anomalies into the attention mechanism. This interdependence extends their influence to non-outlier tokens.</li>
+</ul>
+<h2 id="questions">Questions</h2>
+<ul>
+<li><input disabled="" type="checkbox"> It said that &ldquo;The systematic outliers exhibit strong correlations across feature and squenece dimensions as well as layers.&rdquo; what&rsquo;s the sequence dimension here?
+It means this sytematic outlier appear at token level in different features but also shows in different token level and layer level. Outliers are rare, but when they occur, they are highly structured. The same feature dimensions light up across token and layers, rather than being random one-offs. That&rsquo;s why they&rsquo;re called systematic outliers.</li>
+<li><input disabled="" type="checkbox"> It&rsquo;s said there are three types of outliers, what&rsquo;s them?</li>
+<li><input disabled="" type="checkbox"> What&rsquo;s the meaning of  consistency in table 1?</li>
+<li><input disabled="" type="checkbox"> Are they analysing training or inference?</li>
+</ul>
+<h1 id="future-analysis-of-systematic-outlers">Future Analysis of Systematic Outlers</h1>
+<h2 id="questions-1">Questions</h2>
+<ul>
+<li><input disabled="" type="checkbox"> It says that &ldquo;ensuring minimal updates for those tokens&rdquo;, I am not that clear about this so called update things.</li>
+<li><input disabled="" type="checkbox"> </li>
+</ul>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

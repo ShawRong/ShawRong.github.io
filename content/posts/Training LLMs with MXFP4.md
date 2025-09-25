@@ -1,6 +1,6 @@
 ---
 title: "Training LLMs with MXFP4"
-date: 2025-09-08T11:48:28.689Z
+date: 2025-09-25T09:49:30.022Z
 draft: false
 tags: []
 ---
@@ -39,8 +39,73 @@ Stochastic Rounding
 - The dithering for a uniform integer and non-uniform one is different, which requires modifying the noise scale. The dithering looks like: 
 - $$\begin{align} \delta &= \mathcal{U}(-0.5, -0.5) \quad (1)\\ \text{SR}_\text{dither} (x) &= \begin{cases}\lfloor x \rfloor \quad x + \delta < \lfloor x \rfloor + \frac 1 2 \\ \lceil x \rceil \quad x + \delta \geq \lfloor x \rfloor + \frac 1 2 \end{cases} \quad (2) \end{align}$$
 
+MXFP4 Quantization Process
+--------
+
+MXFP4 is a block-based floating-point format, the block size usually to be 32. 32 elements shared a same exponent number with format E8, which represents the all 8 bits are for exponent. Each mxfp4 is consist of 1 signal bit and 3 mantissa bits.
+
+**Format Structure (Per Block)**:
+- **Grouping:** Data is processed in blocks of 32 values.
+- **Shared Exponent:** One 8-bit exponent is shared across the entire block.
+- **Data Values:** Each value is a 4-bit signed integer (1 sign bit + 3 magnitude bits), representing numbers from **-6 to +6**.
+- **Total Storage:** 136 bits per block (8 bits for the exponent + 32 * 4 bits for the values).
+
+**Quantization Algorithm:**
+- **Find Block Maximum:** For a block of 32 numbers, find the one with the largest absolute value (`max_abs_val`). This value sets the scale for the entire block. Our goal is to map the original numbers to be in the range of \[-6, 6\].
+- **Calculate Shared Exponent:** We know if we want to achieve this range. We get a inequality: (max_abs_val / scale) <= emax. Here, it should be like: max_bas_val / (2^shared_exp) <= 6. To get the shared_exp, we can use this fomula: shared_exp = ceil(log2(max_abs_val / 6))
+- **Scale & Quantize:** Create a scaling factor from the exponent (`Scale = 2^shared_exp`). Divide every number in the block by this `Scale` and round it to the nearest integer.
+- **Store:** The final stored data consists of the single 8-bit `shared_exp` and the 32 new 4-bit integer values.
+
+The original mxfp 4 quantization algorithm:
+
+```python
+"""
+Convert vector of scalar float in high precision to an mx block {e8, 32 fp4}.
+"""
+
+# exponent of the largest normal in lower precision type
+# here it should be 2.
+emax = 2
+max_abs_per_block = torch.max(torch.abs(weight_blocks), dim=1)[0]
+shared_exp = floor(torch.log2(max_abs_per_block)) - emax.unsqueeze(1)
+
+normalized = weigth_blocks / (2^shared_exp).unsqueeze(1)
+# Quantize to FP4 indices, according to its closest value indices
+quantized_indices = self._quantize_to_fp4_indices(normalized)
+
+# Pack indices to bytes
+packed_blocks = self._pack_indices_to_bytes(quantized_indices)
+
+return packed_blocks, scales
+```
+
+The optimized version of mxfp4 quantization:
 
 
+```python
+"""
+Optimized Version
+Convert vector of scalar float in high precision to an mx block {e8, 32 fp4}.
+"""
+
+# exponent of the largest normal in lower precision type
+# here it should be 2.
+emax = 2
+max_abs_per_block = torch.max(torch.abs(weight_blocks), dim=1)[0]
+shared_exp = floor(torch.log2(max_abs_per_block)) - emax.unsqueeze(1)
+
+# Do a uniform scaling to the weight blocks 
+# make it scale to 3/4 original.
+weight_blocks = weight_blocks * 3.0 / 4.0
+normalized = weigth_blocks / (2^shared_exp).unsqueeze(1)
+# Quantize to FP4 indices, but we use stochastic rounding to FP4.
+quantized_indices = self._quantize_to_fp4_indices_stochastic(normalized)
+
+# Pack indices to bytes
+packed_blocks = self._pack_indices_to_bytes(quantized_indices)
+
+return packed_blocks, scales
+```
 Questions
 ========
 - [ ] Why directly applying SR to MXFP 4 can result in high variance form block-level outliers?

@@ -1,6 +1,6 @@
 ---
 title: "vimbook"
-date: 2025-08-21T09:46:37.640Z
+date: 2025-09-25T09:49:40.239Z
 draft: false
 tags: []
 ---
@@ -99,26 +99,26 @@ Your leader key is set to space. When you press space, wait a moment to see avai
 | `<leader>,` | Normal | Switch buffer | Quick buffer switcher |
 
 ### Window & Buffer Management
-| Key | Mode | Action | Description |
-|-----|------|--------|-------------|
-| `<C-h/j/k/l>` | Normal | Navigate windows | Move between splits |
-| `<S-h>` / `<S-l>` | Normal | Buffer navigation | Previous/Next buffer |
-| `<leader>bd` | Normal | Delete buffer | Close current buffer |
-| `<leader>bo` | Normal | Delete others | Close all other buffers |
-| `<leader>-` | Normal | Split below | Horizontal split |
-| `<leader>\|` | Normal | Split right | Vertical split |
+| Key               | Mode   | Action            | Description             |
+| ----------------- | ------ | ----------------- | ----------------------- |
+| `<C-h/j/k/l>`     | Normal | Navigate windows  | Move between splits     |
+| `<S-h>` / `<S-l>` | Normal | Buffer navigation | Previous/Next buffer    |
+| `<leader>bd`      | Normal | Delete buffer     | Close current buffer    |
+| `<leader>bo`      | Normal | Delete others     | Close all other buffers |
+| `<leader>-`       | Normal | Split below       | Horizontal split        |
+| `<leader>\|`      | Normal | Split right       | Vertical split          |
 
 ### Code Navigation & Intelligence
-| Key | Mode | Action | Description |
-|-----|------|--------|-------------|
-| `gd` | Normal | Go to definition | Jump to function/variable definition |
-| `gr` | Normal | References | Show all references |
-| `gD` | Normal | Go to declaration | Jump to declaration |
-| `gI` | Normal | Go to implementation | Jump to implementation |
-| `K` | Normal | Hover info | Show documentation |
-| `<leader>ca` | Normal | Code actions | Available code fixes |
-| `<leader>cr` | Normal | Rename symbol | Rename variable/function |
-| `<leader>cf` | Normal | Format code | Format current buffer |
+| Key          | Mode   | Action               | Description                          |
+| ------------ | ------ | -------------------- | ------------------------------------ |
+| `gd`         | Normal | Go to definition     | Jump to function/variable definition |
+| `gr`         | Normal | References           | Show all references                  |
+| `gD`         | Normal | Go to declaration    | Jump to declaration                  |
+| `gI`         | Normal | Go to implementation | Jump to implementation               |
+| `K`          | Normal | Hover info           | Show documentation                   |
+| `<leader>ca` | Normal | Code actions         | Available code fixes                 |
+| `<leader>cr` | Normal | Rename symbol        | Rename variable/function             |
+| `<leader>cf` | Normal | Format code          | Format current buffer                |
 
 ### Search & Replace
 | Key | Mode | Action | Description |

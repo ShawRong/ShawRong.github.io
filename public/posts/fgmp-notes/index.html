@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Abstract
+
+FGMP is meaning &ldquo;fine-grained mixed precision&rdquo; quantization.
+This is a method that quantize weights and activations. The activations are quantized on the fly.
+Their co-design hardware help to achieve greater energy efficiency.
+First, They develop a policy using perturbation weighted by the Fisher information to select which weight and activation blocks to keep in higher precision.
+Their method is use some metric to select blocks, to keep them in higher precision.
+Second, they proposed a new clipping method to help low-precision blocks can be in good accuracy, too.
+They propose hardware augmentations, which encompasses 1) data path support at block granularity, 2) mixed-precision activation quantization unit.
+Result: &lt;1% perplexity degradation on Wikitext103 for llama 2 7b. 14 less energy, and 30% less weight memory, compared with fp8 baseline.
+
+Summary
+Related Work:
+Hardware support for mixed precision quantization">  
+
+  <title>
+    
+      FGMP notes
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-09-25 09:49:26.189 &#43;0000 UTC">
+                            2025-09-25
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>FGMP notes</h1>
+
+    
+
+    <h1 id="abstract">Abstract</h1>
+<ul>
+<li>FGMP is meaning &ldquo;fine-grained mixed precision&rdquo; quantization.</li>
+<li>This is a method that quantize weights and activations. The activations are quantized on the fly.</li>
+<li>Their co-design hardware help to achieve greater energy efficiency.</li>
+<li>First, They develop a policy using perturbation weighted by the Fisher information to select which weight and activation blocks to keep in higher precision.</li>
+<li>Their method is use some metric to select blocks, to keep them in higher precision.</li>
+<li>Second, they proposed a new clipping method to help low-precision blocks can be in good accuracy, too.</li>
+<li>They propose hardware augmentations, which encompasses 1) data path support at block granularity, 2) mixed-precision activation quantization unit.</li>
+<li>Result: &lt;1% perplexity degradation on Wikitext103 for llama 2 7b. 14 less energy, and 30% less weight memory, compared with fp8 baseline.</li>
+</ul>
+<h1 id="summary">Summary</h1>
+<h2 id="related-work">Related Work:</h2>
+<p><strong>Hardware support for mixed precision quantization</strong></p>
+<ul>
+<li>GOBO is something store outlier in 32bit precision, and do quantization to other ones</li>
+<li>OLVE is using some encoding method, to store outlier values in high precision by sacrificing the neighboring dense values.</li>
+<li>MicroScopiQ retains outlier values by pruning out a portion of non-outlier values.</li>
+<li>SPARK uses encoding scheme to represent different magnitude values to different precision by using a mete data for each element.</li>
+<li>FGMP uses block level granularity instead of element level comparing with SPARK to save space</li>
+<li>FGMP is using efficient <strong>vector</strong> multiply accumulate. I think we can&rsquo;t use tensor core in this senario.</li>
+</ul>
+<h2 id="question">Question</h2>
+<ul>
+<li><input disabled="" type="checkbox"> In the description of their policy, they said that &ldquo;it&rsquo;s a perturbation in each value and weighted by the Fisher Information.&rdquo; I can&rsquo;t fully understand its meaning. We need further reading.</li>
+<li><input disabled="" type="checkbox"> What&rsquo;s the hardware &ldquo;augmentation&rdquo;? Do they really devised their new hardware? Or it&rsquo;s just some simulation.</li>
+<li><input disabled="" type="checkbox"> What&rsquo;s the quantization method for the weight. What&rsquo;s the on-the-fly quantization method for activation?</li>
+<li><input disabled="" type="checkbox"> </li>
+</ul>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

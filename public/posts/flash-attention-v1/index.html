@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Abstract Summary
+
+Time and memory complexity of Self-Attention is quadratic in sequence length.
+Attention Algorithm is IO-aware, a arguement made by the authors
+They are using tiling to reduce the number of memory read/write. Therefore, less HBM access is required.
+Additionally, they extend FlashAttention to block-sparse attention
+3x speedup on GPT2&hellip;
+
+Question
+
+ What&rsquo;s better-than-chance
+ what&rsquo;s block-sparse atttention
+ make self-attetention definition more clear.
+ what&rsquo;s the clear definition of wall-clock?
+ what&rsquo;s IO-aware meaning, need to make it clear.
+ 
+
+Summary
+Introduction
+
+We know tiling can help us to calculate a tile of the result without loading entire matrix. And we can use this calculated tile of result to multiply and make an furture result. this is what FlashAttention doing. Each little tile of the product of K and V is furture multiply with the Q, to produce the new tile of the final result sm(QK)V. Obviously, there we have a sm() function to solve, to furture use this tile.(Tiling, and new problem how to solve sm() in a tile)
+I think the way the draw the graph of FlashAttention calculation is great, especially the arrow to point out which is outer loop and which is inner loop.
+Apparently, they did kernel fusion.
+
+Related Work
+
+I think there is a very intereting and important thing is about the dimesion of the these matrices, Q, K, and V should be in dimmension of Nxd. Therefore we can produce a Nxb matrix as result. In the computation midterm, Q and K produce a matrix in dimension of dxd.
+I think there is a pretty good image to describe this Algorithm 0, which is original Attention Implemention. You can check Bili videos.
+
+Method
+
+
+They are using two technology: *Tiling &amp; Recomputation">  
+
+  <title>
+    
+      Flash Attention V1
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-09-25 09:49:07.358 &#43;0000 UTC">
+                            2025-09-25
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>Flash Attention V1</h1>
+
+    
+
+    <h1 id="abstract-summary">Abstract Summary</h1>
+<ul>
+<li>Time and memory complexity of Self-Attention is quadratic in sequence length.</li>
+<li>Attention Algorithm is IO-aware, a arguement made by the authors</li>
+<li>They are using tiling to reduce the number of memory read/write. Therefore, less HBM access is required.</li>
+<li>Additionally, they extend FlashAttention to block-sparse attention</li>
+<li>3x speedup on GPT2&hellip;</li>
+</ul>
+<h1 id="question">Question</h1>
+<ul>
+<li><input disabled="" type="checkbox"> What&rsquo;s better-than-chance</li>
+<li><input disabled="" type="checkbox"> what&rsquo;s block-sparse atttention</li>
+<li><input disabled="" type="checkbox"> make self-attetention definition more clear.</li>
+<li><input disabled="" type="checkbox"> what&rsquo;s the clear definition of wall-clock?</li>
+<li><input disabled="" type="checkbox"> what&rsquo;s IO-aware meaning, need to make it clear.</li>
+<li><input disabled="" type="checkbox"> </li>
+</ul>
+<h1 id="summary">Summary</h1>
+<h2 id="introduction">Introduction</h2>
+<ul>
+<li>We know tiling can help us to calculate a tile of the result without loading entire matrix. And we can use this calculated tile of result to multiply and make an furture result. this is what FlashAttention doing. Each little tile of the product of K and V is furture multiply with the Q, to produce the new tile of the final result sm(QK)V. Obviously, there we have a sm() function to solve, to furture use this tile.(Tiling, and new problem how to solve sm() in a tile)</li>
+<li>I think the way the draw the graph of FlashAttention calculation is great, especially the arrow to point out which is outer loop and which is inner loop.</li>
+<li>Apparently, they did kernel fusion.</li>
+</ul>
+<h2 id="related-work">Related Work</h2>
+<ul>
+<li>I think there is a very intereting and important thing is about the dimesion of the these matrices, Q, K, and V should be in dimmension of Nxd. Therefore we can produce a Nxb matrix as result. In the computation midterm, Q and K produce a matrix in dimension of dxd.</li>
+<li>I think there is a pretty good image to describe this Algorithm 0, which is original Attention Implemention. You can check Bili videos.</li>
+</ul>
+<h2 id="method">Method</h2>
+<ul>
+<li>
+<p>They are using two technology: *<em>Tiling</em> &amp; <strong>Recomputation</strong></p>
+</li>
+<li>
+<p>Their primitive target is to reduce the amount of HBM accesses.</p>
+</li>
+<li>
+<p>This is the way the authors describe their softmax:&ldquo;By scaling the output of each block by the right <strong>normalization</strong> factor before adding them up, we get the correct result at the end.&rdquo;</p>
+</li>
+<li>
+<p>We know the original softmax can be calculated with decomposition like following formula.
+$$
+\begin{align*}
+m(x) &amp;:= \text{max}_i (x_i) \
+f(x) &amp;:= [e^{x_1 - m(x)}, \cdots,e^{x_B - m(x)}], \quad \text{B stand for the len of vector} \
+\mathcal{l}(x)&amp;:= \sum_i f(x)_i\
+\text{softmax}(x)&amp;:=\frac{f(x)}{\mathcal{l}(x)}
+\end{align*}
+$$
+And we can reformulate this by:
+$$
+\begin{align*}
+m(x) &amp;= m [x^{(1)}, x^{(2)}] \
+f(x) &amp;= \left[e^{m(x^{(1)}) - m(x)} f(x^{(1)}), e^{m(x^{(2)}) - m(x)} f(x^{(1)})\right] \
+\end{align*}
+$$
+Here,
+$$
+\begin{align*}
+e^{m(x^{(1)}) - m(x)} f(x^{(1)}) &amp;= e^{m(x^{(1)}) - m(x)} [e^{x_1 - m{(x^{(1)})}}, \cdots,e^{x_B - m{(x^{(1)})}}]  \
+&amp;= [e^{x_1 - m{(x)}}, \cdots,e^{x_B - m{(x)}}]  \
+\end{align*}
+$$
+And
+$$
+\begin{align*}
+\mathcal{l}(x) = \mathcal{l} ()&hellip;
+\end{align*}
+$$
+You can check the original paper for the formula, I don&rsquo;t want to type anymore, this keyboard is hard to use.</p>
+</li>
+<li>
+<p>We can see from this new formula that we can first calculate the first f1 and f2. and the l1 and l2. After that we can calculate the final mx, and use this final mx to compute the final softmax.</p>
+</li>
+</ul>
+<h2 id="question-1">Question</h2>
+<ul>
+<li><input disabled="" type="checkbox"> But there is a serious problem is that if we want to calculate the tile, we have to load a whole row and col. So we need to see if they really load a whole row or col.</li>
+<li><input disabled="" type="checkbox"> Why we need a m(x) in each decomposed softmax compuation? Can we use a random number? We should dive into details to know more.</li>
+</ul>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

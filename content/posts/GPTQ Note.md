@@ -1,6 +1,6 @@
 ---
 title: "GPTQ Note"
-date: 2025-09-08T11:49:15.836Z
+date: 2025-09-25T09:49:32.874Z
 draft: false
 tags: []
 ---

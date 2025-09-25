@@ -28,8 +28,8 @@ There are a crucial problem when we are facing multi-core system. It&rsquo;s har
                     <a href="/">..</a>
 
                     <p>
-                        <time datetime="2025-09-08 11:49:19.151 &#43;0000 UTC">
-                            2025-09-08
+                        <time datetime="2025-09-25 09:49:22.716 &#43;0000 UTC">
+                            2025-09-25
                         </time>
                     </p>
                 </div>
@@ -137,7 +137,316 @@ Therefore, cooperative groups are here to provide these kinds of granularity for
 </span></span><span style="display:flex;"><span>	phase2_computation();
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>Before cooperative groups, you could only synchronize threads within a single block using __synchtreads. But now we can synchronize across the entire grid.</p>
-
+<h2 id="thread-block-clusters">Thread Block Clusters</h2>
+<p>After the NVIDIA Compute Capacity 9.0, the CUDA programming model introduces an optional level of hierarchy called <strong>Thread Block Clusters</strong> that between Thread Blocks and Grid.</p>
+<p>Thread blocks in a cluster are guaranteed to be co-scheduled on a GPU Processing Cluster in the GPU. The number of thread blocks in a cluster can be user-definend, and the maximum of 8 thread blocks in a cluster is supported as a portable cluster size in CUDA. And some GPU hardware or MIG configuration which are too small to support 8 multiprocessors. So there won&rsquo;t be 8 multiprocessor.</p>
+<p>This number can be queried using the cudaOccupancyMaxPotentialClusterSize API.</p>
+<p>From the hardware perspective, there are some features to support the Thread Block Cluters.</p>
+<ul>
+<li>Streaming Multiprocessor Coordination</li>
+<li>Shared Memory Architecture. The hardware provides a new distributed shared memory model where thread blocks within a cluster can access each other&rsquo;s shared memory spaces, creating a larger, virtually unified shared memory pool</li>
+<li>Hardware Synchronization. New synchronization primitives are implemented in hardware, including <strong>cluster-wide barriers</strong> that synchronize <strong>all threads across multiple SMs</strong> within the cluster.</li>
+</ul>
+<p>We can enable a thread block cluster in a kernel definition or evoke a kernel using <strong>compile-time kernel attribute</strong> using __cluster_dims__(X, Y, Z) or using the CUDA kernel launch API <strong>cudaLaunchKernelEx</strong>.</p>
+<p><strong>kernel attribute</strong>
+The cluster size using kernel attribute is fixed at compile time and then the kernel can be launched using the classical &laquo;&lt;, &raquo;&gt;. And in this way, the cluster size cannot be modified when launching the kernel</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">// Kernel Definition
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// cluster size in 2, 1, 1
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">__cluster_dims__</span>(<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>) cluster_kernel (<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output) {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#f92672">*</span>output;
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">//kernel invocation	
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	dim3 threadsPerBlock(<span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">16</span>);
+</span></span><span style="display:flex;"><span>	dim3 numBlock(N <span style="color:#f92672">/</span> threadsPerBlock.x, N <span style="color:#f92672">/</span> threadsPerBlock.y);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">//
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	cluster_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>numBlocks, threadsPerBlock<span style="color:#f92672">&gt;&gt;&gt;</span>(input, output);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Here we can see the grid size is still counted according to block. But we should be aware of the grid size should be multiple of the cluster size. The grid size must be divisible by the cluster size.</p>
+<p>If we get a cluster to be in size of 3. The grid size would be invalid if it&rsquo;s 1, 2, 4, 5, &hellip;, etc. Anything not divisible by 3.</p>
+<p>The thing is, even though blocks are grouped into cluster of 3, we still need to specify the total number of blocks when launching the kernel</p>
+<p><strong>launch API</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">// Kernel definition
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// no compile time attribute there
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">cluster_kernel</span>(<span style="color:#66d9ef">float</span> <span style="color:#f92672">*</span>input, <span style="color:#66d9ef">float</span> <span style="color:#f92672">*</span>output) {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">float</span> <span style="color:#f92672">*</span>input, <span style="color:#f92672">*</span>output;
+</span></span><span style="display:flex;"><span>	dim3 threadsPerBlock(<span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">16</span>);
+</span></span><span style="display:flex;"><span>	dim3 numBlocks(N <span style="color:#f92672">/</span> threadsPerBlock.x, N <span style="color:#f92672">/</span> threadsPerBlock.y);
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Kernel invocation with runtime cluster size
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	{
+</span></span><span style="display:flex;"><span>		cudaLaunchConfig_t config <span style="color:#f92672">=</span> {<span style="color:#ae81ff">0</span>}<span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>		config.gridDim <span style="color:#f92672">=</span> numBlocks;
+</span></span><span style="display:flex;"><span>		config.blockDim <span style="color:#f92672">=</span> threadsPerBlock;
+</span></span><span style="display:flex;"><span>		
+</span></span><span style="display:flex;"><span>		cudaLaunchAttribute attribute[<span style="color:#ae81ff">1</span>];
+</span></span><span style="display:flex;"><span>		attribute[<span style="color:#ae81ff">0</span>].id <span style="color:#f92672">=</span> cudaLaunchAttributeClusterDimension;
+</span></span><span style="display:flex;"><span>		attribute[<span style="color:#ae81ff">0</span>].val.clusterDim.x <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>;
+</span></span><span style="display:flex;"><span>		attribute[<span style="color:#ae81ff">0</span>].val.clusterDim.y <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>		attribute[<span style="color:#ae81ff">0</span>].val.clusterDim.z <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>		config.attrs <span style="color:#f92672">=</span> attribute;
+</span></span><span style="display:flex;"><span>		config.numAttrs <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>		
+</span></span><span style="display:flex;"><span>		cudaLaunchKernelEx(<span style="color:#f92672">&amp;</span>config, cluster_kernel, input, output);
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>The thread blocks in the cluster are guaranteed to be co-scheduled on a single GPC and is allowed to perform hardware-supported synchronization using API of cluster group, like cluster.sync(). We get api like num_threads() and num_blocks.</p>
+<p>Thread blocks in a cluster have access to the distributed shared memory. They can read, write and perform atomic to any address in the distributed shared memory.</p>
+<p>We can use another kernel attribute __block_size__, which allow us to launch a grid explicitly configured with the number of thread block clusters</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>__cluster__dims__((<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">2</span>)) __global__ <span style="color:#66d9ef">void</span> foo();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>foo<span style="color:#f92672">&lt;&lt;&lt;</span>dim3(<span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">16</span>), dim3(<span style="color:#ae81ff">1024</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>)<span style="color:#f92672">&gt;&gt;&gt;</span>();
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">// first one is the block dimention
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// seond is the cluster size
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>__block_size__((<span style="color:#ae81ff">1024</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>), (<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">2</span>)) __global__ <span style="color:#66d9ef">void</span> foo();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 8x8x8 clusters, grid of cluster
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>foo<span style="color:#f92672">&lt;&lt;&lt;</span>dim3(<span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">8</span>)<span style="color:#f92672">&gt;&gt;&gt;</span>();
+</span></span></code></pre></div><p>Traditional CUDA(without cluster):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">kernel</span>();
+</span></span><span style="display:flex;"><span>kernel<span style="color:#f92672">&lt;&lt;&lt;</span>num_blocks, threads_per_block<span style="color:#f92672">&gt;&gt;&gt;</span>();
+</span></span></code></pre></div><p>With clusters:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>__block_size__((threads_per_block), (cluster_dims)) __global__ <span style="color:#66d9ef">void</span> kernel();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>kernel<span style="color:#f92672">&lt;&lt;&lt;</span>num_clusters<span style="color:#f92672">&gt;&gt;&gt;</span>(); <span style="color:#75715e">//launch clusters, not blocks.
+</span></span></span></code></pre></div><h2 id="memory-hierarchy">Memory Hierarchy</h2>
+<p>For a single thread, it gets <strong>per thread registers</strong> and <strong>local memory</strong>.</p>
+<p>And for Thread block, we get <strong>per block shared memory</strong> that threads in the block can share.</p>
+<p>And for Thread Block Cluster, we get shared memory of all thread blocks in a cluster from <strong>Distributed Shared Memory</strong>.</p>
+<p>For Grid with Clusters, we get <strong>Global Memory</strong>, which is shared between all GPU kernels.
+![[attachments/Pasted image 20250917100020.png]]</p>
+<p>For special additional <strong>read-only</strong> memory spaces that is accessible by <strong>all threads</strong>: the <strong>constant and texture</strong> memory space.</p>
+<table>
+  <thead>
+      <tr>
+          <th>Memory Type</th>
+          <th>Latency (Cycles)</th>
+          <th>Bandwidth</th>
+          <th>Size</th>
+          <th>Access Pattern</th>
+          <th>Best Use Case</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>Registers</strong></td>
+          <td>1</td>
+          <td>~8 TB/s</td>
+          <td>32-64KB per SM</td>
+          <td>Private per thread</td>
+          <td>Thread-local variables</td>
+      </tr>
+      <tr>
+          <td><strong>Shared Memory</strong></td>
+          <td>1-2</td>
+          <td>~1.5-2 TB/s</td>
+          <td>48-164KB per SM</td>
+          <td>Block-local threads</td>
+          <td>Inter-thread communication</td>
+      </tr>
+      <tr>
+          <td><strong>Constant Memory</strong></td>
+          <td>1-2 (cached)<!-- raw HTML omitted -->400-600 (miss)</td>
+          <td>~1-1.5 TB/s</td>
+          <td>64KB total</td>
+          <td>Read-only, uniform</td>
+          <td>Small lookup tables, coefficients</td>
+      </tr>
+      <tr>
+          <td><strong>Texture Memory</strong></td>
+          <td>400-600</td>
+          <td>~800 GB/s - 1.2 TB/s</td>
+          <td>Limited by global</td>
+          <td>Read-only, spatial</td>
+          <td>Image processing, 2D/3D data</td>
+      </tr>
+      <tr>
+          <td><strong>L1 Cache</strong></td>
+          <td>400-600</td>
+          <td>~1-1.5 TB/s</td>
+          <td>128-192KB per SM</td>
+          <td>Automatic caching</td>
+          <td>Global memory acceleration</td>
+      </tr>
+      <tr>
+          <td><strong>L2 Cache</strong></td>
+          <td>600-800</td>
+          <td>~500-800 GB/s</td>
+          <td>6-40MB</td>
+          <td>Shared across SMs</td>
+          <td>Cross-SM data sharing</td>
+      </tr>
+      <tr>
+          <td><strong>Global Memory</strong></td>
+          <td>400-800</td>
+          <td>~500-900 GB/s</td>
+          <td>GB to 80GB+</td>
+          <td>All threads</td>
+          <td>Large datasets, main storage</td>
+      </tr>
+  </tbody>
+</table>
+<hr>
+<p><strong>Shared Memory</strong> VS <strong>L1 cache</strong></p>
+<p>Shared memory and L1 cache often share the <strong>same physical SRAM</strong> banks on modern GPUs. But they have very different <strong>access patterns</strong> and behaviors, which lead to latency difference. But we can see the bandwidth is the same.</p>
+<table>
+  <thead>
+      <tr>
+          <th>Aspect</th>
+          <th>Shared Memory</th>
+          <th>L1 Cache</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>Access Path</strong></td>
+          <td>Direct SRAM access</td>
+          <td>Cache lookup + tag checking</td>
+      </tr>
+      <tr>
+          <td><strong>Address Translation</strong></td>
+          <td>Simple block-relative addressing</td>
+          <td>Full virtual-to-physical translation</td>
+      </tr>
+      <tr>
+          <td><strong>Hardware Overhead</strong></td>
+          <td>Minimal</td>
+          <td>Cache control logic overhead</td>
+      </tr>
+      <tr>
+          <td><strong>Hit/Miss Logic</strong></td>
+          <td>No cache misses (always &ldquo;hits&rdquo;)</td>
+          <td>Cache hit/miss determination</td>
+      </tr>
+      <tr>
+          <td><strong>Memory Controller</strong></td>
+          <td>Bypassed</td>
+          <td>Must go through memory controller</td>
+      </tr>
+      <tr>
+          <td><strong>The Latency Breakdown</strong>.</td>
+          <td></td>
+          <td></td>
+      </tr>
+  </tbody>
+</table>
+<p><em>Shared Memory (1-2 cycles):</em></p>
+<ul>
+<li>Thread requests address</li>
+<li>Direct SRAM bank access</li>
+<li>Data returned
+<em>L1 Cache (400-600 cycles):</em></li>
+<li>Thread requests global memory address</li>
+<li>Address translation and tag lookup</li>
+<li>Cache hit/miss determination</li>
+<li>If miss: Go to L2/global memory (hundreds of cycles)</li>
+<li>If hit: Still has cache controller overhead</li>
+<li>Data returned</li>
+</ul>
+<p><strong>Architecture Insight</strong>
+Physical SRAM Bank (64KB example)
+├── 48KB configured as Shared Memory
+│   └── Direct access path (fast)
+└── 16KB configured as L1 Cache<br>
+└── Cache controller path (slower due to overhead)</p>
+<hr>
+<p><strong>Constant Memory</strong>
+Constant memory uses dedicated on-chip SRAM banks, usually separate from shared memory. These banks are optimized for read-only access patterns</p>
+<p>Cache hit: 1-2 cycles latency
+Cache miss: 200-400 cycles (device memory access)</p>
+<p><strong>Texture Memory</strong>
+It gets advantage from:</p>
+<ul>
+<li>spatial locality, 2D cache optimized for nearby access</li>
+<li>Non-coalesced access: better than global memory for scattered reads</li>
+<li>Hardware filtering: bilinear, trilinear interpolation</li>
+<li>Clamping / Wrapping: hardware boundary handling</li>
+</ul>
+<hr>
+<h1 id="unified-memory-programming">Unified Memory Programming</h1>
+<p>Unified Memory provides:</p>
+<ul>
+<li>Single Unified Memory Pool. A single pointer value enables all processors in the CPUs and GPUs to access this memory with all of their native memory operations. It&rsquo;s managed by the system, and I think there should be a mechanism just like page fault, to create real memory allocation and migrate the data only if the page fault is triggered.</li>
+<li><strong>Concurrent access</strong> to the unified memory pool from <strong>all processor</strong>(CPUs and GPUs) in the system. In the previous traditional memory access pattern. We have to access to the data in separate devices separately. But now, both CPUs and GPUs can be reading from and writing to the same memory pool at the same time, rather than having to take turns. Traditionally, only one processor can access a piece of data at a time. While GPU is working on data, CPU cannot access it, and vice versa. But proper synchronization is still needed for avoiding data races.</li>
+</ul>
+<p>It helps with Performance:</p>
+<ul>
+<li>Data access speed may be maximized by migrating data towards processors that access it most frequently</li>
+<li>We can use feature <strong>hint</strong> to control migration</li>
+<li>Total system memory usage may be reduced by avoiding duplicating memory on both CPUs and GPUs</li>
+</ul>
+<p>We can focus on functionality of the program at first, but worry about data-movement later in the development cycle as a performance optimization use hint.</p>
+<p><strong>System-Allocated Memory</strong>
+Memory allocated on the host with system APIs: stack variables, global-/file-scope variables, malloc()/mmap(), thread locals.
+<strong>CUDA API</strong>
+cudaMallocManaged()</p>
+<p>Not completed</p>
+<hr>
+<h1 id="asynchronous-operation">Asynchronous Operation</h1>
+<p>We can utilize asynchronous SIMT allows:</p>
+<ul>
+<li>We can initiate memory transfers without waiting for completion. Threads can do other work, while transferring happens in the background.</li>
+<li>We can overlapping computation and communication</li>
+<li>Instead of having threads sit idle waiting for slow operations, they can work on other tasks.</li>
+</ul>
+<p>A typical Asynchronous operation:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">// Traditional synchronous approach
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>__shared__ <span style="color:#66d9ef">float</span> shared_data[<span style="color:#ae81ff">256</span>];
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Copy data and wait
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>shared_data[tid] <span style="color:#f92672">=</span> global_data[tid];  <span style="color:#75715e">// All threads wait here
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">__syncthreads</span>();  <span style="color:#75715e">// Barrier - everyone waits
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>result <span style="color:#f92672">=</span> <span style="color:#a6e22e">compute</span>(shared_data[tid]);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Asynchronous approach
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>__shared__ <span style="color:#66d9ef">float</span> shared_data[<span style="color:#ae81ff">256</span>];
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Start the copy operation (doesn&#39;t wait)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">async_copy</span>(<span style="color:#f92672">&amp;</span>shared_data[tid], <span style="color:#f92672">&amp;</span>global_data[tid]);
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Do other work while copy happens
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">float</span> temp <span style="color:#f92672">=</span> <span style="color:#a6e22e">some_other_computation</span>();
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Wait only when we actually need the data
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">wait_for_copy_completion</span>();
+</span></span><span style="display:flex;"><span>result <span style="color:#f92672">=</span> <span style="color:#a6e22e">compute</span>(shared_data[tid] <span style="color:#f92672">+</span> temp);
+</span></span></code></pre></div><p>Apparently, we need synchronization to use the asynchronous operations. Such as:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">// Wrong One
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// Thread 1 starts copying data asynchronously
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">async_copy</span>(shared_memory, global_memory);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Thread 2 immediately tries to use the data
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">float</span> result <span style="color:#f92672">=</span> <span style="color:#a6e22e">compute</span>(shared_memory[tid]); <span style="color:#75715e">// WRONG! Data might not be ready yet
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Use synchronization
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// Only this thread can wait on this barrier
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>cuda<span style="color:#f92672">::</span>barrier<span style="color:#f92672">&lt;</span>cuda<span style="color:#f92672">::</span>thread_scope_thread<span style="color:#f92672">&gt;</span> personal_barrier;
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">async_copy</span>(..., personal_barrier);
+</span></span><span style="display:flex;"><span>personal_barrier.<span style="color:#a6e22e">wait</span>(); <span style="color:#75715e">// Only this thread waits
+</span></span></span></code></pre></div><p>There are two kinds of synchronization object, they can be &ldquo;cuda:: barrier&rdquo; or &ldquo;cuda:: pipleline&rdquo;,</p>
+<p>They get different scope, like:</p>
+<ul>
+<li>cuda::thread_scope::thread_scope_thread</li>
+<li>cuda::thread_scope::thread_scope_block</li>
+<li>cuda::thread_scope::thread_scope_device</li>
+<li>cuda::thread_scope::thread_scope_system
+You can use them to the synchronization object, like:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>cuda<span style="color:#f92672">::</span>barrier<span style="color:#f92672">&lt;</span>cuda<span style="color:#f92672">::</span>thread_scope_thread<span style="color:#f92672">&gt;</span> personal_barrier;
+</span></span><span style="display:flex;"><span>async_copy(..., personal_barrier);
+</span></span><span style="display:flex;"><span>personal_barrier.wait();
+</span></span></code></pre></div><p>Or in block synchronization</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>cuda<span style="color:#f92672">::</span>barrier<span style="color:#f92672">&lt;</span>cuda<span style="color:#f92672">::</span>thread_scope_block<span style="color:#f92672">&gt;</span> block_barrier;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (threadIdx.x <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>	async_copy(..., block_barrier);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>block_barrier.wait();
+</span></span></code></pre></div>
 </article>
 
             </div>

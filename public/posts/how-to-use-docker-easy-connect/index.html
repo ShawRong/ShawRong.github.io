@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="
+Install docker
+Use command
+
+docker run --rm --device /dev/net/tun \
+	--cap-add NET_ADMIN -ti -e PASSWORD=xxxx \
+	-e DISABLE_PKG_VERSION_XML=1 -e URLWIN=1 \
+	-v $HOME/.ecdata:/root -p 127.0.0.1:5901:5901 \
+	-p 127.0.0.1:1081:1080 -p 127.0.0.1:8889:8888 \
+	hagb/docker-easyconnect:latest
+
+Optional: You can make it into your bashrc or zshrc. And you can use prompt &ldquo;easyconnect&rdquo; to launch your easyconnect docker
+
+alias easyconnect=&#39;docker run --rm --device /dev/net/tun --cap-add NET_ADMIN -ti -e PASSWORD=xxxx -e DISABLE_PKG_VERSION_XML=1 -e URLWIN=1 -v $HOME/.ecdata:/root -p 127.0.0.1:5901:5901 -p 127.0.0.1:1081:1080 -p 127.0.0.1:8889:8888 hagb/docker-easyconnect:latest&#39;
+
+Type &ldquo;easyconnect&rdquo; to launch easyconnect docker
+Use VNC software to connect to &ldquo;127.0.0.1:5091&rdquo;. If you are using mac, you can use software &ldquo;ScreenSharing&rdquo;. The password is &ldquo;xxxx&rdquo;.
+Use screen sharing, type https://remote.hkust-gz.edu.cn to enter the domain, and type you account and password.
+Now you need to use the socks port &ldquo;127.0.0.1:1080&rdquo; as you proxy.
+">  
+
+  <title>
+    
+      How to use docker easy connect
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-09-25 09:49:04.976 &#43;0000 UTC">
+                            2025-09-25
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>How to use docker easy connect</h1>
+
+    
+
+    <ul>
+<li>Install docker</li>
+<li>Use command</li>
+</ul>
+<pre tabindex="0"><code>docker run --rm --device /dev/net/tun \
+	--cap-add NET_ADMIN -ti -e PASSWORD=xxxx \
+	-e DISABLE_PKG_VERSION_XML=1 -e URLWIN=1 \
+	-v $HOME/.ecdata:/root -p 127.0.0.1:5901:5901 \
+	-p 127.0.0.1:1081:1080 -p 127.0.0.1:8889:8888 \
+	hagb/docker-easyconnect:latest
+</code></pre><ul>
+<li>Optional: You can make it into your bashrc or zshrc. And you can use prompt &ldquo;easyconnect&rdquo; to launch your easyconnect docker</li>
+</ul>
+<pre tabindex="0"><code>alias easyconnect=&#39;docker run --rm --device /dev/net/tun --cap-add NET_ADMIN -ti -e PASSWORD=xxxx -e DISABLE_PKG_VERSION_XML=1 -e URLWIN=1 -v $HOME/.ecdata:/root -p 127.0.0.1:5901:5901 -p 127.0.0.1:1081:1080 -p 127.0.0.1:8889:8888 hagb/docker-easyconnect:latest&#39;
+</code></pre><ul>
+<li>Type &ldquo;easyconnect&rdquo; to launch easyconnect docker</li>
+<li>Use VNC software to connect to &ldquo;127.0.0.1:5091&rdquo;. If you are using mac, you can use software &ldquo;ScreenSharing&rdquo;. The password is &ldquo;xxxx&rdquo;.</li>
+<li>Use screen sharing, type <a href="https://remote.hkust-gz.edu.cn">https://remote.hkust-gz.edu.cn</a> to enter the domain, and type you account and password.</li>
+<li>Now you need to use the socks port &ldquo;127.0.0.1:1080&rdquo; as you proxy.</li>
+</ul>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

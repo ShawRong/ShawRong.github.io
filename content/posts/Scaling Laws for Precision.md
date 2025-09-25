@@ -1,6 +1,6 @@
 ---
 title: "Scaling Laws for Precision"
-date: 2025-09-08T11:49:29.916Z
+date: 2025-09-25T09:49:38.130Z
 draft: false
 tags: []
 ---

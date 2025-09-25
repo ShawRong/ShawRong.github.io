@@ -38,19 +38,8 @@ SR can be implemented through dithering. It adds random uniform noise to the inp
 The dithering for a uniform integer and non-uniform one is different, which requires modifying the noise scale. The dithering looks like:
 $$\begin{align} \delta &amp;= \mathcal{U}(-0.5, -0.5) \quad (1)\ \text{SR}_\text{dither} (x) &amp;= \begin{cases}\lfloor x \rfloor \quad x &#43; \delta &lt; \lfloor x \rfloor &#43; \frac 1 2 \ \lceil x \rceil \quad x &#43; \delta \geq \lfloor x \rfloor &#43; \frac 1 2 \end{cases} \quad (2) \end{align}$$
 
-Questions
-
- Why directly applying SR to MXFP 4 can result in high variance form block-level outliers?
- It says that MXFP4 uses an INT8 scale s for every contiguous block v of 32 FP4 numbers to represent 2^{s-1}v. where 1 is the exponent bias for FP4. I got a question for what&rsquo;s the bias here? Is this universal?
- What&rsquo;s the stochastic rounding here. And how can it used to compute the GEMMs? And how does the Hadamard transform applied? It&rsquo;s applied to what?
- What if we just use the Hadamard transform? Is there any ablation study?
- What does they do to avoid the overhead of the RHT and SR.
- IEEE 754 format: $(-1)^S (1 &#43; M) 2^{E - \text{bias}}$ . Does fp4 obey this format?
- Here it says about the back propagate through a linear layer, we need to calculate the gradient of y with respect to x. Why? Shouldn&rsquo;t we calculate the gradient like Loss to W? And it&rsquo;s says something like: dL/dx = dL/dy W, dL/dW = dL/dY x, and dL/db = 1 dL/ dy. What&rsquo;s all this, and what&rsquo;s our purpose?
- Why the dL/dx and dL/dW is computationally intensive?
- How can this dithering achieve a random rounding with its expectation to be equal with the original one?
- It says: &ldquo;For example, near the end of the training, the model update norm is much smaller than the parameter norm and information in low precision updates can be &ldquo;lost&rdquo;. Here, stochastic rounding can be used to preserve the update in expectation&rdquo;. I don&rsquo;t really understand why keep the update in expectation can help the training near the end.
-">  
+MXFP4 Quantization Process
+MXFP4 is a block-based floating-point format, the block size usually to be 32. 32 elements shared a same exponent number with format E8, which represents the all 8 bits are for exponent. Each mxfp4 is consist of 1 signal bit and 3 mantissa bits.">  
 
   <title>
     
@@ -73,8 +62,8 @@ Questions
                     <a href="/">..</a>
 
                     <p>
-                        <time datetime="2025-09-08 11:48:28.689 &#43;0000 UTC">
-                            2025-09-08
+                        <time datetime="2025-09-25 09:49:30.022 &#43;0000 UTC">
+                            2025-09-25
                         </time>
                     </p>
                 </div>
@@ -119,7 +108,65 @@ Questions
 <li>The dithering for a uniform integer and non-uniform one is different, which requires modifying the noise scale. The dithering looks like:</li>
 <li>$$\begin{align} \delta &amp;= \mathcal{U}(-0.5, -0.5) \quad (1)\ \text{SR}_\text{dither} (x) &amp;= \begin{cases}\lfloor x \rfloor \quad x + \delta &lt; \lfloor x \rfloor + \frac 1 2 \ \lceil x \rceil \quad x + \delta \geq \lfloor x \rfloor + \frac 1 2 \end{cases} \quad (2) \end{align}$$</li>
 </ul>
-<h1 id="questions">Questions</h1>
+<h2 id="mxfp4-quantization-process">MXFP4 Quantization Process</h2>
+<p>MXFP4 is a block-based floating-point format, the block size usually to be 32. 32 elements shared a same exponent number with format E8, which represents the all 8 bits are for exponent. Each mxfp4 is consist of 1 signal bit and 3 mantissa bits.</p>
+<p><strong>Format Structure (Per Block)</strong>:</p>
+<ul>
+<li><strong>Grouping:</strong> Data is processed in blocks of 32 values.</li>
+<li><strong>Shared Exponent:</strong> One 8-bit exponent is shared across the entire block.</li>
+<li><strong>Data Values:</strong> Each value is a 4-bit signed integer (1 sign bit + 3 magnitude bits), representing numbers from <strong>-6 to +6</strong>.</li>
+<li><strong>Total Storage:</strong> 136 bits per block (8 bits for the exponent + 32 * 4 bits for the values).</li>
+</ul>
+<p><strong>Quantization Algorithm:</strong></p>
+<ul>
+<li><strong>Find Block Maximum:</strong> For a block of 32 numbers, find the one with the largest absolute value (<code>max_abs_val</code>). This value sets the scale for the entire block. Our goal is to map the original numbers to be in the range of [-6, 6].</li>
+<li><strong>Calculate Shared Exponent:</strong> We know if we want to achieve this range. We get a inequality: (max_abs_val / scale) &lt;= emax. Here, it should be like: max_bas_val / (2^shared_exp) &lt;= 6. To get the shared_exp, we can use this fomula: shared_exp = ceil(log2(max_abs_val / 6))</li>
+<li><strong>Scale &amp; Quantize:</strong> Create a scaling factor from the exponent (<code>Scale = 2^shared_exp</code>). Divide every number in the block by this <code>Scale</code> and round it to the nearest integer.</li>
+<li><strong>Store:</strong> The final stored data consists of the single 8-bit <code>shared_exp</code> and the 32 new 4-bit integer values.</li>
+</ul>
+<p>The original mxfp 4 quantization algorithm:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#e6db74">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Convert vector of scalar float in high precision to an mx block {e8, 32 fp4}.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># exponent of the largest normal in lower precision type</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># here it should be 2.</span>
+</span></span><span style="display:flex;"><span>emax <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>max_abs_per_block <span style="color:#f92672">=</span> torch<span style="color:#f92672">.</span>max(torch<span style="color:#f92672">.</span>abs(weight_blocks), dim<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>shared_exp <span style="color:#f92672">=</span> floor(torch<span style="color:#f92672">.</span>log2(max_abs_per_block)) <span style="color:#f92672">-</span> emax<span style="color:#f92672">.</span>unsqueeze(<span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>normalized <span style="color:#f92672">=</span> weigth_blocks <span style="color:#f92672">/</span> (<span style="color:#ae81ff">2</span><span style="color:#f92672">^</span>shared_exp)<span style="color:#f92672">.</span>unsqueeze(<span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Quantize to FP4 indices, according to its closest value indices</span>
+</span></span><span style="display:flex;"><span>quantized_indices <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_quantize_to_fp4_indices(normalized)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Pack indices to bytes</span>
+</span></span><span style="display:flex;"><span>packed_blocks <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_pack_indices_to_bytes(quantized_indices)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">return</span> packed_blocks, scales
+</span></span></code></pre></div><p>The optimized version of mxfp4 quantization:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#e6db74">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Optimized Version
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Convert vector of scalar float in high precision to an mx block {e8, 32 fp4}.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># exponent of the largest normal in lower precision type</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># here it should be 2.</span>
+</span></span><span style="display:flex;"><span>emax <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>max_abs_per_block <span style="color:#f92672">=</span> torch<span style="color:#f92672">.</span>max(torch<span style="color:#f92672">.</span>abs(weight_blocks), dim<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>shared_exp <span style="color:#f92672">=</span> floor(torch<span style="color:#f92672">.</span>log2(max_abs_per_block)) <span style="color:#f92672">-</span> emax<span style="color:#f92672">.</span>unsqueeze(<span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Do a uniform scaling to the weight blocks </span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># make it scale to 3/4 original.</span>
+</span></span><span style="display:flex;"><span>weight_blocks <span style="color:#f92672">=</span> weight_blocks <span style="color:#f92672">*</span> <span style="color:#ae81ff">3.0</span> <span style="color:#f92672">/</span> <span style="color:#ae81ff">4.0</span>
+</span></span><span style="display:flex;"><span>normalized <span style="color:#f92672">=</span> weigth_blocks <span style="color:#f92672">/</span> (<span style="color:#ae81ff">2</span><span style="color:#f92672">^</span>shared_exp)<span style="color:#f92672">.</span>unsqueeze(<span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Quantize to FP4 indices, but we use stochastic rounding to FP4.</span>
+</span></span><span style="display:flex;"><span>quantized_indices <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_quantize_to_fp4_indices_stochastic(normalized)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Pack indices to bytes</span>
+</span></span><span style="display:flex;"><span>packed_blocks <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_pack_indices_to_bytes(quantized_indices)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">return</span> packed_blocks, scales
+</span></span></code></pre></div><h1 id="questions">Questions</h1>
 <ul>
 <li><input disabled="" type="checkbox"> Why directly applying SR to MXFP 4 can result in high variance form block-level outliers?</li>
 <li><input disabled="" type="checkbox"> It says that MXFP4 uses an INT8 scale s for every contiguous block v of 32 FP4 numbers to represent 2^{s-1}v. where 1 is the exponent bias for FP4. I got a question for what&rsquo;s the bias here? Is this universal?</li>

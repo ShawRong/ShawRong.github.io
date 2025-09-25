@@ -1,6 +1,6 @@
 ---
 title: "QuIP sharpe Note"
-date: 2025-09-08T11:49:22.555Z
+date: 2025-09-25T09:49:34.770Z
 draft: false
 tags: []
 ---
