@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Difference with Neural Network
+The output of RNN are passed to the next RNN network (internal variable).
+Multilayer
+Actually, these rnn can have multiple layers and multiple memory units.
+Basic RNN
+The basic rnn is simple. It use internal variable(s) as output variable(y). And the s can be calculated by using:
+$s_t = tanh(W [x_{t}, s_{t-1}] &#43; b)$
+$y_t = s_t$
+LSTM
+There are components:
+
+internal variable to store memory
+forget feature to forget some portion of internal variable
+input feature to decide portion of input and strength of input
+output feature to decide portion of output and strength of output
+
+Some significant difference
+First, the output and internal state previous are input, too.">  
+
+  <title>
+    
+      5002 Recurrent Neural Network Memo
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-05-16 21:17:29 &#43;0800 CST">
+                            2025-05-16
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>5002 Recurrent Neural Network Memo</h1>
+
+    
+
+    <h1 id="difference-with-neural-network">Difference with Neural Network</h1>
+<p>The output of RNN are passed to the next RNN network (internal variable).</p>
+<h1 id="multilayer">Multilayer</h1>
+<p>Actually, these rnn can have multiple layers and multiple memory units.</p>
+<h1 id="basic-rnn">Basic RNN</h1>
+<p>The basic rnn is simple. It use internal variable(s) as output variable(y). And the s can be calculated by using:
+$s_t = tanh(W [x_{t}, s_{t-1}] + b)$
+$y_t = s_t$</p>
+<h1 id="lstm">LSTM</h1>
+<p>There are components:</p>
+<ul>
+<li>internal variable to store memory</li>
+<li>forget feature to forget some portion of internal variable</li>
+<li>input feature to decide portion of input and strength of input</li>
+<li>output feature to decide portion of output and strength of output</li>
+</ul>
+<h2 id="some-significant-difference">Some significant difference</h2>
+<p>First, the output and internal state previous are input, too.</p>
+<h2 id="components-and-framework">Components and Framework</h2>
+<p>Component:</p>
+<ul>
+<li>Forget gate (portion of memory)</li>
+<li>Input gate (portion of input)</li>
+<li>Input activatin gate (weight of input)</li>
+<li>New internal state is Input(Input gate combine with Input activation gate + Forget gate combine with previous Internal state)</li>
+<li>Output gate (portion of output)</li>
+<li>Final output state gate (Multiplication of tanh internal state and Output gate)
+Formulas:</li>
+<li>Forget gate$f_t = \sigma(W_f [x_t, y_{t-1}] + b_f)$</li>
+<li>Input gate $I_t = \sigma(W_i (x_t, y_{t-1})+ b_i)$</li>
+<li>Input Activation gate $a_t = tahn(W_a[x_t, y_{t-1}]+b_a)$</li>
+<li>New internal state: $s_t = I_t \times a_t + s_{t-1}$</li>
+<li>Output gate: $O_t = \sigma(W_o [x_t, y_{t-1}] + b_o)$</li>
+<li>Final output: $O_t \times \tanh(s_t)$</li>
+</ul>
+<h1 id="gated-recurrent-unit">Gated Recurrent Unit</h1>
+<h2 id="advantages">Advantages</h2>
+<ul>
+<li>training time shorter due to simple architecture</li>
+<li>few data point to capture properties</li>
+<li>no interval variable</li>
+</ul>
+<h2 id="key-difference">Key difference</h2>
+<p>No internal varible here, just use previous prediction y.</p>
+<h2 id="component">Component</h2>
+<ul>
+<li>Reset Gate: using previous prediction as reference to store memory. Portion of memory</li>
+<li>Input activation Gate: just input activation gate</li>
+<li>Output: Combine portion of predicted target and portion of the processed input variable. (ratio come from the update feature)</li>
+</ul>
+<h3 id="summary">Summary</h3>
+<ul>
+<li>reset component</li>
+<li>input activation component</li>
+<li>update component</li>
+<li>final output component</li>
+</ul>
+<h2 id="formula">Formula</h2>
+<ul>
+<li>reset gate: $r_t = \sigma(W_r [x_t, y_{t-1}] + b_r)$</li>
+<li>input activation gate: $a_t = \tanh(W_a [x_t, r_t \times y_{t-1}] + b_a)$</li>
+<li>update gate: $u_t = \sigma(W_u [x_t, y_{t-1}] + b_u)$</li>
+<li>final output: $y_t = (1-u_t) y_{t-1} + u_t a_t$</li>
+</ul>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

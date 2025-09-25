@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Authority weight (in-degree)
+Hub weight (out-degree)
+
+A good authority has many edges from good hubs
+A good hub has many edges from good authorities
+
+Hit Algorithm
+Two steps:
+
+Sampling Step
+Iteration Step
+
+sampling step
+Given a user query with several terms, we collect a set of pages that are very relevant &ndash; called the base set.
+
+We get all the web page that contain any query terms. This is called root set.
+We find the link pages, which are linked by or link to web pages of root set.
+Base set = link pages &amp; root set
+
+Iteration Step
+We know the hub weight of a web page is given by:
+$h(N) = a(N) &#43; a(MS) &#43; a(A)$
+etc..
+so we can get:
+$\vec{h} = [{h(N), h(MS), h(A)}]$
+$\vec{a} = [{a(N), a(MS), a(A)}]$
+$\vec{h} = M\vec{a}$
+Here M represents adjacent matrix.">  
+
+  <title>
+    
+      5002 Web Database Memo
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-05-16 21:17:29 &#43;0800 CST">
+                            2025-05-16
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>5002 Web Database Memo</h1>
+
+    
+
+    <p>Authority weight (in-degree)
+Hub weight (out-degree)</p>
+<ul>
+<li>A good authority has many edges from good hubs</li>
+<li>A good hub has many edges from good authorities</li>
+</ul>
+<h1 id="hit-algorithm">Hit Algorithm</h1>
+<p>Two steps:</p>
+<ul>
+<li>Sampling Step</li>
+<li>Iteration Step</li>
+</ul>
+<h2 id="sampling-step">sampling step</h2>
+<p>Given a user query with several terms, we collect a set of pages that are very relevant &ndash; called the base set.</p>
+<ul>
+<li>We get all the web page that contain any query terms. This is called root set.</li>
+<li>We find the link pages, which are linked by or link to web pages of root set.</li>
+<li>Base set = link pages &amp; root set</li>
+</ul>
+<h2 id="iteration-step">Iteration Step</h2>
+<p>We know the hub weight of a web page is given by:
+$h(N) = a(N) + a(MS) + a(A)$
+etc..
+so we can get:
+$\vec{h} = [{h(N), h(MS), h(A)}]$
+$\vec{a} = [{a(N), a(MS), a(A)}]$
+$\vec{h} = M\vec{a}$
+Here M represents adjacent matrix.</p>
+<p>Similarly, we get
+$\vec{a} = M^T\vec{h}$
+So we get:
+$\vec{h} = MM^T\vec{h}$
+$\vec{a} = M^TM\vec{a}$</p>
+<h3 id="how-to-interation">How to interation?</h3>
+<ul>
+<li>We set all the pages with hub weight = 1 at first.</li>
+<li>And we do  $\vec{h} = MM^T\vec{h}$, to get new vec h.</li>
+<li>And we <strong>normalize</strong> it to make the sum of all the element in the vector to be equal to the number of elements.  For example, normalize to 3.</li>
+</ul>
+<h1 id="recommendation">Recommendation</h1>
+<ul>
+<li>We can rank base on h weight</li>
+<li>We can rank base on a weight</li>
+<li>We can rank base on a combination of h &amp; a weight (for example, sum)</li>
+</ul>
+<h1 id="pagerank-algorithm">Pagerank Algorithm</h1>
+<h1 id="comparison-with-hit-algorithm">Comparison with HIT algorithm</h1>
+<ul>
+<li>Disadvantage of hit: It can be hard to determine to use a or h.</li>
+<li>Advantage of Pagerank: only one concept for ranking</li>
+</ul>
+<h1 id="ideas">Ideas</h1>
+<p>Stochastic Matrix</p>
+<ul>
+<li>column-wise Matrix, column is decided by the out-link of a node. And the sum of the column elements equal to 1.</li>
+</ul>
+<p>Like:
+N -&gt; N
+N -&gt; A
+A -&gt; N
+A -&gt; M
+M -&gt; A</p>
+<p>We can get:
+![[Pasted image 20250515235758.png]]</p>
+<h1 id="iteration">Iteration</h1>
+<p>After we get the stochastic matrix</p>
+<ul>
+<li>Initial the vec r to be [1, &hellip;, 1].</li>
+<li>$\vec{r} = M \vec{r}$</li>
+<li>so on so forth
+We need to understand that it&rsquo;s actually the weighted sum of columns, so the sum of elements equal to the num of elements.
+![[Pasted image 20250516000110.png]]</li>
+</ul>
+<h1 id="spider-trap">Spider Trap</h1>
+<p>Definition: A group of one or more pages that have no links out of the group will eventually accumulate all the importance of the web.</p>
+<p><strong>How to avoid it?</strong>
+$\vec{r} = 0.8W\vec{r} + \vec{c}$
+$\vec{c} = \begin{bmatrix} 0.2 \ 0.2 \ 0.2\end{bmatrix}$</p>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>
