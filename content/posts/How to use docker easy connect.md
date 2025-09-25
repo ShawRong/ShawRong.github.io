@@ -1,6 +1,6 @@
 ---
 title: "How to use docker easy connect"
-date: 2025-09-25T09:49:04.976Z
+date: 2025-09-25T09:55:37.345Z
 draft: false
 tags: []
 ---
@@ -21,5 +21,5 @@ alias easyconnect='docker run --rm --device /dev/net/tun --cap-add NET_ADMIN -ti
 ```
 - Type "easyconnect" to launch easyconnect docker
 - Use VNC software to connect to "127.0.0.1:5091". If you are using mac, you can use software "ScreenSharing". The password is "xxxx".
-- Use screen sharing, type https://remote.hkust-gz.edu.cn to enter the domain, and type you account and password.
-- Now you need to use the socks port "127.0.0.1:1080" as you proxy.
+- Use screen sharing, type https://remote.hkust-gz.edu.cn to enter the domain, and type your account and password.
+- Now you need to use the socks port "127.0.0.1:1080" as your proxy.
