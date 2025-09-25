@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Type of Decision Tree
+
+ID3
+Information gain
+C4.5
+Information gain normalized by entropy(split info).
+CART
+
+Entropy
+To measure how informative a distribution is.
+The formula is as follows:
+$\text{Entropy} = - \sum p log p$
+Here, the logarithm is based on a base of two.
+The greater the entropy is, the less informative the distribution is.
+For example:
+P(tail) = 0.5  P(tail) = 0.5  entropy = 1
+P(tail) = 1    P(tail) = 0    entropy = 
+We assume 0log 0 = 0 in the calculation">  
+
+  <title>
+    
+      5002 Decision Tree Memo
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-05-16 21:17:29 &#43;0800 CST">
+                            2025-05-16
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>5002 Decision Tree Memo</h1>
+
+    
+
+    <h1 id="type-of-decision-tree">Type of Decision Tree</h1>
+<ul>
+<li>ID3
+Information gain</li>
+<li>C4.5
+Information gain normalized by entropy(split info).</li>
+<li>CART</li>
+</ul>
+<h1 id="entropy">Entropy</h1>
+<p>To measure how informative a distribution is.
+The formula is as follows:
+$\text{Entropy} = - \sum p log p$
+Here, the logarithm is based on a base of two.
+The greater the entropy is, the less informative the distribution is.
+For example:</p>
+<pre tabindex="0"><code>P(tail) = 0.5  P(tail) = 0.5  entropy = 1
+P(tail) = 1    P(tail) = 0    entropy = 
+</code></pre><p><em>We assume 0log 0 = 0 in the calculation</em></p>
+<h1 id="information-gain">Information gain</h1>
+<p>Suppose we get a table having columns: race, income, label</p>
+<p>We calculate the base information(entropy):
+Info(label) = entropy(p_yes, p_no)</p>
+<p>We calculate the information associated with an attribute.
+Info(race) = p_black * entropy(p_yes, p_no | black) + p_white * entropy(p_yes, p_no | white)
+<em>Here, p_black means the proportion of the black attribute</em></p>
+<p>And we can calculate the information gain by:
+Gain(race) = Info(label) - Info(race)</p>
+<p><strong>We should choose the one with the greatest gain.</strong></p>
+<h1 id="c45">C4.5</h1>
+<p>We use a new measurement:
+Gain(race) = Info(label) - Info(race) / entropy(race)</p>
+<h3 id="comparison-with-id3">Comparison with ID3</h3>
+<p>ID3 tends to choose the attributes with more values.
+C4.5 tries to penalize attributes with more values.</p>
+<h2 id="cart">CART</h2>
+<p>It uses gini index to calculate the Info.
+gini(p_i, &hellip;) = 1 - \sum p_i^2
+Info(label) = gini(p_yes, p_no)
+Info(white) = gini(p_yes, p_no | white)
+Info(black) = gini(p_yes, p_no | black)
+Info(race) = p_black * Info(black) + p_white * Info(white)
+Gain(race) = Info(label) - Info(race)</p>
+<h2 id="intuition-of-gini">Intuition of Gini</h2>
+<p>Suppose we get two kinds of balls: x and y.
+The probability of picking x is p_x, and correspondingly p_y.
+The probability of taking two balls of different kinds is:
+1 - P_x^2 - P_y^2.</p>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

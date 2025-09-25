@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Methods
+
+Dense Unit-based Method
+Entropy-Based Method
+Transformation-Based Method
+
+why subspace clustering?
+dimension curse: when the number of dimensions increases, the distance between any two points is nearly the same.
+Dense Unit-based Method
+Property
+If a set is cluster in k dimension, then it&rsquo;s part of cluster in k-1 dimension, too.
+Algorithm
+
+Identify sub-space that contain dense units (aprior algorithm, find x, y, z these dimension)
+Identify clusters in each sub-space that contain dense units (base on previous found x, y, z dimension, we find cluster like {x:[1, 10] y: [11, 20]}, etc..)
+
+adapt aprior
+for example, we get grid of 10, and mark $X_1$ as [1, 10], and so on. threshold 1.
+( 1, 19) $X_0$ $Y_1$
+(11, 29) $X_1$ $Y_2$
+(21, 39) $X_2$ $Y_3$
+(31, 49) $X_3$ $Y_4$
+(41, 59) $X_4$ $Y_5$">  
+
+  <title>
+    
+      5002 Subspace clustering Memo
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-05-16 21:17:29 &#43;0800 CST">
+                            2025-05-16
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>5002 Subspace clustering Memo</h1>
+
+    
+
+    <h1 id="methods">Methods</h1>
+<ul>
+<li>Dense Unit-based Method</li>
+<li>Entropy-Based Method</li>
+<li>Transformation-Based Method</li>
+</ul>
+<h2 id="why-subspace-clustering">why subspace clustering?</h2>
+<p>dimension curse: when the number of dimensions increases, the distance between any two points is nearly the same.</p>
+<h1 id="dense-unit-based-method">Dense Unit-based Method</h1>
+<h2 id="property">Property</h2>
+<p>If a set is cluster in k dimension, then it&rsquo;s part of cluster in k-1 dimension, too.</p>
+<h2 id="algorithm">Algorithm</h2>
+<ul>
+<li>Identify sub-space that contain dense units (aprior algorithm, find x, y, z these dimension)</li>
+<li>Identify clusters in each sub-space that contain dense units (base on previous found x, y, z dimension, we find cluster like {x:[1, 10] y: [11, 20]}, etc..)</li>
+</ul>
+<h2 id="adapt-aprior">adapt aprior</h2>
+<p>for example, we get grid of 10, and mark $X_1$ as [1, 10], and so on. threshold 1.
+( 1, 19) $X_0$ $Y_1$
+(11, 29) $X_1$ $Y_2$
+(21, 39) $X_2$ $Y_3$
+(31, 49) $X_3$ $Y_4$
+(41, 59) $X_4$ $Y_5$</p>
+<p>We get dense unit:
+$L_1 = {X_0, X_1, X_2, X_3, X_4}$
+$L_1 = {Y_1, Y_2, Y_3, Y_4, Y_5}$
+We found subspace:
+$L_1 = {{X}, {Y}}$
+And
+$C_2 = {{X, Y}}$
+For attribute ${X, Y}$, we get:
+$C_2 = {{X_0, Y_1}, {X_0, Y_2} \cdots}$
+$L_2 = ..$
+And &hellip;</p>
+<h1 id="entropy-based-method">Entropy-Based Method</h1>
+<h2 id="conditional-entropy">conditional entropy</h2>
+<p>H represents entropy.
+$H(Y|X)=\sum_{x\in A} p(x)H(Y|X=x)$
+$H(Y|X=x)= -\sum_{y \in B} p(y|X=x)\log(p(y|X=x))$
+And
+$H(X, Y) = H(X) + H(Y|X)$
+$H(X_1, X_2, \cdots, X_k) = H(X_1,\cdots, X_{k-1}) + H(X_k|X_1,\cdots, X_{k-1})$</p>
+<p>So we can get the Lemma:
+If subspace with k dimension has good clustering (H(X1,&hellip;, X_k) &lt;= w).
+The each of the (k-1) dimensional projections has good clustering</p>
+<h2 id="apriori">Apriori</h2>
+<p>We can calculate:
+H(Age)=0.12, H(Income)=0.08, w = 0.2</p>
+<ul>
+<li>L_1 = {{Age}, {Income}}</li>
+<li>C_2 = {{Age, Income}}&hellip; etc</li>
+</ul>
+<p>H(Age,&hellip;) is calculated based on grid.</p>
+<h2 id="comparison-with-dense-unit-base">comparison with dense unit base</h2>
+<p>good to find subspace, only. bad to find clusters, only.</p>
+<h1 id="transformation-based-method">Transformation-based Method</h1>
+<h2 id="steps">steps</h2>
+<p>for example, data points (3, 3)(0, 2)(-1, -1)(2, 0).</p>
+<ul>
+<li>calculate the mean vector of data points (1, 1)</li>
+<li>Get the difference vector with mean vector(2, 2)(-1, 1)(-2, -2)(1, -1)</li>
+<li>Get the covariance Matrix 1. (arrange data vector as column).
+$$Y = \begin{bmatrix}2 &amp;-1 &amp;-2 &amp;1 \ 2 &amp;1 &amp;-2 &amp;-1\end{bmatrix}$$</li>
+<li>
+<ol start="2">
+<li>covariance matrix: $\Sigma = 1/4 YY^T$</li>
+</ol>
+</li>
+<li>Find eigenvalues of eigenvectors, solve $det(\Sigma - \lambda I)=0$. (cross product), get lambda</li>
+<li>Find eigenvectors using eigenvalues, $(\Sigma - \lambda_1 I)x = 0$</li>
+<li>Normalize the eigen vector into standard form.</li>
+<li>Arrange the eigen vector into transformation matrix. (a column a vector, corresponding to the eigenvalue).</li>
+<li>Using $y = T x$ to transform the data vector.</li>
+<li>Only keep the row corresponding to smallest eigen value of the transformed data vector.</li>
+</ul>
+<h2 id="why-smallest-eigen-value">why smallest eigen value?</h2>
+<p>information loss is minimized if we project to the eigenvector with a large eigenvalue.</p>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

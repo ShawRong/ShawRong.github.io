@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Conditional Probability
+$P(B | A) = \frac {P(A | B) P(B)} {P(A)}$
+Assuming x, y, z are independent, we have:
+$P(x, y, z | A) = P(x | A) &#43; P(y | A) &#43; P(z | A)$
+Naive Bayesian Classifier
+Assume all the attribute are independent, and we get:
+$$\begin{align}
+P(yes | race, income) &amp;= \frac {P(race, income | yes) P(yes)} {P(race, income)} \
+&amp;= \frac {P(race | yes) P(income | yes) P(yes)} {P(race, income)}
+\end{align}$$">  
+
+  <title>
+    
+      5002 Bayesian Classifier Memo
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-05-16 21:17:29 &#43;0800 CST">
+                            2025-05-16
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>5002 Bayesian Classifier Memo</h1>
+
+    
+
+    <h1 id="conditional-probability">Conditional Probability</h1>
+<p>$P(B | A) = \frac {P(A | B) P(B)} {P(A)}$
+Assuming x, y, z are independent, we have:
+$P(x, y, z | A) = P(x | A) + P(y | A) + P(z | A)$</p>
+<h1 id="naive-bayesian-classifier">Naive Bayesian Classifier</h1>
+<p>Assume all the attribute are independent, and we get:
+$$\begin{align}
+P(yes | race, income) &amp;= \frac {P(race, income | yes) P(yes)} {P(race, income)} \
+&amp;= \frac {P(race | yes) P(income | yes) P(yes)} {P(race, income)}
+\end{align}$$</p>
+<p>The $P(race, income)$ are identical when calculating no.</p>
+<p>So we just calculate $P(race | yes) P(income | yes) P(yes)$</p>
+<h1 id="bayesian-belief-network">Bayesian Belief Network</h1>
+<h2 id="conditionally-independent">Conditionally independent</h2>
+<p>$P(C | A, B) = P(x | B)$
+We say C is conditionally independent of A given B.</p>
+<p>Property used in Bayesian Belief Network: A node is conditionally independent of its non-descendants if its parents are known.</p>
+<h3 id="different-condition-to-calculate">Different Condition to Calculate</h3>
+<p>![[Pasted image 20250515143618.png]]</p>
+<p>We know how to calculate P(HD|E), very simple bayesian rule.
+$P(HD=yes|E=yes) = 0.25$
+And
+$P(E=yes|HD=yes)=\frac{P(HD=yes|E=yes)P(E=yes)}{P(HD=yes)}$
+$P(E=yes) = 0.7$
+$P(HD=yes) = P(HD=yes|case1)P(case1) + P(HD=yes|case2)P(case2) = 0.31$
+And we can calculate it.</p>
+<p>And there are
+$P(HD=yes|E=yes, BP=yes, CP=yes)$
+We need to swap using formula $P(A|B, C) = \frac{P(B|A, C)P(A|C)}{P(B|C)}$.
+$P = \frac{P(BP=yes, CP=yes | HD = yes, E=yes)P(HD=yes|E=yes)}{P(BP=yes, CP=yes|E=yes)}$
+And another rule $P(A|B) = P(A|case1, B)P(case1|B) + P(A|case2, B)P(case2 | B)$ here used here:
+$P(BP=yes, CP=yes|E=yes) = P(BP=yes, CP=yes|case1, E=yes)P(case1|E=yes) + P(BP=yes, CP=yes|case2, E=yes)P(case2|E=yes)$
+$= P(BP=yes, CP=yes|HD=yes)P(HD=yes|E=yes) + P(BP=yes, CP=yes|HD=no)P(HD=no|E=yes)$</p>
+<h2 id="disadvantage-of-bayesian-belief-network">Disadvantage of Bayesian Belief network</h2>
+<ul>
+<li>The bayesian belief network classifier requires a predifined knowledge about network.</li>
+<li>The bayesian belief network classifier cannot work directly when the network contains cycles.</li>
+</ul>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

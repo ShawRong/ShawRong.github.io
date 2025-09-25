@@ -221,46 +221,46 @@
     <loc>https://example.org/posts/hugo/hugo-bugs/</loc>
     <lastmod>2025-05-16T21:17:29+08:00</lastmod>
   </url><url>
-    <loc>https://example.org/posts/5002/association-memo/</loc>
+    <loc>https://example.org/posts/ml/association-memo/</loc>
     <lastmod>2025-05-16T21:17:29+08:00</lastmod>
   </url><url>
-    <loc>https://example.org/posts/5002/bayesian-classifier-memo/</loc>
+    <loc>https://example.org/posts/ml/bayesian-classifier-memo/</loc>
     <lastmod>2025-05-16T21:17:29+08:00</lastmod>
   </url><url>
-    <loc>https://example.org/posts/5002/data-stream-memo/</loc>
+    <loc>https://example.org/posts/ml/data-stream-memo/</loc>
     <lastmod>2025-05-16T21:17:29+08:00</lastmod>
   </url><url>
-    <loc>https://example.org/posts/5002/decision-tree-memo/</loc>
+    <loc>https://example.org/posts/ml/decision-tree-memo/</loc>
     <lastmod>2025-05-16T21:17:29+08:00</lastmod>
   </url><url>
-    <loc>https://example.org/posts/5002/hierarchical-clustering/</loc>
+    <loc>https://example.org/posts/ml/hierarchical-clustering/</loc>
     <lastmod>2025-05-16T21:17:29+08:00</lastmod>
   </url><url>
-    <loc>https://example.org/posts/5002/k-means-clustering/</loc>
+    <loc>https://example.org/posts/ml/k-means-clustering/</loc>
     <lastmod>2025-05-16T21:17:29+08:00</lastmod>
   </url><url>
-    <loc>https://example.org/posts/5002/neural-network/</loc>
+    <loc>https://example.org/posts/ml/neural-network/</loc>
     <lastmod>2025-05-16T21:17:29+08:00</lastmod>
   </url><url>
-    <loc>https://example.org/posts/5002/other-clustering-memo/</loc>
+    <loc>https://example.org/posts/ml/other-clustering-memo/</loc>
     <lastmod>2025-05-16T21:17:29+08:00</lastmod>
   </url><url>
-    <loc>https://example.org/posts/5002/outlier-memo/</loc>
+    <loc>https://example.org/posts/ml/outlier-memo/</loc>
     <lastmod>2025-05-16T21:17:29+08:00</lastmod>
   </url><url>
-    <loc>https://example.org/posts/5002/recurrent-neural-network-memo/</loc>
+    <loc>https://example.org/posts/ml/recurrent-neural-network-memo/</loc>
     <lastmod>2025-05-16T21:17:29+08:00</lastmod>
   </url><url>
-    <loc>https://example.org/posts/5002/subspace-clustering-memo/</loc>
+    <loc>https://example.org/posts/ml/subspace-clustering-memo/</loc>
     <lastmod>2025-05-16T21:17:29+08:00</lastmod>
   </url><url>
-    <loc>https://example.org/posts/5002/svm-memo/</loc>
+    <loc>https://example.org/posts/ml/svm-memo/</loc>
     <lastmod>2025-05-16T21:17:29+08:00</lastmod>
   </url><url>
-    <loc>https://example.org/posts/5002/web-database-memo/</loc>
+    <loc>https://example.org/posts/ml/web-database-memo/</loc>
     <lastmod>2025-05-16T21:17:29+08:00</lastmod>
   </url><url>
-    <loc>https://example.org/posts/5002/memo-data-warehouse/</loc>
+    <loc>https://example.org/posts/ml/memo-data-warehouse/</loc>
     <lastmod>2025-05-14T17:10:29+08:00</lastmod>
   </url><url>
     <loc>https://example.org/posts/pyspark/pyspark-memo-4/</loc>

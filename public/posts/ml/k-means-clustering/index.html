@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="K-means
+First, we get a pre-defined parameter k.
+We make k random guesses of the mean point.
+Do iterations until the mean doesn&rsquo;t change.
+
+Assign each data point to the cluster whose mean is nearest
+Calculate the mean of each cluster
+Replace the cluster with a new mean
+
+About the initialization of k-means
+The popular way to initialize the starting mean is a random choice.
+The result depends on the initial guess, and a suboptimal result is possible, so we do several different starting points.">  
+
+  <title>
+    
+      5002 K-means Clustering Memo
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-05-16 21:17:29 &#43;0800 CST">
+                            2025-05-16
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>5002 K-means Clustering Memo</h1>
+
+    
+
+    <h1 id="k-means">K-means</h1>
+<p>First, we get a pre-defined parameter k.
+We make k random guesses of the mean point.
+Do iterations until the mean doesn&rsquo;t change.</p>
+<ul>
+<li>Assign each data point to the cluster whose mean is nearest</li>
+<li>Calculate the mean of each cluster</li>
+<li>Replace the cluster with a new mean</li>
+</ul>
+<h2 id="about-the-initialization-of-k-means">About the initialization of k-means</h2>
+<p>The popular way to initialize the starting mean is a random choice.
+The result depends on the initial guess, and a suboptimal result is possible, so we do several different starting points.</p>
+<h2 id="disadvantages-of-k-means">Disadvantages of k-means</h2>
+<ul>
+<li>Bad initial guess can lead to no points assigned to the cluster.</li>
+<li>The value k is not user-friendly, cause we don&rsquo;t know the number of clusters in the beginning.</li>
+</ul>
+<h1 id="sequential-k-means">Sequential k-means</h1>
+<p>To deal with data that comes at different times. We choose to update our mean point when a new data point is encountered.</p>
+<h2 id="procedure">Procedure</h2>
+<p>We set several initial guess points.
+We save variable n to represent the number of data points in the cluster(no mean point).
+Do iterations until interrupted:</p>
+<ul>
+<li>Get the next data point</li>
+<li>Find the closest mean point</li>
+<li>Increment the number counter n</li>
+<li>Replace the mean point by $m+(1/n)(x - m)$ (m for mean point and x for data point, n for counter)</li>
+</ul>
+<h2 id="how-does-this-formula-work">How does this formula work</h2>
+<p>When data point t comes in, we get:
+$m_t = m_{t-1} + \frac 1 t (x - m_{t-1})$
+Suppose $m_{t-1} = \sum_{1}^{t-1} x_i / (t - 1)$,
+We get :$m_{t-1} (t - 1) = \sum_{1}^{t-1} x_i$
+$m_{t-1} (t - 1) + x_t = \sum_{1}^{t} x_i$
+$m_{t-1} (t - 1)/t + x_t/t = m_t$
+$m_t = m_{t-1}+ 1/t( x_t - m_{t-1})$</p>
+<h1 id="forgetful-sequential-k-means">Forgetful Sequential K-means</h1>
+<h2 id="formula">Formula</h2>
+<p>$m_n = (1-a)^n m_0 + a\sum (1-a)^{n-k}x_k$
+can be derived as:
+$m_{i+1} = m_i + a(x-m_i)$
+a ranges from 1 to 0.</p>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

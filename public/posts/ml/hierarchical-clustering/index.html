@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Kinds
+
+Agglomerative methods
+It begin from clusters based on each data point to a big cluster containing all the data point
+Divisive Methods
+From big cluster containing all the data point to cluster containing one data point.
+
+Dendrogram
+![[Pasted image 20250516131649.png]]
+Distance
+
+Single Linkage: The nearest distance between two point in two cluster
+Complete Linkage: The distance between two cluster is given by the distance between their most distant members
+Group Average Linkage: The average of the distance between all pairs of records (pair-wise)
+Centroid Linkage: The distance is defined as the distance between the mean vector of two cluster
+Median Linkage: The mid-point of the original two cluster cetnres is used as the centre of the new combined group. To avoid the characteristic properties of the small one are lost.
+
+Bottom-up(Agglomerative)
+![[Pasted image 20250516133344.png]]
+single linkage:">  
+
+  <title>
+    
+      5002 Hierarchical Clustering Memo
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2025-05-16 21:17:29 &#43;0800 CST">
+                            2025-05-16
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>5002 Hierarchical Clustering Memo</h1>
+
+    
+
+    <h1 id="kinds">Kinds</h1>
+<ul>
+<li>Agglomerative methods
+It begin from clusters based on each data point to a big cluster containing all the data point</li>
+<li>Divisive Methods
+From big cluster containing all the data point to cluster containing one data point.</li>
+</ul>
+<h1 id="dendrogram">Dendrogram</h1>
+<p>![[Pasted image 20250516131649.png]]</p>
+<h1 id="distance">Distance</h1>
+<ul>
+<li>Single Linkage: The nearest distance between two point in two cluster</li>
+<li>Complete Linkage: The distance between two cluster is given by the distance between their most distant members</li>
+<li>Group Average Linkage: The average of the distance between all pairs of records (pair-wise)</li>
+<li>Centroid Linkage: The distance is defined as the distance between the mean vector of two cluster</li>
+<li>Median Linkage: The mid-point of the original two cluster cetnres is used as the centre of the new combined group. To avoid the characteristic properties of the small one are lost.</li>
+</ul>
+<h1 id="bottom-upagglomerative">Bottom-up(Agglomerative)</h1>
+<p>![[Pasted image 20250516133344.png]]
+<strong>single linkage:</strong></p>
+<ul>
+<li>We find the shortest distance between two cluster-&gt; 2.0 between 1 and 2.</li>
+<li>We use the closest distance as the new distance, etc.</li>
+</ul>
+<h1 id="divisive-approach">Divisive Approach</h1>
+<h2 id="polythetic-approach">Polythetic Approach</h2>
+<p>It uses all the attributes to do clustering</p>
+<h3 id="procedure">Procedure</h3>
+<p>In the begining, we select each point in the whole cluster, to form a new cluster, and measure the distance between these two cluster.</p>
+<p>We select the cluster with greatest distance as new cluster A. The cluster containing other data points is called cluster B.</p>
+<p>After that, we select one point a (one by one) from B, and measure the distance between A, and B/a, and measure the delta of distance of A and B/a.</p>
+<p>We select the one with the greatest delta to put into A.</p>
+<p>We continue this, until all delta become negative.</p>
+<h3 id="note">Note</h3>
+<p><em>We can continue to do this on each sub group to get more cluster</em></p>
+<h2 id="monothetic-apporach">Monothetic Apporach</h2>
+<h3 id="chi-square-measure">Chi-Square Measure</h3>
+<p>![[Pasted image 20250516143935.png]]
+note: ad and bc is cross product.  a + b &hellip; is row and column-wise addition.</p>
+<h3 id="do-clustering">Do clustering</h3>
+<p>![[Pasted image 20250516144020.png]]
+We use the chi-square to get the one with greatest impact.
+For example, for A: $\chi_{AB}^2 + \chi_{AC}^2$
+for B: $\chi_{AB}^2 + \chi_{BC}^2$
+etc&hellip;</p>
+<p>We select the most impact one, and cluster by the value.
+For example, the most impact one is attribute A. We split the whole group into {2, 3, 4} and {1, 5} due to they get same value 0 or 1.</p>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>
